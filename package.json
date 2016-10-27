@@ -1,0 +1,14 @@
+{
+  "name": "jl-sql",
+  "version": "1.0.0",
+  "keywords": [
+    "sql",
+    "stream",
+  ],
+  "author": "avz@nologin.ru",
+  "contributors": [],
+  "dependencies": {},
+  "devDependencies": {
+    "jison": "^0.4.17"
+  }
+}
