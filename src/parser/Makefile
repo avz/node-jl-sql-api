@@ -1,9 +1,9 @@
-all: sql.js
+all: Sql.js
 
-build: sql.js
+build: Sql.js
 
-sql.js: sql.jison
-	../../node_modules/jison/lib/cli.js < ./sql.jison > ./sql.js
+Sql.js: sql.jison
+	../../node_modules/jison/lib/cli.js < ./sql.jison > ./Sql.js
 
 clean:
-	rm -f sql.js
+	rm -f Sql.js

@@ -1,3 +1,3 @@
-var parser = require('./parser/sql');
+var Sql = require('./parser/Sql');
 
-console.log(parser.parse(process.argv[2]));
+console.log(Sql.parse(process.argv[2]));
