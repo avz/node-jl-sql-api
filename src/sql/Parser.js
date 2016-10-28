@@ -90,64 +90,64 @@ case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11
  this.$ = $$[$0] 
 break;
 case 20: case 21:
- this.$ = new nodes.Ident($$[$0]); 
+ this.$ = new Nodes.Ident($$[$0]); 
 break;
 case 22:
  $$[$0-2].fragments.push($$[$0].name); this.$ = $$[$0-2]; 
 break;
 case 23:
- this.$ = new nodes.ComplexIdent($$[$0].name); 
+ this.$ = new Nodes.ComplexIdent($$[$0].name); 
 break;
 case 24:
- this.$ = new nodes.Number($$[$0]); 
+ this.$ = new Nodes.Number($$[$0]); 
 break;
 case 25:
- this.$ = new nodes.String($$[$0]); 
+ this.$ = new Nodes.String($$[$0]); 
 break;
 case 26: case 54: case 72: case 74: case 76: case 78: case 88: case 93:
  this.$ = $$[$0]; 
 break;
 case 27:
- this.$ = new nodes.Null(); 
+ this.$ = new Nodes.Null(); 
 break;
 case 28:
- this.$ = new nodes.Boolean(true); 
+ this.$ = new Nodes.Boolean(true); 
 break;
 case 29:
- this.$ = new nodes.Boolean(false); 
+ this.$ = new Nodes.Boolean(false); 
 break;
 case 30:
- this.$ = new nodes.Distinct($$[$0]); 
+ this.$ = new Nodes.Distinct($$[$0]); 
 break;
 case 31: case 32: case 33: case 34: case 35:
- this.$ = new nodes.BinaryOperation($$[$0-1], $$[$0-2], $$[$0]); 
+ this.$ = new Nodes.BinaryOperation($$[$0-1], $$[$0-2], $$[$0]); 
 break;
 case 36: case 37: case 38: case 39: case 40: case 41: case 42: case 43: case 44: case 45:
- this.$ = new nodes.ComparsionOperation($$[$0-1], $$[$0-2], $$[$0]); 
+ this.$ = new Nodes.ComparsionOperation($$[$0-1], $$[$0-2], $$[$0]); 
 break;
 case 46: case 47:
- this.$ = new nodes.UnaryOperation($$[$0-1], $$[$0]); 
+ this.$ = new Nodes.UnaryOperation($$[$0-1], $$[$0]); 
 break;
 case 48:
- this.$ = new nodes.In($$[$0-4], $$[$0-1]); 
+ this.$ = new Nodes.In($$[$0-4], $$[$0-1]); 
 break;
 case 49:
- this.$ = new nodes.Call(new nodes.FunctionIdent($$[$0-3]), $$[$0-1]); 
+ this.$ = new Nodes.Call(new Nodes.FunctionIdent($$[$0-3]), $$[$0-1]); 
 break;
 case 50:
- this.$ = new nodes.Call(new nodes.FunctionIdent($$[$0-2]), []); 
+ this.$ = new Nodes.Call(new Nodes.FunctionIdent($$[$0-2]), []); 
 break;
 case 51:
- this.$ = new nodes.Call(new nodes.FunctionIdent(new nodes.ComplexIdent($$[$0-3])), [$$[$0-1]]); 
+ this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($$[$0-3])), [$$[$0-1]]); 
 break;
 case 52:
- this.$ = new nodes.Call(new nodes.FunctionIdent(new nodes.ComplexIdent($$[$0-3])), []); 
+ this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($$[$0-3])), []); 
 break;
 case 53:
- this.$ = new nodes.ColumnIdent($$[$0]); 
+ this.$ = new Nodes.ColumnIdent($$[$0]); 
 break;
 case 55:
- this.$ = new nodes.Brackets($$[$0-1]); 
+ this.$ = new Nodes.Brackets($$[$0-1]); 
 break;
 case 56: case 85:
  $$[$0-2].push($$[$0]); this.$ = $$[$0-2]; 
@@ -156,16 +156,16 @@ case 57: case 61: case 86:
  this.$ = [$$[$0]]; 
 break;
 case 58:
- this.$ = new nodes.Column($$[$0-2], new nodes.ColumnAlias($$[$0])); 
+ this.$ = new Nodes.Column($$[$0-2], new Nodes.ColumnAlias($$[$0])); 
 break;
 case 59:
- this.$ = new nodes.Column($$[$0]); 
+ this.$ = new Nodes.Column($$[$0]); 
 break;
 case 60:
  this.$ = $$[$0-2].concat($$[$0]); 
 break;
 case 62:
- this.$ = new nodes.Select(); 
+ this.$ = new Nodes.Select(); 
 break;
 case 63:
  $$[$0-1].columns = $$[$0]; this.$ = $$[$0-1]; 
@@ -174,10 +174,10 @@ case 64:
  $$[$0-1].columns = null; this.$ = $$[$0-1]; 
 break;
 case 65:
- this.$ = new nodes.Table(new nodes.TableIdent($$[$0-2]), new nodes.TableAlias($$[$0])); 
+ this.$ = new Nodes.Table(new Nodes.TableIdent($$[$0-2]), new Nodes.TableAlias($$[$0])); 
 break;
 case 66:
- this.$ = new nodes.Table(new nodes.TableIdent($$[$0])); 
+ this.$ = new Nodes.Table(new Nodes.TableIdent($$[$0])); 
 break;
 case 67:
  $$[$0-2].table = $$[$0]; this.$ = $$[$0-2]; 
@@ -186,13 +186,13 @@ case 68:
  $$[$0].table = null; this.$ = $$[$0]; 
 break;
 case 69:
- $$[$0-4].join(new nodes.InnerJoin($$[$0-2], $$[$0])); this.$ = $$[$0-4]; 
+ $$[$0-4].join(new Nodes.InnerJoin($$[$0-2], $$[$0])); this.$ = $$[$0-4]; 
 break;
 case 70:
- $$[$0-5].join(new nodes.InnerJoin($$[$0-2], $$[$0])); this.$ = $$[$0-5]; 
+ $$[$0-5].join(new Nodes.InnerJoin($$[$0-2], $$[$0])); this.$ = $$[$0-5]; 
 break;
 case 71:
- $$[$0-5].join(new nodes.LeftJoin($$[$0-2], $$[$0])); this.$ = $$[$0-5]; 
+ $$[$0-5].join(new Nodes.LeftJoin($$[$0-2], $$[$0])); this.$ = $$[$0-5]; 
 break;
 case 73:
  $$[$0-2].where = $$[$0]; this.$ = $$[$0-2]; 
@@ -204,16 +204,16 @@ case 77:
  $$[$0-2].having = $$[$0]; this.$ = $$[$0-2]; 
 break;
 case 79: case 80:
- this.$ = new nodes.Order($$[$0-1], $$[$0]) 
+ this.$ = new Nodes.Order($$[$0-1], $$[$0]) 
 break;
 case 81:
- this.$ = new nodes.Order($$[$0]) 
+ this.$ = new Nodes.Order($$[$0]) 
 break;
 case 82: case 83:
- this.$ = new nodes.Order($$[$0-2], $$[$0], $$[$0-1]) 
+ this.$ = new Nodes.Order($$[$0-2], $$[$0], $$[$0-1]) 
 break;
 case 84:
- this.$ = new nodes.Order($$[$0-1], 'ASC', $$[$0]) 
+ this.$ = new Nodes.Order($$[$0-1], 'ASC', $$[$0]) 
 break;
 case 87:
  $$[$0-3].orders = $$[$0]; this.$ = $$[$0-3]; 
@@ -382,7 +382,7 @@ parse: function parse(input) {
     return true;
 }};
 
-var nodes = require('./nodes.js');
+var Nodes = require('./Nodes.js');
 
 /* generated by jison-lex 0.3.4 */
 var lexer = (function(){

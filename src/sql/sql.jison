@@ -1,5 +1,5 @@
 %{
-var nodes = require('./nodes.js');
+var Nodes = require('./Nodes.js');
 
 %}
 
@@ -113,52 +113,52 @@ keywords
 ;
 
 ident
-	: 'IDENT' { $$ = new nodes.Ident($1); }
-	| keywords { $$ = new nodes.Ident($1); }
+	: 'IDENT' { $$ = new Nodes.Ident($1); }
+	| keywords { $$ = new Nodes.Ident($1); }
 ;
 
 complexIdent
 	: complexIdent '.' ident { $1.fragments.push($3.name); $$ = $1; }
-	| ident { $$ = new nodes.ComplexIdent($1.name); }
+	| ident { $$ = new Nodes.ComplexIdent($1.name); }
 ;
 
-number: 'NUMBER' { $$ = new nodes.Number($1); };
+number: 'NUMBER' { $$ = new Nodes.Number($1); };
 
 const
-	: 'STRING' { $$ = new nodes.String($1); }
+	: 'STRING' { $$ = new Nodes.String($1); }
 	| number   { $$ = $1; }
-	| 'NULL'   { $$ = new nodes.Null(); }
-	| 'TRUE'   { $$ = new nodes.Boolean(true); }
-	| 'FALSE'   { $$ = new nodes.Boolean(false); }
+	| 'NULL'   { $$ = new Nodes.Null(); }
+	| 'TRUE'   { $$ = new Nodes.Boolean(true); }
+	| 'FALSE'   { $$ = new Nodes.Boolean(false); }
 ;
 
 expression
-	: DISTINCT expression       { $$ = new nodes.Distinct($2); }
-	| expression '*' expression { $$ = new nodes.BinaryOperation($2, $1, $3); }
-	| expression '%' expression { $$ = new nodes.BinaryOperation($2, $1, $3); }
-	| expression '/' expression { $$ = new nodes.BinaryOperation($2, $1, $3); }
-	| expression '+' expression { $$ = new nodes.BinaryOperation($2, $1, $3); }
-	| expression '-' expression { $$ = new nodes.BinaryOperation($2, $1, $3); }
-	| expression '=' expression { $$ = new nodes.ComparsionOperation($2, $1, $3); }
-	| expression '!==' expression { $$ = new nodes.ComparsionOperation($2, $1, $3); }
-	| expression '===' expression { $$ = new nodes.ComparsionOperation($2, $1, $3); }
-	| expression '!=' expression { $$ = new nodes.ComparsionOperation($2, $1, $3); }
-	| expression 'AND' expression { $$ = new nodes.ComparsionOperation($2, $1, $3); }
-	| expression 'OR' expression { $$ = new nodes.ComparsionOperation($2, $1, $3); }
-	| expression '>' expression { $$ = new nodes.ComparsionOperation($2, $1, $3); }
-	| expression '>=' expression { $$ = new nodes.ComparsionOperation($2, $1, $3); }
-	| expression '<' expression { $$ = new nodes.ComparsionOperation($2, $1, $3); }
-	| expression '<=' expression { $$ = new nodes.ComparsionOperation($2, $1, $3); }
-	| '-' expression { $$ = new nodes.UnaryOperation($1, $2); }
-	| '!' expression { $$ = new nodes.UnaryOperation($1, $2); }
-	| expression 'IN' '(' expressionsList ')' { $$ = new nodes.In($1, $4); }
-	| complexIdent '(' expressionsList ')' { $$ = new nodes.Call(new nodes.FunctionIdent($1), $3); }
-	| complexIdent '(' ')' { $$ = new nodes.Call(new nodes.FunctionIdent($1), []); }
-	| 'COUNT' '(' expression ')' { $$ = new nodes.Call(new nodes.FunctionIdent(new nodes.ComplexIdent($1)), [$3]); }
-	| 'COUNT' '(' '*' ')' { $$ = new nodes.Call(new nodes.FunctionIdent(new nodes.ComplexIdent($1)), []); }
-	| complexIdent { $$ = new nodes.ColumnIdent($1); }
+	: DISTINCT expression       { $$ = new Nodes.Distinct($2); }
+	| expression '*' expression { $$ = new Nodes.BinaryOperation($2, $1, $3); }
+	| expression '%' expression { $$ = new Nodes.BinaryOperation($2, $1, $3); }
+	| expression '/' expression { $$ = new Nodes.BinaryOperation($2, $1, $3); }
+	| expression '+' expression { $$ = new Nodes.BinaryOperation($2, $1, $3); }
+	| expression '-' expression { $$ = new Nodes.BinaryOperation($2, $1, $3); }
+	| expression '=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression '!==' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression '===' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression '!=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression 'AND' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression 'OR' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression '>' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression '>=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression '<' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression '<=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| '-' expression { $$ = new Nodes.UnaryOperation($1, $2); }
+	| '!' expression { $$ = new Nodes.UnaryOperation($1, $2); }
+	| expression 'IN' '(' expressionsList ')' { $$ = new Nodes.In($1, $4); }
+	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), $3); }
+	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), []); }
+	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($1)), [$3]); }
+	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($1)), []); }
+	| complexIdent { $$ = new Nodes.ColumnIdent($1); }
 	| const { $$ = $1; }
-	| '(' expression ')' { $$ = new nodes.Brackets($2); }
+	| '(' expression ')' { $$ = new Nodes.Brackets($2); }
 ;
 
 expressionsList
@@ -167,8 +167,8 @@ expressionsList
 ;
 
 column
-	: expression 'AS' ident { $$ = new nodes.Column($1, new nodes.ColumnAlias($3)); }
-	| expression            { $$ = new nodes.Column($1); }
+	: expression 'AS' ident { $$ = new Nodes.Column($1, new Nodes.ColumnAlias($3)); }
+	| expression            { $$ = new Nodes.Column($1); }
 ;
 
 columns
@@ -176,14 +176,14 @@ columns
 	| column                 { $$ = [$1]; }
 ;
 
-selectClause: 'SELECT' { $$ = new nodes.Select(); };
+selectClause: 'SELECT' { $$ = new Nodes.Select(); };
 
 selectColumns: selectClause columns { $1.columns = $2; $$ = $1; };
 selectColumns: selectClause '*' { $1.columns = null; $$ = $1; };
 
 table
-	: complexIdent AS ident { $$ = new nodes.Table(new nodes.TableIdent($1), new nodes.TableAlias($3)); }
-	| complexIdent { $$ = new nodes.Table(new nodes.TableIdent($1)); }
+	: complexIdent AS ident { $$ = new Nodes.Table(new Nodes.TableIdent($1), new Nodes.TableAlias($3)); }
+	| complexIdent { $$ = new Nodes.Table(new Nodes.TableIdent($1)); }
 ;
 
 selectFrom
@@ -192,9 +192,9 @@ selectFrom
 ;
 
 selectJoin
-	: selectFrom JOIN table 'ON' expression       { $1.join(new nodes.InnerJoin($3, $5)); $$ = $1; }
-	| selectFrom INNER JOIN table 'ON' expression { $1.join(new nodes.InnerJoin($4, $6)); $$ = $1; }
-	| selectFrom LEFT JOIN table 'ON' expression  { $1.join(new nodes.LeftJoin($4, $6)); $$ = $1; }
+	: selectFrom JOIN table 'ON' expression       { $1.join(new Nodes.InnerJoin($3, $5)); $$ = $1; }
+	| selectFrom INNER JOIN table 'ON' expression { $1.join(new Nodes.InnerJoin($4, $6)); $$ = $1; }
+	| selectFrom LEFT JOIN table 'ON' expression  { $1.join(new Nodes.LeftJoin($4, $6)); $$ = $1; }
 	| selectFrom { $$ = $1; }
 ;
 
@@ -214,12 +214,12 @@ selectHaving
 ;
 
 order
-	: expression ASC  { $$ = new nodes.Order($1, $2) }
-	| expression DESC { $$ = new nodes.Order($1, $2) }
-	| expression      { $$ = new nodes.Order($1) }
-	| expression NUMERIC ASC  { $$ = new nodes.Order($1, $3, $2) }
-	| expression NUMERIC DESC { $$ = new nodes.Order($1, $3, $2) }
-	| expression NUMERIC      { $$ = new nodes.Order($1, 'ASC', $2) }
+	: expression ASC  { $$ = new Nodes.Order($1, $2) }
+	| expression DESC { $$ = new Nodes.Order($1, $2) }
+	| expression      { $$ = new Nodes.Order($1) }
+	| expression NUMERIC ASC  { $$ = new Nodes.Order($1, $3, $2) }
+	| expression NUMERIC DESC { $$ = new Nodes.Order($1, $3, $2) }
+	| expression NUMERIC      { $$ = new Nodes.Order($1, 'ASC', $2) }
 ;
 
 ordersList

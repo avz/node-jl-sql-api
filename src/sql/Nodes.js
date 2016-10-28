@@ -26,6 +26,11 @@ InspectableNode.prototype.inspect = function(depth, opts) {
 	return type + ' ' + util.inspect(obj, opts);
 };
 
+InspectableNode.prototype.childNodes = function() {
+	return [];
+};
+
+
 function Number(number) {
 	this.value = number - 0;
 };
@@ -75,6 +80,10 @@ function ComplexIdent(ident) {
 
 util.inherits(ComplexIdent, InspectableNode);
 
+ComplexIdent.prototype.childNodes = function() {
+	return this.fragments;
+};
+
 exports.ComplexIdent = ComplexIdent;
 
 function Call(functionIdent, args) {
@@ -83,6 +92,10 @@ function Call(functionIdent, args) {
 };
 
 util.inherits(Call, InspectableNode);
+
+Call.prototype.childNodes = function() {
+	return [this.function].concat(this.args);
+};
 
 exports.Call = Call;
 
@@ -94,6 +107,10 @@ function BinaryOperation(operator, left, right) {
 
 util.inherits(BinaryOperation, InspectableNode);
 
+BinaryOperation.prototype.childNodes = function() {
+	return [this.left, this.right];
+};
+
 exports.BinaryOperation = BinaryOperation;
 
 function ComparsionOperation(operator, left, right) {
@@ -104,6 +121,10 @@ function ComparsionOperation(operator, left, right) {
 
 util.inherits(ComparsionOperation, InspectableNode);
 
+ComparsionOperation.prototype.childNodes = function() {
+	return [this.left, this.right];
+};
+
 exports.ComparsionOperation = ComparsionOperation;
 
 function UnaryOperation(operator, right) {
@@ -112,6 +133,10 @@ function UnaryOperation(operator, right) {
 };
 
 util.inherits(UnaryOperation, InspectableNode);
+
+UnaryOperation.prototype.childNodes = function() {
+	return [this.right];
+};
 
 exports.UnaryOperation = UnaryOperation;
 
@@ -122,6 +147,10 @@ function In(needle, haystack) {
 
 util.inherits(In, InspectableNode);
 
+In.prototype.childNodes = function() {
+	return [this.needle].concat(this.haystack);
+};
+
 exports.In = In;
 
 function Column(expression, alias) {
@@ -130,6 +159,10 @@ function Column(expression, alias) {
 };
 
 util.inherits(Column, InspectableNode);
+
+Column.prototype.childNodes = function() {
+	return [this.expression];
+};
 
 exports.Column = Column;
 
@@ -141,6 +174,10 @@ function Order(expression, direction, collation) {
 
 util.inherits(Order, InspectableNode);
 
+Order.prototype.childNodes = function() {
+	return [this.expression];
+};
+
 exports.Order = Order;
 
 function Distinct(expression) {
@@ -148,6 +185,10 @@ function Distinct(expression) {
 };
 
 util.inherits(Distinct, InspectableNode);
+
+Distinct.prototype.childNodes = function() {
+	return [this.expression];
+};
 
 exports.Distinct = Distinct;
 
@@ -180,6 +221,15 @@ Select.prototype.orderBy = function(orders) {
 	this.orders = orders;
 };
 
+Select.prototype.childNodes = function() {
+	return this.columns.concat(
+		this.joins,
+		this.groups,
+		this.orders,
+		[this.table, this.where, this.having, this.limit].filter(o => o !== null)
+	);
+};
+
 exports.Select = Select;
 
 function InnerJoin(table, expression) {
@@ -189,11 +239,19 @@ function InnerJoin(table, expression) {
 
 util.inherits(InnerJoin, InspectableNode);
 
+InnerJoin.prototype.childNodes = function() {
+	return [this.table, this.expression];
+};
+
 exports.InnerJoin = InnerJoin;
 
 function LeftJoin(table, expression) {
 	this.table = table;
 	this.expression = expression;
+};
+
+LeftJoin.prototype.childNodes = function() {
+	return [this.table, this.expression];
 };
 
 util.inherits(LeftJoin, InspectableNode);
@@ -205,6 +263,10 @@ function Brackets(expression) {
 };
 
 util.inherits(Brackets, InspectableNode);
+
+Brackets.prototype.childNodes = function() {
+	return [this.expression];
+};
 
 exports.Brackets = Brackets;
 
@@ -233,6 +295,10 @@ function Table(tableIdent, tableAlias) {
 }
 
 util.inherits(Table, InspectableNode);
+
+Table.prototype.childNodes = function() {
+	return [this.ident];
+};
 
 exports.Table = Table;
 

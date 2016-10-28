@@ -1,9 +1,7 @@
-all: Sql.js
+all: Parser.js
 
-build: Sql.js
-
-Sql.js: sql.jison
-	../../node_modules/jison/lib/cli.js < ./sql.jison > ./Sql.js
+Parser.js: sql.jison
+	../../node_modules/jison/lib/cli.js < ./sql.jison > ./Parser.js
 
 clean:
-	rm -f Sql.js
+	rm -f Parser.js
