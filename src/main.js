@@ -7,26 +7,16 @@ const Sorter = require('./stream/Sorter');
 const LinesJoiner = require('./stream/LinesJoiner');
 const PropertiesPicker = require('./stream/PropertiesPicker');
 
+const SqlEngine = require('./SqlEngine');
+
+var engine = new SqlEngine;
+
 var pp = new PropertiesPicker;
-
-var from = {hello: {aaa: {bbb: 112}}};
-var to = {world: 1, hello: {aaa: {}}};
-
-var props = new Map;
-props.set(['alias', 'sub'], ['hello', 'aaa', 'bbb']);
-props.set(['alias', 'sub2'], ['hello', 'aaa', 'bbb']);
-
-pp.copyProperties(props, from, to);
-console.log(to);
-
-process.exit();
 
 process.stdin
 		.pipe(new LineSplitter)
 		.pipe(new JsonParser)
-		.pipe(new Sorter(function(a, b) {
-			return a > b;
-		}))
+		.pipe(engine.createTransform(process.argv[2]))
 		.pipe(new JsonStringifier)
 		.pipe(new LinesJoiner)
 		.pipe(process.stdout)

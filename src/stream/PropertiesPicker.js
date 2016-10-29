@@ -38,7 +38,7 @@ class PropertiesPicker extends JlTransform
 	copyPropertiesList(paths, from, to)
 	{
 		for (let i = 0; i < paths.length; i++) {
-			copyProperty(paths[i], from, to);
+			this.copyProperty(paths[i], from, to);
 		}
 	}
 
@@ -74,6 +74,10 @@ class PropertiesPicker extends JlTransform
 			}
 
 			return deepGet(path, pathOffset + 1, obj[seg]);
+		}
+
+		if (typeof(obj) !== 'object' || obj === null) {
+			return undefined;
 		}
 
 		return deepGet(path, 0, obj);
