@@ -19,16 +19,6 @@ class SqlToJs
 		return this[codeConstructorName](node);
 	}
 
-	/**
-	 * @param {String} objectName
-	 * @param {String[]} path
-	 * @returns {String}
-	 */
-	objectPathToCode(objectName, path)
-	{
-		return objectName + '[' + path.map(JSON.stringify).join('][') + ']';
-	}
-
 	basicTypeToCode(basic)
 	{
 		return JSON.stringify(basic);
@@ -36,12 +26,33 @@ class SqlToJs
 
 	codeFrom_ColumnIdent(columnIdent)
 	{
-		return this.objectPathToCode(this.rowObjectName, columnIdent.fragments);
+		/*
+		 * SQL: `a`.`b`.`c`
+		 * JS: ((item.a || undefined) && (item.a.b || undefined) && item.a.b.c)
+		 */
+		var levels = [];
+		var rel = this.rowObjectName;
+		const frags = columnIdent.fragments;
+
+		for (let i = 0; i < frags.length - 1; i++) {
+			var fragment = frags[i];
+			rel += '[' + JSON.stringify(fragment) + ']';
+			levels.push('(' + rel + ' || undefined)');
+		}
+
+		levels.push(rel + '[' + JSON.stringify(frags[frags.length - 1]) + ']');
+
+		if (levels.length > 1) {
+			return '(' + levels.join(' && ') + ')';
+		} else {
+			return levels[0];
+		}
+
 	}
 
 	codeFrom_FunctionIdent(functionIdent)
 	{
-		return this.objectPathToCode(this.functionsObjectName, functionIdent.fragments);
+		return this.functionsObjectName + '[' + functionIdent.fragments.map(JSON.stringify).join('][') + ']';
 	}
 
 	codeFrom_Call(call)
