@@ -19,6 +19,14 @@ class SqlToJs
 		return this[codeConstructorName](node);
 	}
 
+	nodeToFunction(node)
+	{
+		return new Function(
+			[this.rowObjectName, this.functionsObjectName],
+			'return ' + this.nodeToCode(node)
+		);
+	}
+
 	basicTypeToCode(basic)
 	{
 		return JSON.stringify(basic);

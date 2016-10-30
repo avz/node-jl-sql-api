@@ -1,17 +1,25 @@
 const SqlParser = require('./sql/Parser');
+const SqlToJs = require('./SqlToJs');
 const SqlNodes = require('./sql/Nodes');
 const PropertiesPicker = require('./stream/PropertiesPicker');
+const Filter = require('./stream/Filter');
 
 class SqlEngine
 {
 	createTransform(sql)
 	{
-		const SqlNodes = require('./sql/Nodes');
 		const select = SqlParser.parse(sql);
+		const sqlToJs = new SqlToJs;
 
 		var usedFields = this.extractUsedFieldsPaths(select);
 
-		return new PropertiesPicker(usedFields);
+		var stream = new PropertiesPicker(usedFields);
+
+		if (select.where) {
+			stream = stream.pipe(new Filter(sqlToJs.nodeToFunction(select.where)));
+		}
+
+		return stream;
 	}
 
 	extractUsedFieldsPaths(select)
