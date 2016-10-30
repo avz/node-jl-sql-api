@@ -127,6 +127,21 @@ ComparsionOperation.prototype.childNodes = function() {
 
 exports.ComparsionOperation = ComparsionOperation;
 
+function LogicalOperation(operator, left, right) {
+	this.operator = operator;
+	this.left = left;
+	this.right = right;
+};
+
+util.inherits(LogicalOperation, InspectableNode);
+
+LogicalOperation.prototype.childNodes = function() {
+	return [this.left, this.right];
+};
+
+exports.LogicalOperation = LogicalOperation;
+
+
 function UnaryOperation(operator, right) {
 	this.operator = operator;
 	this.right = right;

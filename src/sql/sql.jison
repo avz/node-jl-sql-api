@@ -143,8 +143,8 @@ expression
 	| expression '!==' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| expression '===' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| expression '!=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
-	| expression 'AND' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
-	| expression 'OR' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression 'AND' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
+	| expression 'OR' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
 	| expression '>' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| expression '>=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| expression '<' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }

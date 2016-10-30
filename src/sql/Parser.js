@@ -122,8 +122,11 @@ break;
 case 31: case 32: case 33: case 34: case 35:
  this.$ = new Nodes.BinaryOperation($$[$0-1], $$[$0-2], $$[$0]); 
 break;
-case 36: case 37: case 38: case 39: case 40: case 41: case 42: case 43: case 44: case 45:
+case 36: case 37: case 38: case 39: case 42: case 43: case 44: case 45:
  this.$ = new Nodes.ComparsionOperation($$[$0-1], $$[$0-2], $$[$0]); 
+break;
+case 40: case 41:
+ this.$ = new Nodes.LogicalOperation($$[$0-1], $$[$0-2], $$[$0]); 
 break;
 case 46: case 47:
  this.$ = new Nodes.UnaryOperation($$[$0-1], $$[$0]); 
