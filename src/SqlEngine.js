@@ -1,4 +1,4 @@
-const SqlParser = require('./sql/parser');
+const SqlParser = require('./sql/Parser');
 const SqlNodes = require('./sql/Nodes');
 const PropertiesPicker = require('./stream/PropertiesPicker');
 
