@@ -102,7 +102,9 @@ class SqlToJs
 
 	codeFrom_ComparsionOperation(comp)
 	{
-		return this.nodeToCode(comp.left) + ' ' + comp.operator + ' ' + this.nodeToCode(comp.right);
+		const op = comp.operator === '=' ? '==' : comp.operator;
+
+		return this.nodeToCode(comp.left) + ' ' + op + ' ' + this.nodeToCode(comp.right);
 	}
 
 	codeFrom_LogicalOperation(comp)
