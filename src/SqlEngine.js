@@ -4,7 +4,6 @@ const SqlNodes = require('./sql/Nodes');
 const PropertiesPicker = require('./stream/PropertiesPicker');
 const Filter = require('./stream/Filter');
 const Sorter = require('./stream/Sorter');
-const Mapper = require('./stream/Mapper');
 const JlTransformsChain = require('./stream/JlTransformsChain');
 
 class SqlEngine
