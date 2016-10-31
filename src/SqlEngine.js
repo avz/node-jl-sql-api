@@ -19,11 +19,6 @@ class SqlEngine
 
 		chain.append(new PropertiesPicker(usedFields));
 
-		const aliaser = this.createColumnAliaser(sqlToJs, select);
-		if (aliaser) {
-//			chain.append(aliaser);
-		}
-
 		if (select.where) {
 			chain.append(new Filter(sqlToJs.nodeToFunction(select.where)));
 		}
@@ -119,35 +114,6 @@ class SqlEngine
 		};
 
 		return compare;
-	}
-
-	createColumnAliaser(sqlTojs, select)
-	{
-		var map = new Map;
-
-		for (let i = 0; i < select.columns.length; i++) {
-			var column = select.columns[i];
-
-			if (!column.alias) {
-				if (column.expression instanceof SqlNodes.ColumnIdent) {
-					continue;
-				}
-
-				throw new Error('All columns must have the alias');
-			}
-
-			if (column.expression instanceof SqlNodes.ColumnIdent) {
-				map.set(column.alias.fragments, column.expression.fragments);
-			} else {
-				map.set(column.alias.fragments, sqlTojs.nodeToFunction(column.expression));
-			}
-		}
-
-		if (!map.size) {
-			return null;
-		}
-
-		return new PropertiesPicker(map);
 	}
 }
 
