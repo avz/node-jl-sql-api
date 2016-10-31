@@ -167,7 +167,7 @@ expressionsList
 ;
 
 column
-	: expression 'AS' ident { $$ = new Nodes.Column($1, new Nodes.ColumnAlias($3)); }
+	: expression 'AS' complexIdent { $$ = new Nodes.Column($1, $3); }
 	| expression            { $$ = new Nodes.Column($1); }
 ;
 

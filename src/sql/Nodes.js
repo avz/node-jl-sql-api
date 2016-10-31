@@ -294,16 +294,6 @@ util.inherits(ColumnIdent, InspectableNode);
 
 exports.ColumnIdent = ColumnIdent;
 
-
-function ColumnAlias(ident) {
-	this.name = ident.name;
-}
-
-util.inherits(ColumnAlias, InspectableNode);
-
-exports.ColumnAlias = ColumnAlias;
-
-
 function Table(tableIdent, tableAlias) {
 	this.alias = tableAlias || null;
 	this.ident = tableIdent;
