@@ -24,7 +24,7 @@ class SqlEngine
 		}
 
 		if (select.orders.length) {
-			chain.append(new Sorter(this.createSortingFunction(sqlToJs, select.orders)));
+			chain.append(new Sorter(this.createSortingFunction(sqlToJs, select)));
 		}
 
 		return chain;
@@ -92,7 +92,7 @@ class SqlEngine
 
 	createSortingFunction(sqlToJs, select)
 	{
-		const valueFuncs = select.map(order => sqlToJs.nodeToFunction(order.expression));
+		const valueFuncs = select.orders.map(order => sqlToJs.nodeToFunction(order.expression));
 
 		const compare = function(row1, row2) {
 			for (let i = 0; i < valueFuncs.length; i++) {
