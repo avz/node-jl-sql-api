@@ -45,7 +45,12 @@ class PropertiesPicker extends JlTransform
 	copyPropertiesMap(paths, from, to)
 	{
 		for (let [alias, source] of paths) {
-			let value = this.getProperty(source, from);
+			let value;
+			if (typeof(source) === 'function') {
+				value = source(from);
+			} else {
+				value = this.getProperty(source, from);
+			}
 
 			if (value === undefined) {
 				continue;
