@@ -13,11 +13,11 @@ class SqlEngine
 		const select = SqlParser.parse(sql);
 		const sqlToJs = new SqlToJs;
 
-		const usedFields = this.extractUsedFieldsPaths(sqlToJs, select);
-
 		const chain = new JlTransformsChain;
 
-		chain.append(new PropertiesPicker(usedFields));
+		if (select.columns) {
+			chain.append(new PropertiesPicker(this.extractUsedFieldsPaths(sqlToJs, select)));
+		}
 
 		if (select.where) {
 			chain.append(new Filter(sqlToJs.nodeToFunction(select.where)));
