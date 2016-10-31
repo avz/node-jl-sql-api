@@ -62,29 +62,28 @@ class SqlEngine
 
 	createSortingFunction(sqlToJs, orders)
 	{
-		var order = orders[0];
+		const valueFuncs = orders.map(order => sqlToJs.nodeToFunction(order.expression));
 
-		var valueFunc = sqlToJs.nodeToFunction(order.expression);
-		var ascCompare = function(row1, row2) {
-			var v1 = valueFunc(row1);
-			var v2 = valueFunc(row2);
+		const compare = function(row1, row2) {
+			for (let i = 0; i < valueFuncs.length; i++) {
+				const valueFunc = valueFuncs[i];
 
-			if (v1 > v2) {
-				return 1;
-			} else if (v1 < v2) {
-				return -1;
+				const v1 = valueFunc(row1);
+				const v2 = valueFunc(row2);
+
+				const direction = orders[i].direction === 'DESC' ? -1 : 1;
+
+				if (v1 > v2) {
+					return direction;
+				} else if (v1 < v2) {
+					return -direction;
+				}
 			}
 
 			return 0;
 		};
 
-		if (order.direction === 'DESC') {
-			return function(row1, row2) {
-				return -ascCompare(row1, row2);
-			}
-		} else {
-			return ascCompare;
-		}
+		return compare;
 	}
 }
 
