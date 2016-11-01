@@ -203,8 +203,17 @@ selectWhere
 	| selectJoin { $$ = $1; }
 ;
 
+groupping
+	: expression { $$ = new Nodes.GroupBy($1); }
+;
+
+grouppingList
+	: grouppingList ',' groupping { $1.push($3); $$ = $1; }
+	| groupping { $$ = [$1]; }
+;
+
 selectGroup
-	: selectWhere GROUP BY expressionsList { $1.groups = $4; $$ = $1; }
+	: selectWhere GROUP BY grouppingList { $1.groups = $4; $$ = $1; }
 	| selectWhere { $$ = $1; }
 ;
 

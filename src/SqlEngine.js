@@ -5,6 +5,8 @@ const PropertiesPicker = require('./stream/PropertiesPicker');
 const Filter = require('./stream/Filter');
 const Sorter = require('./stream/Sorter');
 const JlTransformsChain = require('./stream/JlTransformsChain');
+const JlTransform = require('./stream/JlTransform');
+const JlPassThrough = require('./stream/JlPassThrough');
 
 class SqlEngine
 {
@@ -23,8 +25,16 @@ class SqlEngine
 			chain.append(new Filter(sqlToJs.nodeToFunction(select.where)));
 		}
 
+		if (select.groups.length) {
+			chain.append(new Sorter(this.createSortingFunction(sqlToJs, select.groups)));
+		}
+
 		if (select.orders.length) {
-			chain.append(new Sorter(this.createSortingFunction(sqlToJs, select)));
+			chain.append(new Sorter(this.createSortingFunction(sqlToJs, select.orders)));
+		}
+
+		if (chain.isEmpty()) {
+			return new JlPassThrough(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS)
 		}
 
 		return chain;
@@ -83,6 +93,10 @@ class SqlEngine
 			fields = mapMerge(fields, extractFields([select.where]));
 		}
 
+		if (select.groups.length) {
+			fields = mapMerge(fields, extractFields([select.groups]));
+		}
+
 		if (select.orders.length) {
 			fields = mapMerge(fields, extractFields(select.orders));
 		}
@@ -90,9 +104,9 @@ class SqlEngine
 		return fields;
 	}
 
-	createSortingFunction(sqlToJs, select)
+	createSortingFunction(sqlToJs, orders)
 	{
-		const valueFuncs = select.orders.map(order => sqlToJs.nodeToFunction(order.expression));
+		const valueFuncs = orders.map(order => sqlToJs.nodeToFunction(order.expression));
 
 		const compare = function(row1, row2) {
 			for (let i = 0; i < valueFuncs.length; i++) {
@@ -101,7 +115,7 @@ class SqlEngine
 				const v1 = valueFunc(row1);
 				const v2 = valueFunc(row2);
 
-				const direction = select.orders[i].direction === 'DESC' ? -1 : 1;
+				const direction = orders[i].direction === 'DESC' ? -1 : 1;
 
 				if (v1 > v2) {
 					return direction;

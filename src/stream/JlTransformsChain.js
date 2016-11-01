@@ -20,6 +20,11 @@ class JlTransformsChain extends JlTransform
 		this.firstStream.end(cb);
 	}
 
+	isEmpty()
+	{
+		return !this.firstStream;
+	}
+
 	append(stream)
 	{
 		if (!this.firstStream) {

@@ -195,6 +195,19 @@ Order.prototype.childNodes = function() {
 
 exports.Order = Order;
 
+function GroupBy(expression) {
+	this.expression = expression;
+};
+
+util.inherits(GroupBy, InspectableNode);
+
+GroupBy.prototype.childNodes = function() {
+	return [this.expression];
+};
+
+exports.GroupBy = GroupBy;
+
+
 function Distinct(expression) {
 	this.expression = expression;
 };
@@ -228,8 +241,8 @@ Select.prototype.setLimit = function(count, offset) {
 	this.limit = new Limit(count, offset);
 }
 
-Select.prototype.groupBy = function(expressions) {
-	this.groups = expressions;
+Select.prototype.groupBy = function(groups) {
+	this.groups = groups;
 };
 
 Select.prototype.orderBy = function(orders) {
