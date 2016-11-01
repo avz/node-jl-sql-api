@@ -210,16 +210,16 @@ case 80:
  $$[$0-2].having = $$[$0]; this.$ = $$[$0-2]; 
 break;
 case 82: case 83:
- this.$ = new Nodes.Order($$[$0-1], $$[$0]) 
+ this.$ = new Nodes.OrderBy($$[$0-1], $$[$0]) 
 break;
 case 84:
- this.$ = new Nodes.Order($$[$0]) 
+ this.$ = new Nodes.OrderBy($$[$0]) 
 break;
 case 85: case 86:
- this.$ = new Nodes.Order($$[$0-2], $$[$0], $$[$0-1]) 
+ this.$ = new Nodes.OrderBy($$[$0-2], $$[$0], $$[$0-1]) 
 break;
 case 87:
- this.$ = new Nodes.Order($$[$0-1], 'ASC', $$[$0]) 
+ this.$ = new Nodes.OrderBy($$[$0-1], 'ASC', $$[$0]) 
 break;
 case 90:
  $$[$0-3].orders = $$[$0]; this.$ = $$[$0-3]; 

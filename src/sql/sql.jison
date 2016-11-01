@@ -223,12 +223,12 @@ selectHaving
 ;
 
 order
-	: expression ASC  { $$ = new Nodes.Order($1, $2) }
-	| expression DESC { $$ = new Nodes.Order($1, $2) }
-	| expression      { $$ = new Nodes.Order($1) }
-	| expression NUMERIC ASC  { $$ = new Nodes.Order($1, $3, $2) }
-	| expression NUMERIC DESC { $$ = new Nodes.Order($1, $3, $2) }
-	| expression NUMERIC      { $$ = new Nodes.Order($1, 'ASC', $2) }
+	: expression ASC  { $$ = new Nodes.OrderBy($1, $2) }
+	| expression DESC { $$ = new Nodes.OrderBy($1, $2) }
+	| expression      { $$ = new Nodes.OrderBy($1) }
+	| expression NUMERIC ASC  { $$ = new Nodes.OrderBy($1, $3, $2) }
+	| expression NUMERIC DESC { $$ = new Nodes.OrderBy($1, $3, $2) }
+	| expression NUMERIC      { $$ = new Nodes.OrderBy($1, 'ASC', $2) }
 ;
 
 ordersList
