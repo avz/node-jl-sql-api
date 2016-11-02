@@ -1,6 +1,7 @@
 const BasicColumn = require('./BasicColumn');
 const AggregationColumn = require('./AggregationColumn');
 const PropertiesPicker = require('./stream/PropertiesPicker');
+const AggregationCallRuntime = require('./AggregationCallRuntime');
 
 class Aggregation
 {
@@ -20,17 +21,10 @@ class Aggregation
 			}
 
 			for (let ac of column.aggregationCalls) {
-				const elt = {
-					call: ac,
-					instance: new ac.func,
-					update: function(row) {
-						this.instance.update(this.call.args.map(cb => cb(row)));
-					}
-				};
+				const state = new AggregationCallRuntime(ac);
+				this.aggregationCalls.push(state);
 
-				this.aggregationCalls.push(elt);
-
-				aggregations[ac.node.id] = elt.instance.result.bind(elt.instance);
+				aggregations[ac.node.id] = state.result.bind(state);
 			}
 		}
 

@@ -1,6 +1,7 @@
 const SqlNodes = require('./sql/Nodes');
 const BasicColumn = require('./BasicColumn');
 const AggregationFunction = require('./AggregationFunction');
+const AggregationCall = require('./AggregationCall');
 
 class AggregationColumn extends BasicColumn
 {
@@ -8,30 +9,32 @@ class AggregationColumn extends BasicColumn
 	{
 		super(preparingContext, alias, expression);
 
-		this.aggregationCalls = [];
+		this.aggregationCalls = this.createAggregationCalls();
 
-		const sqlToJs = preparingContext.sqlToJs;
+		this.result = () => preparingContext.sqlToJs.nodeToFunction(expression)({});
+	}
 
-		const nodes = expression.childNodesRecursive().concat([expression]);
+	createAggregationCalls()
+	{
+		const calls = [];
+		const sqlToJs = this.preparingContext.sqlToJs;
+
+		const nodes = this.expression.childNodesRecursive().concat([this.expression]);
 
 		for (let node of nodes) {
 			if (!(node instanceof SqlNodes.Call)) {
 				continue;
 			}
 
-			const func = preparingContext.functionsMap.need(node.function.fragments);
+			const func = this.preparingContext.functionsMap.need(node.function.fragments);
 			if (!(func.prototype instanceof AggregationFunction)) {
 				continue;
 			}
 
-			this.aggregationCalls.push({
-				node: node,
-				func: func,
-				args: node.args.map(sqlToJs.nodeToFunction.bind(sqlToJs))
-			});
+			calls.push(new AggregationCall(sqlToJs, node, func));
 		}
 
-		this.result = () => sqlToJs.nodeToFunction(expression)({});
+		return calls;
 	}
 
 	valueSource()
