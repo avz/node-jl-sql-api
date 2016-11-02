@@ -147,7 +147,7 @@ case 52:
  this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($$[$0-3])), []); 
 break;
 case 53:
- this.$ = new Nodes.ColumnIdent($$[$0]); 
+ this.$ = new Nodes.ColumnIdent(); this.$.fragments = $$[$0].fragments; 
 break;
 case 55:
  this.$ = new Nodes.Brackets($$[$0-1]); 

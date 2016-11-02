@@ -2,6 +2,12 @@ const util = require('util');
 
 class Node
 {
+	constructor()
+	{
+		Node.lastId++;
+		this.id = 'Node_' + Node.lastId;
+	}
+
 	type()
 	{
 		return this.constructor.name;
@@ -11,15 +17,16 @@ class Node
 	{
 		var obj = {};
 
-		for (var k in this) {
-			if(this.hasOwnProperty(k))
+		for (let k in this) {
+			if(this.hasOwnProperty(k)) {
 				obj[k] = this[k];
+			}
 		}
 
-		var type = this.type();
+		const type = this.type();
 
 		if (opts && opts.colors) {
-			var color = util.inspect.colors[util.inspect.styles.special][0];
+			const color = util.inspect.colors[util.inspect.styles.special][0];
 
 			type = '\x1b[' + color + 'm' + type + '\x1b[0m';
 		}
@@ -31,6 +38,34 @@ class Node
 	{
 		return [];
 	}
+
+	*eachChildNodeRecursive()
+	{
+		const childs = this.childNodes();
+
+		for (let i = 0; i < childs.length; i++) {
+			const child = childs[i];
+
+			yield child;
+
+			for (let subchild of child.eachChildNodeRecursive()) {
+				yield subchild;
+			}
+		}
+	}
+
+	childNodesRecursive()
+	{
+		const nodes = [];
+
+		for (let f of this.eachChildNodeRecursive()) {
+			nodes.push(f);
+		}
+
+		return nodes;
+	}
 }
+
+Node.lastId = 0;
 
 module.exports = Node;

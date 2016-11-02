@@ -1,16 +1,24 @@
+const SqlNodes = require('./sql/Nodes');
+const AggregationFunction = require('./AggregationFunction');
+
 class SqlToJs
 {
-	constructor()
+	constructor(functionsMap, runtimeContext)
 	{
-		this.functionsObjectName = 'sqlFunctions';
-		this.rowObjectName = 'item';
+		this.runtimeContext = runtimeContext;
+		this.functionsMap = functionsMap;
+
+		this.functionsPropertyName = 'this.' + this.runtimeContext.functionsPropertyName;
+		this.aggregationPropertyName = 'this.' + this.runtimeContext.aggregationsPropertyName;
+
+		this.rowArgumentName = 'row';
 	}
 
 	nodeToCode(node)
 	{
-		var nodeType = node.getNodeType();
+		const nodeType = node.type();
 
-		var codeConstructorName = 'codeFrom_' + nodeType;
+		const codeConstructorName = 'codeFrom_' + nodeType;
 
 		if (!(codeConstructorName in this)) {
 			throw new Error('Unknown node type: ' + nodeType);
@@ -21,10 +29,10 @@ class SqlToJs
 
 	nodeToFunction(node)
 	{
-		return new Function(
-			[this.rowObjectName, this.functionsObjectName],
+		return (new Function(
+			[this.rowArgumentName],
 			'return ' + this.nodeToCode(node)
-		);
+		)).bind(this.runtimeContext);
 	}
 
 	basicTypeToCode(basic)
@@ -39,7 +47,7 @@ class SqlToJs
 		 * JS: ((item.a || undefined) && (item.a.b || undefined) && item.a.b.c)
 		 */
 		var levels = [];
-		var rel = this.rowObjectName;
+		var rel = this.rowArgumentName;
 		const frags = columnIdent.fragments;
 
 		for (let i = 0; i < frags.length - 1; i++) {
@@ -60,11 +68,29 @@ class SqlToJs
 
 	codeFrom_FunctionIdent(functionIdent)
 	{
-		return this.functionsObjectName + '[' + functionIdent.fragments.map(JSON.stringify).join('][') + ']';
+		return this.runtimeContext.functionsPropertyName + '[' + functionIdent.fragments.map(JSON.stringify).join('][') + ']';
 	}
 
 	codeFrom_Call(call)
 	{
+		const func = this.functionsMap.get(call.function.fragments);
+
+		if (func && func.prototype instanceof AggregationFunction) {
+			/*
+			 * Агрегирующие функции хранят состояние, поэтому вызов должен
+			 * быть привязан к определённому контексту.
+			 * Контекст определяется по уникальному идентификатору ноды.
+			 * Конкретно этот код используется только для генерации результата агрегации,
+			 * а обновления, инициализация и очистка происходят в группировщике
+			 */
+			return (
+				this.aggregationPropertyName + '[' + JSON.stringify(call.id) + ']'
+				+ '('
+				+ call.args.map(this.nodeToCode.bind(this)).join(', ')
+				+ ')'
+			);
+		}
+
 		return (
 			this.codeFrom_FunctionIdent(call.function)
 			+ '('

@@ -7,24 +7,17 @@ class LinesJoiner extends JlTransform
 		super(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.RAW);
 
 		this.glue = '\n';
-
-		this.empty = true;
 	}
 
 	_transform(chunk, encoding, cb)
 	{
-		this.push(chunk.join(this.glue));
-		this.empty = false;
+		this.push(chunk.join(this.glue) + this.glue);
 
 		cb();
 	}
 
 	_flush()
 	{
-		if (!this.empty) {
-			// tailing \n
-			this.push(this.glue);
-		}
 	}
 }
 

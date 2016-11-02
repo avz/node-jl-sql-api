@@ -1,6 +1,6 @@
 const Node = require('../Node');
 
-class Boolean extends Node
+class Call extends Node
 {
 	constructor(functionIdent, args)
 	{
@@ -16,4 +16,4 @@ class Boolean extends Node
 	}
 }
 
-module.exports = Boolean;
+module.exports = Call;

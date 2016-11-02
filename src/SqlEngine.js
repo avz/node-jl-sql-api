@@ -4,29 +4,64 @@ const SqlNodes = require('./sql/Nodes');
 const PropertiesPicker = require('./stream/PropertiesPicker');
 const Filter = require('./stream/Filter');
 const Sorter = require('./stream/Sorter');
+const Groupper = require('./stream/Groupper');
 const JlTransformsChain = require('./stream/JlTransformsChain');
 const JlTransform = require('./stream/JlTransform');
 const JlPassThrough = require('./stream/JlPassThrough');
+
+const PreparingContext = require('./PreparingContext');
+const RuntimeContext = require('./RuntimeContext');
+const ColumnsAnalyser = require('./ColumnsAnalyser');
+const Aggregation = require('./Aggregation');
+const FunctionsMap = require('./FunctionsMap');
 
 class SqlEngine
 {
 	createTransform(sql)
 	{
+		const functionsMap = new FunctionsMap;
+
+		functionsMap.add(['SUM'], require('./sqlFunctions/SUM'));
+
+		const runtimeContext = new RuntimeContext;
+
+		const sqlToJs = new SqlToJs(
+			functionsMap,
+			runtimeContext
+		);
+
+		const preparingContext = new PreparingContext(
+			sqlToJs,
+			functionsMap
+		);
+
 		const select = SqlParser.parse(sql);
-		const sqlToJs = new SqlToJs;
+		const columnsAnalyser = new ColumnsAnalyser(preparingContext);
+		const columns = columnsAnalyser.analyse(select);
 
 		const chain = new JlTransformsChain;
 
-		if (select.columns) {
-			chain.append(new PropertiesPicker(this.extractUsedFieldsPaths(sqlToJs, select)));
-		}
+//		if (select.columns) {
+//			chain.append(new PropertiesPicker(this.extractUsedFieldsPaths(sqlToJs, select)));
+//		}
 
-		if (select.where) {
-			chain.append(new Filter(sqlToJs.nodeToFunction(select.where)));
-		}
+//		if (select.where) {
+//			chain.append(new Filter(sqlToJs.nodeToFunction(select.where)));
+//		}
 
 		if (select.groups.length) {
 			chain.append(new Sorter(this.createSortingFunction(sqlToJs, select.groups)));
+
+			const keyGenerators = select
+				.groups
+				.map(g => sqlToJs.nodeToFunction(g.expression))
+			;
+
+			const keyGeneratorCb = row => {
+				return keyGenerators.map(g => g(row));
+			};
+
+			chain.append(new Groupper(keyGeneratorCb, new Aggregation(runtimeContext, columns)));
 		}
 
 		if (select.orders.length) {
@@ -94,7 +129,7 @@ class SqlEngine
 		}
 
 		if (select.groups.length) {
-			fields = mapMerge(fields, extractFields([select.groups]));
+			fields = mapMerge(fields, extractFields(select.groups));
 		}
 
 		if (select.orders.length) {

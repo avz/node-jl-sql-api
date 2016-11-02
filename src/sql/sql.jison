@@ -156,7 +156,7 @@ expression
 	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), []); }
 	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($1)), [$3]); }
 	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($1)), []); }
-	| complexIdent { $$ = new Nodes.ColumnIdent($1); }
+	| complexIdent { $$ = new Nodes.ColumnIdent(); $$.fragments = $1.fragments; }
 	| const { $$ = $1; }
 	| '(' expression ')' { $$ = new Nodes.Brackets($2); }
 ;
