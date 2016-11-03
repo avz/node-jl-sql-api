@@ -7,7 +7,7 @@ class FunctionsMap
 
 	_key(path)
 	{
-		return JSON.stringify(path);
+		return JSON.stringify(path.map(s => s.toUpperCase()));
 	}
 
 	_unkey(key)
@@ -17,7 +17,7 @@ class FunctionsMap
 
 	add(path, func)
 	{
-		const key = JSON.stringify(path);
+		const key = this._key(path);
 
 		this.map[this._key(path)] = func;
 	}

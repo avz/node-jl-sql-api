@@ -68,7 +68,14 @@ class SqlToJs
 
 	codeFrom_FunctionIdent(functionIdent)
 	{
-		return this.basicFunctionsPropertyName + '[' + functionIdent.fragments.map(JSON.stringify).join('][') + ']';
+		return (
+			this.basicFunctionsPropertyName + '['
+			+ functionIdent.fragments
+				.map(s => s.toUpperCase())
+				.map(JSON.stringify)
+				.join('][')
+			+ ']'
+		);
 	}
 
 	codeFrom_Call(call)

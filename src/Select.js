@@ -1,6 +1,7 @@
 const ColumnsAnalyser = require('./ColumnsAnalyser');
 const Sorter = require('./stream/Sorter');
 const Filter = require('./stream/Filter');
+const PropertiesPicker = require('./stream/PropertiesPicker');
 const Groupper = require('./stream/Groupper');
 const Aggregation = require('./Aggregation');
 const AggregationColumn = require('./AggregationColumn');

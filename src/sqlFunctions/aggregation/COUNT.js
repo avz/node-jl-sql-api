@@ -6,7 +6,7 @@ class SUM extends AggregationFunction
 	{
 		super();
 
-		this.sum = 0;
+		this.count = 0;
 	}
 
 	init()
@@ -15,22 +15,26 @@ class SUM extends AggregationFunction
 
 	update(args)
 	{
-		const v = parseFloat(args[0]);
-		if (isNaN(v)) {
+		if (!args.length) {
+			this.count++;
 			return;
 		}
 
-		this.sum += v;
+		if (args[0] === undefined || args[0] === null) {
+			return;
+		}
+
+		this.count++;
 	}
 
 	result()
 	{
-		return this.sum;
+		return this.count;
 	}
 
 	deinit()
 	{
-		this.sum = 0;
+		this.count = 0;
 	}
 }
 
