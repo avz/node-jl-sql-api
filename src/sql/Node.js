@@ -43,9 +43,7 @@ class Node
 	{
 		const childs = this.childNodes();
 
-		for (let i = 0; i < childs.length; i++) {
-			const child = childs[i];
-
+		for (let child of childs) {
 			yield child;
 
 			for (let subchild of child.eachChildNodeRecursive()) {

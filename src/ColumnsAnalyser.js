@@ -15,8 +15,7 @@ class ColumnsAnalyser
 	{
 		const columnsMap = new Map();
 
-		for (let i = 0; i < select.columns.length; i++) {
-			const selectColumn = select.columns[i];
+		for (let selectColumn of select.columns) {
 			const column = this.analyseColumn(selectColumn);
 
 			columnsMap.set(column.alias, column);
