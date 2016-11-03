@@ -1,24 +1,19 @@
 const SqlParser = require('./sql/Parser');
 const SqlToJs = require('./SqlToJs');
-const PropertiesPicker = require('./stream/PropertiesPicker');
 const JlTransformsChain = require('./stream/JlTransformsChain');
-const JlTransform = require('./stream/JlTransform');
-const JlPassThrough = require('./stream/JlPassThrough');
-
 const PreparingContext = require('./PreparingContext');
 const RuntimeContext = require('./RuntimeContext');
 const FunctionsMap = require('./FunctionsMap');
 const Select = require('./Select');
+const fs = require('fs');
+const path = require('path');
 
 class Engine
 {
 	createTransform(sql)
 	{
-		const functionsMap = new FunctionsMap;
-
-		functionsMap.add(['SUM'], require('./sqlFunctions/SUM'));
-
-		const runtimeContext = new RuntimeContext;
+		const functionsMap = this.createFunctionsMap();
+		const runtimeContext = new RuntimeContext(functionsMap);
 
 		const sqlToJs = new SqlToJs(
 			functionsMap,
@@ -32,6 +27,31 @@ class Engine
 
 		const select = new Select(preparingContext, runtimeContext, SqlParser.parse(sql));
 		return select.stream();
+	}
+
+	createFunctionsMap()
+	{
+		const map = new FunctionsMap;
+
+		const dirs = [
+			path.join(__dirname, 'sqlFunctions', 'aggregation'),
+			path.join(__dirname, 'sqlFunctions', 'basic')
+		];
+
+		for (const dir of dirs) {
+			const files = fs.readdirSync(dir);
+
+			for (const file of files) {
+				const parsed = path.parse(file);
+				if (parsed.ext !== '.js') {
+					continue;
+				}
+
+				map.add([parsed.name], require(path.join(dir, file)));
+			}
+		}
+
+		return map;
 	}
 }
 

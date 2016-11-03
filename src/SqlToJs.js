@@ -8,7 +8,7 @@ class SqlToJs
 		this.runtimeContext = runtimeContext;
 		this.functionsMap = functionsMap;
 
-		this.functionsPropertyName = 'this.' + this.runtimeContext.functionsPropertyName;
+		this.basicFunctionsPropertyName = 'this.' + this.runtimeContext.basicFunctionsPropertyName;
 		this.aggregationPropertyName = 'this.' + this.runtimeContext.aggregationsPropertyName;
 
 		this.rowArgumentName = 'row';
@@ -68,7 +68,7 @@ class SqlToJs
 
 	codeFrom_FunctionIdent(functionIdent)
 	{
-		return this.runtimeContext.functionsPropertyName + '[' + functionIdent.fragments.map(JSON.stringify).join('][') + ']';
+		return this.basicFunctionsPropertyName + '[' + functionIdent.fragments.map(JSON.stringify).join('][') + ']';
 	}
 
 	codeFrom_Call(call)
@@ -93,9 +93,9 @@ class SqlToJs
 
 		return (
 			this.codeFrom_FunctionIdent(call.function)
-			+ '('
+			+ '(['
 			+ call.args.map(this.nodeToCode.bind(this)).join(', ')
-			+ ')'
+			+ '])'
 		);
 	}
 

@@ -1,4 +1,4 @@
-const AggregationFunction = require('../AggregationFunction');
+const AggregationFunction = require('../../AggregationFunction');
 
 class SUM extends AggregationFunction
 {

@@ -10,6 +10,11 @@ class FunctionsMap
 		return JSON.stringify(path);
 	}
 
+	_unkey(key)
+	{
+		return JSON.parse(key);
+	}
+
 	add(path, func)
 	{
 		const key = JSON.stringify(path);
@@ -31,6 +36,13 @@ class FunctionsMap
 		}
 
 		return f;
+	}
+
+	*[Symbol.iterator]()
+	{
+		for (const k in this.map) {
+			yield [this._unkey(k), this.map[k]];
+		}
 	}
 }
 
