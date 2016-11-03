@@ -31,6 +31,12 @@ class AggregationColumn extends BasicColumn
 				continue;
 			}
 
+			for (let arg of node.args) {
+				if (this.preparingContext.isAggregationExpression(arg)) {
+					throw new Error('Nested aggregation function is not alowed');
+				}
+			}
+
 			calls.push(new AggregationCall(sqlToJs, node, func));
 		}
 

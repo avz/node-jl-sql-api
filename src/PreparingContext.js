@@ -1,3 +1,6 @@
+const SqlNodes = require('./sql/Nodes');
+const AggregationFunction = require('./AggregationFunction');
+
 /**
  * Контекст, который используется на этапе подготовки запроса.
  * В него входит, например, список обычных и агрегирующийх функций,
@@ -9,6 +12,37 @@ class PreparingContext
 	{
 		this.sqlToJs = sqlToJs;
 		this.functionsMap = functionsMap;
+	}
+
+	isAggregationExpression(expression)
+	{
+		const callIsAggregation = call => {
+			const func = this.functionsMap.need(call.function.fragments);
+
+			if (func.prototype instanceof AggregationFunction) {
+				return true;
+			}
+
+			return false;
+		}
+
+		if (expression instanceof SqlNodes.Call) {
+			if (callIsAggregation(expression)) {
+				return true;
+			}
+		}
+
+		for (let node in expression.eachChildNodeRecursive()) {
+			if (!(node instanceof SqlNodes.Call)) {
+				continue;
+			}
+
+			if (callIsAggregation(node)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
 

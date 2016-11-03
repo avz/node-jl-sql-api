@@ -48,44 +48,12 @@ class ColumnsAnalyser
 		);
 	}
 
-	isAggregagtion(expression)
-	{
-		const callIsAggregation = call => {
-			const func = this.preparingContext.functionsMap.need(call.function.fragments);
-
-			if (func.prototype instanceof AggregationFunction) {
-				return true;
-			}
-
-			return false;
-		}
-
-		if (expression instanceof SqlNodes.Call) {
-			if (callIsAggregation(expression)) {
-				return true;
-			}
-		}
-
-		for (let node in expression.eachChildNodeRecursive()) {
-			if (!(node instanceof SqlNodes.Call)) {
-				continue;
-			}
-
-			if (callIsAggregation(node)) {
-				return true;
-			}
-		}
-
-		return false;
-
-	}
-
 	/**
 	 * @private
 	 */
 	column(alias, expression)
 	{
-		if (this.isAggregagtion(expression)) {
+		if (this.preparingContext.isAggregationExpression(expression)) {
 			return new AggregationColumn(this.preparingContext, alias, expression);
 		} else {
 			return new BasicColumn(this.preparingContext, alias, expression);
