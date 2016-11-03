@@ -13,6 +13,7 @@ const PreparingContext = require('./PreparingContext');
 const RuntimeContext = require('./RuntimeContext');
 const ColumnsAnalyser = require('./ColumnsAnalyser');
 const Aggregation = require('./Aggregation');
+const AggregationColumn = require('./AggregationColumn');
 const FunctionsMap = require('./FunctionsMap');
 
 class SqlEngine
@@ -39,6 +40,23 @@ class SqlEngine
 		const columnsAnalyser = new ColumnsAnalyser(preparingContext);
 		const columns = columnsAnalyser.analyse(select);
 
+		let implicitGroupper = null;
+
+		if (!select.groups.length) {
+			let hasAggregation = false;
+
+			for (const [path, column] of columns) {
+				if (column instanceof AggregationColumn) {
+					hasAggregation = true;
+					break;
+				}
+			}
+
+			if (hasAggregation) {
+				implicitGroupper = new Groupper(() => [null], new Aggregation(runtimeContext, columns));
+			}
+		}
+
 		const chain = new JlTransformsChain;
 
 		if (select.where) {
@@ -48,6 +66,20 @@ class SqlEngine
 		if (select.groups.length) {
 			chain.append(new Sorter(this.createSortingFunction(sqlToJs, select.groups)));
 			chain.append(this.createGroupper(sqlToJs, runtimeContext, columns, select.groups));
+		} else if (implicitGroupper) {
+			chain.append(implicitGroupper);
+		} else {
+			/*
+			 * группировщик сам создаёт строки с нужными полями, поэтому вычленение
+			 * полей нужно только для безгруппировочных запросов
+			 */
+			const m = new Map;
+
+			for (const [path, column] of columns) {
+				m.set(path, column.valueSource());
+			}
+
+			chain.append(new PropertiesPicker(m));
 		}
 
 		if (select.orders.length) {
