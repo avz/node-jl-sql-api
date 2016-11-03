@@ -1,4 +1,5 @@
 const Node = require('../Node');
+const Limit = require('./Limit')
 
 class Select extends Node
 {

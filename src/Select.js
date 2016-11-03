@@ -1,5 +1,6 @@
 const ColumnsAnalyser = require('./ColumnsAnalyser');
 const Sorter = require('./stream/Sorter');
+const Filter = require('./stream/Filter');
 const Groupper = require('./stream/Groupper');
 const Aggregation = require('./Aggregation');
 const AggregationColumn = require('./AggregationColumn');
@@ -11,6 +12,18 @@ class Select
 {
 	constructor(preparingContext, runtimeContext, ast)
 	{
+		if (ast.joins.length) {
+			throw new Error('Joins is not supported yet');
+		}
+
+		if (ast.table) {
+			throw new Error('FROM is not supported yet');
+		}
+
+		if (ast.limit) {
+			throw new Error('LIMIT is not supported yet');
+		}
+
 		this.preparingContext = preparingContext;
 		this.runtimeContext = runtimeContext;
 		this.sqlToJs = preparingContext.sqlToJs;
@@ -37,6 +50,15 @@ class Select
 		}
 
 		return new Filter(this.sqlToJs.nodeToFunction(this.ast.where));
+	}
+
+	having()
+	{
+		if (!this.ast.having) {
+			return null;
+		}
+
+		return new Filter(this.sqlToJs.nodeToFunction(this.ast.having));
 	}
 
 	sortingFunction(ordersOrGroups)
@@ -71,7 +93,7 @@ class Select
 
 	hasAggregationColumns()
 	{
-		for (const [path, column] of columns) {
+		for (const [path, column] of this.columns) {
 			if (column instanceof AggregationColumn) {
 				return true;
 			}
@@ -129,6 +151,11 @@ class Select
 			chain.append(new PropertiesPicker(m));
 		}
 
+		const having = this.having();
+		if (having) {
+			chain.append(having);
+		}
+
 		const sorter = this.sorter();
 		if (sorter) {
 			chain.append(sorter);
@@ -164,44 +191,6 @@ class Select
 		};
 
 		return new Groupper(keyGeneratorCb, new Aggregation(this.runtimeContext, this.columns));
-	}
-
-	/**
-	 * @private
-	 */
-	appendGroupBy(chain, preparingContext, runtimeContext, select, columns)
-	{
-		const sqlToJs = preparingContext.sqlToJs;
-		let implicitGroupper = null;
-
-		if (!select.groups.length) {
-			/*
-			 * For aggregation queries without GROUP BY, e.g. `SELECT SUM(c) AS sum`
-			 */
-			let hasAggregation = false;
-
-			for (const [path, column] of columns) {
-				if (column instanceof AggregationColumn) {
-					hasAggregation = true;
-					break;
-				}
-			}
-
-			if (hasAggregation) {
-				implicitGroupper = new Groupper(() => [null], new Aggregation(runtimeContext, columns));
-			}
-		}
-
-		if (select.groups.length) {
-			chain.append(new Sorter(this.createSortingFunction(sqlToJs, select.groups)));
-			chain.append(this.createGroupper(sqlToJs, runtimeContext, columns, select.groups));
-		} else if (implicitGroupper) {
-			chain.append(implicitGroupper);
-		} else {
-			return false;
-		}
-
-		return true;
 	}
 }
 
