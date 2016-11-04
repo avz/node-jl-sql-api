@@ -8,7 +8,7 @@ const ChunkSplitter = require('../stream/ChunkSplitter');
 
 const PassThrough = require('stream').PassThrough;
 
-class SelectFromStream
+class SelectFrom
 {
 	constructor(select, inputStream)
 	{
@@ -16,19 +16,30 @@ class SelectFromStream
 		this.inputStream = inputStream;
 	}
 
-	toObjectsStream()
+	toObjectsStream(stream)
 	{
-		return new JlTransformsChain([this.inputStream, this.select.stream(), new ChunkSplitter]);
+		const chain = [this.inputStream, this.select.stream(), new ChunkSplitter];
+		if (stream) {
+			chain.push(stream);
+		}
+
+		return new JlTransformsChain(chain);
 	}
 
-	toJsonStream()
+	toJsonStream(stream)
 	{
-		return new JlTransformsChain([
+		const chain = [
 			this.inputStream,
 			this.select.stream(),
 			new JsonStringifier,
 			new LinesJoiner
-		]);
+		];
+
+		if (stream) {
+			chain.push(stream);
+		}
+
+		return new JlTransformsChain(chain);
 	}
 
 	toArrayOfObjects(cb)
@@ -50,4 +61,4 @@ class SelectFromStream
 	}
 }
 
-module.exports = SelectFromStream;
+module.exports = SelectFrom;

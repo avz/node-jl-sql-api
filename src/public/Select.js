@@ -6,7 +6,7 @@ const JsonParser = require('../stream/JsonParser');
 const LinesSplitter = require('../stream/LinesSplitter');
 const ChunkJoiner = require('../stream/ChunkJoiner');
 
-const SelectFromStream = require('./SelectFromStream');
+const SelectFrom = require('./SelectFrom');
 
 class Select
 {
@@ -15,16 +15,27 @@ class Select
 		this.select = select;
 	}
 
-	fromJsonStream()
+	fromJsonStream(stream)
 	{
-		const input = new JlTransformsChain([new LinesSplitter, new JsonParser]);
+		const chain = [new LinesSplitter, new JsonParser];
+		if (stream) {
+			chain.unshift(stream);
+		}
 
-		return new SelectFromStream(this.select, input);
+		const input = new JlTransformsChain(chain);
+
+		return new SelectFrom(this.select, input);
 	}
 
-	fromObjectsStream()
+	fromObjectsStream(stream)
 	{
-		return new SelectFromStream(this.select, new ChunkJoiner);
+		var input = new ChunkJoiner;
+
+		if (stream) {
+			input = new JlTransformsChain([stream, input]);
+		}
+
+		return new SelectFrom(this.select, input);
 	}
 
 	fromArrayOfObjects(array)
@@ -33,7 +44,7 @@ class Select
 
 		stream.end(array);
 
-		return new SelectFromStream(this.select, stream);
+		return new SelectFrom(this.select, stream);
 	}
 }
 
