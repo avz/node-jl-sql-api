@@ -15,10 +15,12 @@ class ColumnsAnalyser
 	{
 		const columnsMap = new Map();
 
-		for (let selectColumn of select.columns) {
-			const column = this.analyseColumn(selectColumn);
+		if (select.columns) {
+			for (let selectColumn of select.columns) {
+				const column = this.analyseColumn(selectColumn);
 
-			columnsMap.set(column.alias, column);
+				columnsMap.set(column.alias, column);
+			}
 		}
 
 		return columnsMap;

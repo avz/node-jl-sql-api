@@ -1,13 +1,37 @@
 const JlTransform = require('./JlTransform');
+const Transform = require('stream').Transform;
 
 class JlTransformsChain extends JlTransform
 {
-	constructor()
+	constructor(streams = [])
 	{
 		super(JlTransform.ANY, JlTransform.ANY);
 
 		this.firstStream = null;
 		this.lastStream = null;
+
+		for (const stream of streams) {
+			this.append(stream);
+		}
+
+		this.lastStream.on('data', (data) => {
+			if (!this.push(data)) {
+				this.lastStream.pause();
+			}
+		});
+
+		this.lastStream.on('end', () => {
+			this.emit('end');
+		});
+	}
+
+	_read(...args)
+	{
+		if (this.lastStream.isPaused()) {
+			this.lastStream.resume();
+		}
+
+		return super._read(...args);
 	}
 
 	_transform(chunk, encoding, cb)
@@ -43,11 +67,11 @@ class JlTransformsChain extends JlTransform
 			this.outputType = stream.outputType;
 		}
 	}
-
-	pipe(stream)
-	{
-		return this.lastStream.pipe(stream);
-	}
+//
+//	pipe(stream)
+//	{
+//		return this.lastStream.pipe(stream);
+//	}
 }
 
 module.exports = JlTransformsChain;

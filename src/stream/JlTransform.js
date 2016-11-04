@@ -86,6 +86,11 @@ module.exports = JlTransform;
 
 class JlTransform_ArraysOfObjects_To_Objects extends JlTransform
 {
+	constructor()
+	{
+		super(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.OBJECTS);
+	}
+
 	_transform(chunk, charset, cb)
 	{
 		for (var i = 0; i < chunk.length; i++) {
@@ -100,7 +105,7 @@ class JlTransform_Objects_To_ArraysOfObjects extends JlTransform
 {
 	constructor(chunkMaxSize = 100)
 	{
-		super();
+		super(JlTransform.OBJECTS, JlTransform.ARRAYS_OF_OBJECTS);
 
 		this.chunkMaxSize = chunkMaxSize;
 		this.chunk = [];
@@ -109,6 +114,7 @@ class JlTransform_Objects_To_ArraysOfObjects extends JlTransform
 	_transform(object, charset, cb)
 	{
 		this.chunk.push(object);
+
 		if (this.chunk.length >= this.chunkMaxSize) {
 			this.push(this.chunk);
 			this.chunk = [];
@@ -125,3 +131,6 @@ class JlTransform_Objects_To_ArraysOfObjects extends JlTransform
 		cb();
 	}
 }
+
+JlTransform.ArraysOfObjects_To_Objects = JlTransform_ArraysOfObjects_To_Objects;
+JlTransform.Objects_To_ArraysOfObjects = JlTransform_Objects_To_ArraysOfObjects;

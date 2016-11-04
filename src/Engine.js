@@ -10,7 +10,7 @@ const path = require('path');
 
 class Engine
 {
-	createTransform(sql)
+	createSelect(sql)
 	{
 		const functionsMap = this.createFunctionsMap();
 		const runtimeContext = new RuntimeContext(functionsMap);
@@ -26,7 +26,7 @@ class Engine
 		);
 
 		const select = new Select(preparingContext, runtimeContext, SqlParser.parse(sql));
-		return select.stream();
+		return select;
 	}
 
 	createFunctionsMap()

@@ -4,8 +4,7 @@ class JlPassThrough extends JlTransform
 {
 	_transform(chunk, charset, cb)
 	{
-		this.push(chunk);
-		cb();
+		cb(null, chunk);
 	}
 
 	_flush(cb)

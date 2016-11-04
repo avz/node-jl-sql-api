@@ -119,26 +119,24 @@ class Select
 		// make pre-sorting
 		const sorter = new Sorter(this.sortingFunction(this.ast.groups));
 
-		const chain = new JlTransformsChain;
-		chain.append(sorter);
-		chain.append(groupper);
+		const chain = new JlTransformsChain([sorter, groupper]);
 
 		return chain;
 	}
 
 	stream()
 	{
-		const chain = new JlTransformsChain;
+		const pipeline = [];
 
 		const filter = this.filter();
 		if (filter) {
-			chain.append(filter);
+			pipeline.push(filter);
 		}
 
 		const groupper = this.groupper();
 		if (groupper) {
-			chain.append(groupper);
-		} else {
+			pipeline.push(groupper);
+		} else if (this.columns.size) {
 			/*
 			 * группировщик сам создаёт строки с нужными полями, поэтому вычленение
 			 * полей нужно только для безгруппировочных запросов
@@ -149,24 +147,24 @@ class Select
 				m.set(path, column.valueSource());
 			}
 
-			chain.append(new PropertiesPicker(m));
+			pipeline.push(new PropertiesPicker(m));
 		}
 
 		const having = this.having();
 		if (having) {
-			chain.append(having);
+			pipeline.push(having);
 		}
 
 		const sorter = this.sorter();
 		if (sorter) {
-			chain.append(sorter);
+			pipeline.push(sorter);
 		}
 
-		if (chain.isEmpty()) {
+		if (!pipeline.length) {
 			return new JlPassThrough(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS)
 		}
 
-		return chain;
+		return new JlTransformsChain(pipeline);
 	}
 
 	/**
@@ -183,6 +181,10 @@ class Select
 			 * For aggregation queries without GROUP BY, e.g. `SELECT SUM(c) AS sum`
 			 */
 			return new Groupper(() => [null], new Aggregation(this.runtimeContext, this.columns));
+		}
+
+		if (!this.columns.size) {
+			throw new Error('`SELECT * ... GROUP BY ...` does not make sense');
 		}
 
 		const keyGenerators = this.ast.groups.map(g => this.sqlToJs.nodeToFunction(g.expression));
