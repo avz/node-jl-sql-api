@@ -160,4 +160,54 @@ describe('SELECT', () => {
 			);
 		});
 	});
+
+	describe('`SELECT ... AS alias[.deepAlias[. ...]]`', () => {
+		const input = [{a: 10}];
+
+		let output;
+
+		before(done => {
+			jlSql.query(
+					`SELECT
+						a,
+						a AS aliasForA,
+						aliasForA AS nonexistentAlias,
+						a + 10 AS b,
+						a + 20 AS deep.c,
+						a + 30 AS deep.d.e,
+						undef AS deepUndef.undef`
+				)
+				.fromArrayOfObjects(input)
+				.toArrayOfObjects((r) => {
+					output = r;
+					done();
+				})
+			;
+		});
+
+		it('original column', () => {
+			assert.strictEqual(output[0].a, input[0].a);
+		});
+
+		it('alias to alias', () => {
+			assert.strictEqual(output[0].nonexistentAlias, undefined);
+		})
+
+		it('direct column to alias mapping', () => {
+			assert.strictEqual(output[0].aliasForA, input[0].a);
+		});
+
+		it('aliases to top level', () => {
+			assert.strictEqual(output[0].b, input[0].a + 10);
+		});
+
+		it('aliases to deep levels', () => {
+			assert.strictEqual(output[0].deep.c, input[0].a + 20);
+			assert.strictEqual(output[0].deep.d.e, input[0].a + 30);
+		});
+
+		it('alias to undefined does not make empty deep object', () => {
+			assert.strictEqual(output[0].deepUndef, undefined);
+		})
+	});
 });
