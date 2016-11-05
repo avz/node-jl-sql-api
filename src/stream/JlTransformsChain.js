@@ -21,7 +21,7 @@ class JlTransformsChain extends Transform
 		}
 
 		this.lastStream.on('end', () => {
-			this.emit('end');
+			this.push(null);
 		});
 
 		this.lastStream.on('data', (d) => {
