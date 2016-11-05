@@ -16,10 +16,6 @@ class JlTransformsChain extends Transform
 		this.firstStream = streams[0];
 		this.lastStream = streams[streams.length - 1];
 
-		for (let i = 0; i < streams.length - 1; i++) {
-			streams[i].pipe(streams[i + 1]);
-		}
-
 		this.lastStream.on('end', () => {
 			this.push(null);
 		});
@@ -30,9 +26,13 @@ class JlTransformsChain extends Transform
 			}
 		});
 
-		this.lastStream.on('error', e => {
-			this.emit('error', e);
-		});
+		for (let i = 0; i < streams.length - 1; i++) {
+			streams[i].on('error', e => {
+				this.emit('error', e);
+			});
+
+			streams[i].pipe(streams[i + 1]);
+		}
 	}
 
 	_transform(chunk, encoding, callback)

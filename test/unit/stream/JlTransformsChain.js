@@ -79,4 +79,21 @@ describe('JlTransformsChain', () => {
 			})
 		}, 10);
 	});
+
+	it('proxy \'error\' event', (done) => {
+		const error = new Error('test error');
+
+		const errorStream = new Readable({
+			read() {
+				errorStream.emit('error', error);
+			}
+		});
+
+		const chain = new JlTransformsChain([errorStream, new PassThrough]);
+
+		chain.on('error', function(err) {
+			assert.strictEqual(err, error);
+			done();
+		});
+	});
 });
