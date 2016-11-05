@@ -18,28 +18,29 @@ class SelectFrom
 
 	toObjectsStream(stream)
 	{
-		const chain = [this.inputStream, this.select.stream(), new ChunkSplitter];
+		const chain = new JlTransformsChain([this.inputStream, this.select.stream(), new ChunkSplitter]);
+
 		if (stream) {
-			chain.push(stream);
+			return chain.pipe(stream);
 		}
 
-		return new JlTransformsChain(chain);
+		return chain;
 	}
 
-	toJsonStream(stream)
+	toJsonStream(outputStream)
 	{
-		const chain = [
+		const chain = new JlTransformsChain([
 			this.inputStream,
 			this.select.stream(),
 			new JsonStringifier,
 			new LinesJoiner
-		];
+		]);
 
-		if (stream) {
-			chain.push(stream);
+		if (outputStream) {
+			return chain.pipe(outputStream);
 		}
 
-		return new JlTransformsChain(chain);
+		return chain;
 	}
 
 	toArrayOfObjects(cb)

@@ -1,15 +1,15 @@
-const JlTransform = require('./JlTransform');
+const PassThrough = require('stream').PassThrough;
 
-class JlPassThrough extends JlTransform
+class JlPassThrough extends PassThrough
 {
-	_transform(chunk, charset, cb)
+	constructor(inputType, outputType)
 	{
-		cb(null, chunk);
-	}
+		super({
+			objectMode: true
+		});
 
-	_flush(cb)
-	{
-		cb();
+		this.inputType = inputType;
+		this.outputType = outputType;
 	}
 }
 

@@ -15,10 +15,6 @@ class LinesJoiner extends JlTransform
 
 		cb();
 	}
-
-	_flush()
-	{
-	}
 }
 
 module.exports = LinesJoiner;
