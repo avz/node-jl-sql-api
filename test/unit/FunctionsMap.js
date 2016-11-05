@@ -1,5 +1,5 @@
 const assert = require('assert');
-const FunctionMap = require('../src/FunctionsMap');
+const FunctionMap = require('../../src/FunctionsMap');
 
 describe('FunctionMap::add', () => {
 	it('just add', () => {
