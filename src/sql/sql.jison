@@ -77,6 +77,7 @@ var Nodes = require('./Nodes.js');
 %left '+' '-'
 %left '*' '/' '%'
 %left '=' '==' '!=' '===' '!=='
+%left 'COUNT'
 %left 'FROM' 'AS' 'DISTINCT' 'IN' 'WHERE' 'HAVING' 'LIMIT' 'OFFSET'
 %left 'ORDER' 'GROUP' 'BY' 'ASC' 'DESC'
 %left 'JOIN' 'INNER' 'LEFT'
@@ -156,6 +157,7 @@ expression
 	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), []); }
 	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($1)), [$3]); }
 	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($1)), []); }
+	| 'COUNT' { $$ = new Nodes.ColumnIdent($1); }
 	| complexIdent { $$ = new Nodes.ColumnIdent(); $$.fragments = $1.fragments; }
 	| const { $$ = $1; }
 	| '(' expression ')' { $$ = new Nodes.Brackets($2); }
@@ -168,6 +170,7 @@ expressionsList
 
 column
 	: expression 'AS' complexIdent { $$ = new Nodes.Column($1, $3); }
+	| expression 'AS' 'COUNT' { $$ = new Nodes.Column($1, new Nodes.ColumnIdent($3)); }
 	| expression            { $$ = new Nodes.Column($1); }
 ;
 
