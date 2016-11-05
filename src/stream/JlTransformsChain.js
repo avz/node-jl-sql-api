@@ -24,11 +24,10 @@ class JlTransformsChain extends Transform
 			this.emit('end');
 		});
 
-		/*
-		 * TODO FIX back pressure issue
-		 */
 		this.lastStream.on('data', (d) => {
-			this.push(d);
+			if (!this.push(d)) {
+				this.lastStream.pause();
+			}
 		});
 	}
 
@@ -41,6 +40,15 @@ class JlTransformsChain extends Transform
 	{
 		this.lastStream.once('end', cb);
 		this.firstStream.end();
+	}
+
+	_read(...args)
+	{
+		super._read(...args);
+
+		if (this.lastStream.isPaused()) {
+			this.lastStream.resume();
+		}
 	}
 }
 
