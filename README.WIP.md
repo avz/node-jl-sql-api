@@ -1,3 +1,5 @@
+# `jl-sql-api` [![Build Status](https://travis-ci.org/avz/node-jl-sql-api.svg?branch=master)](https://travis-ci.org/avz/node-jl-sql-api)
+
 ## API
 
 ```javascript
