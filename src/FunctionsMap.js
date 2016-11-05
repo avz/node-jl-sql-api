@@ -19,7 +19,11 @@ class FunctionsMap
 	{
 		const key = this._key(path);
 
-		this.map[this._key(path)] = func;
+		if (this.map[key]) {
+			throw new Error('Function already exists: ', path.join('.§'));
+		}
+
+		this.map[key] = func;
 	}
 
 	get(path)
