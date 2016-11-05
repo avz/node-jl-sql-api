@@ -29,6 +29,10 @@ class JlTransformsChain extends Transform
 				this.lastStream.pause();
 			}
 		});
+
+		this.lastStream.on('error', e => {
+			this.emit('error', e);
+		});
 	}
 
 	_transform(chunk, encoding, callback)
