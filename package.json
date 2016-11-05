@@ -15,5 +15,8 @@
   },
   "scripts": {
     "test": "mocha --recursive"
+  },
+  "engines": {
+    "node": ">=6"
   }
 }
