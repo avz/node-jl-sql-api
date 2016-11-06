@@ -10,7 +10,7 @@ const path = require('path');
 
 class Engine
 {
-	createSelect(sql)
+	createSelect(sql, options = {})
 	{
 		const functionsMap = this.createFunctionsMap();
 		const runtimeContext = new RuntimeContext(functionsMap);
@@ -24,6 +24,8 @@ class Engine
 			sqlToJs,
 			functionsMap
 		);
+
+		preparingContext.externalSort = !!options.externalSort;
 
 		const select = new Select(preparingContext, runtimeContext, SqlParser.parse(sql));
 		return select;

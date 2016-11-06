@@ -12,6 +12,8 @@ class PreparingContext
 	{
 		this.sqlToJs = sqlToJs;
 		this.functionsMap = functionsMap;
+
+		this.externalSort = false;
 	}
 
 	isAggregationExpression(expression)

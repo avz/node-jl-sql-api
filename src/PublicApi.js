@@ -3,14 +3,15 @@ const PublicSelect = require('./public/Select');
 
 class PublicApi
 {
-	constructor()
+	constructor(options = {})
 	{
+		this.options = options;
 		this.engine = new Engine();
 	}
 
 	query(sql)
 	{
-		return new PublicSelect(this.engine.createSelect(sql));
+		return new PublicSelect(this.engine.createSelect(sql, this.options));
 	}
 }
 

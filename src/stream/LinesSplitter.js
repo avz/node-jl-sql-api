@@ -28,8 +28,9 @@ class LinesSplitter extends JlTransform
 			this.tail += lines[lines.length - 1];
 		}
 
-		if(bucket.length)
+		if(bucket.length) {
 			this.push(bucket);
+		}
 
 		cb();
 	}

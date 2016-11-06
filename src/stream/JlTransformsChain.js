@@ -1,10 +1,13 @@
 const Duplex = require('stream').Duplex;
 const Transform = require('stream').Transform;
+
 const JlTransform = require('./JlTransform');
+const Terminator = require('./Terminator');
+
 
 class JlTransformsChain extends Transform
 {
-	constructor(streams)
+	constructor(streams = null)
 	{
 		super({
 			objectMode: true
@@ -13,6 +16,16 @@ class JlTransformsChain extends Transform
 		this.inputType = JlTransform.ANY;
 		this.outputType = JlTransform.ANY;
 
+		this.firstStream = null;
+		this.lastStream = null;
+
+		if (streams) {
+			this.init(streams);
+		}
+	}
+
+	init(streams)
+	{
 		this.firstStream = streams[0];
 		this.lastStream = streams[streams.length - 1];
 
@@ -27,6 +40,10 @@ class JlTransformsChain extends Transform
 		});
 
 		for (let i = 0; i < streams.length - 1; i++) {
+			if (streams[i] instanceof Terminator) {
+				continue;
+			}
+
 			streams[i].on('error', e => {
 				this.emit('error', e);
 			});

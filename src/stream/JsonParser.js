@@ -12,10 +12,17 @@ class JsonParser extends JlTransform
 		var parsed = [];
 
 		for (var i = 0; i < chunk.length; i++) {
-			parsed.push(JSON.parse(' ' + chunk[i]));
+			const json = chunk[i];
+			if (/^\s*$/.test(json)) {
+				continue;
+			}
+
+			parsed.push(JSON.parse(' ' + json));
 		}
 
-		this.push(parsed);
+		if (parsed.length) {
+			this.push(parsed);
+		}
 
 		cb();
 	}
