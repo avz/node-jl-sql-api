@@ -4,7 +4,7 @@ const JlTransform = require('./JlTransform');
  * Тупейший алгоритм сортировки: сохраняем всё в памятьЮ а потом сортируем
  * TODO Переделать на нормальную схему
  */
-class Sorter extends JlTransform
+class SorterInMemory extends JlTransform
 {
 	constructor(compare)
 	{
@@ -34,4 +34,4 @@ class Sorter extends JlTransform
 	}
 }
 
-module.exports = Sorter;
+module.exports = SorterInMemory;

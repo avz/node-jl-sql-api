@@ -1,5 +1,5 @@
 const ColumnsAnalyser = require('./ColumnsAnalyser');
-const Sorter = require('./stream/Sorter');
+const SorterInMemory = require('./stream/SorterInMemory');
 const Filter = require('./stream/Filter');
 const PropertiesPicker = require('./stream/PropertiesPicker');
 const Groupper = require('./stream/Groupper');
@@ -41,7 +41,7 @@ class Select
 			return null;
 		}
 
-		return new Sorter(sf);
+		return new SorterInMemory(sf);
 	}
 
 	filter()
@@ -117,7 +117,7 @@ class Select
 		}
 
 		// make pre-sorting
-		const sorter = new Sorter(this.sortingFunction(this.ast.groups));
+		const sorter = new SorterInMemory(this.sortingFunction(this.ast.groups));
 
 		const chain = new JlTransformsChain([sorter, groupper]);
 
