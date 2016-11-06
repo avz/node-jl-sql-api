@@ -3,6 +3,7 @@ const SorterInMemory = require('./stream/SorterInMemory');
 const Filter = require('./stream/Filter');
 const PropertiesPicker = require('./stream/PropertiesPicker');
 const Groupper = require('./stream/Groupper');
+const Order = require('./Order');
 const Aggregation = require('./Aggregation');
 const AggregationColumn = require('./AggregationColumn');
 const JlTransformsChain = require('./stream/JlTransformsChain');
@@ -36,12 +37,12 @@ class Select
 
 	sorter()
 	{
-		const sf = this.sortingFunction(this.ast.orders);
-		if (!sf) {
+		const orders = this.orders(this.ast.orders);
+		if (!orders.length) {
 			return null;
 		}
 
-		return new SorterInMemory(sf);
+		return new SorterInMemory(orders);
 	}
 
 	filter()
@@ -62,34 +63,20 @@ class Select
 		return new Filter(this.sqlToJs.nodeToFunction(this.ast.having));
 	}
 
-	sortingFunction(ordersOrGroups)
+	orders(ordersOrGroups)
 	{
 		if (!ordersOrGroups.length) {
-			return null;
+			return [];
 		}
 
-		const valueFuncs = ordersOrGroups.map(order => this.sqlToJs.nodeToFunction(order.expression));
+		const orders = ordersOrGroups.map(item => {
+			const valueFunc = this.sqlToJs.nodeToFunction(item.expression);
+			const direction = item.direction === 'DESC' ? Order.DIRECTION_DESC : Order.DIRECTION_ASC;
 
-		const compare = function(row1, row2) {
-			for (let i = 0; i < valueFuncs.length; i++) {
-				const valueFunc = valueFuncs[i];
+			return new Order(valueFunc, direction);
+		});
 
-				const v1 = valueFunc(row1);
-				const v2 = valueFunc(row2);
-
-				const direction = ordersOrGroups[i].direction === 'DESC' ? -1 : 1;
-
-				if (v1 > v2) {
-					return direction;
-				} else if (v1 < v2) {
-					return -direction;
-				}
-			}
-
-			return 0;
-		};
-
-		return compare;
+		return orders;
 	}
 
 	hasAggregationColumns()
@@ -117,7 +104,7 @@ class Select
 		}
 
 		// make pre-sorting
-		const sorter = new SorterInMemory(this.sortingFunction(this.ast.groups));
+		const sorter = new SorterInMemory(this.orders(this.ast.groups));
 
 		const chain = new JlTransformsChain([sorter, groupper]);
 

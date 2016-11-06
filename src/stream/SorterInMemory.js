@@ -1,4 +1,5 @@
 const JlTransform = require('./JlTransform');
+const Order = require('../Order');
 
 /**
  * Тупейший алгоритм сортировки: сохраняем всё в памятьЮ а потом сортируем
@@ -6,11 +7,15 @@ const JlTransform = require('./JlTransform');
  */
 class SorterInMemory extends JlTransform
 {
-	constructor(compare)
+	constructor(orders)
 	{
+		if (!orders.length) {
+			throw new Error('Empty orders');
+		}
+
 		super(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS);
 
-		this.compare = compare;
+		this.orders = orders;
 		this.objects = [];
 	}
 
@@ -25,12 +30,36 @@ class SorterInMemory extends JlTransform
 
 	_flush(cb)
 	{
-		this.objects.sort(this.compare);
+		this.objects.sort(this.sortingFunction());
 
 		this.push(this.objects);
 		this.objects = [];
 
 		cb();
+	}
+
+	sortingFunction()
+	{
+		const compare = (row1, row2) => {
+			for (let i = 0; i < this.orders.length; i++) {
+				const order = this.orders[i];
+
+				const v1 = order.valueFunction(row1);
+				const v2 = order.valueFunction(row2);
+
+				const direction = order.direction === Order.DIRECTION_DESC ? -1 : 1;
+
+				if (v1 > v2) {
+					return direction;
+				} else if (v1 < v2) {
+					return -direction;
+				}
+			}
+
+			return 0;
+		};
+
+		return compare;
 	}
 }
 
