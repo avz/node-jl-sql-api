@@ -1,3 +1,4 @@
+const SortOptions = require('./external/sort/SortOptions');
 
 class PublicApiOptions
 {
@@ -12,6 +13,10 @@ class PublicApiOptions
 			}
 
 			this[k] = options[k];
+		}
+
+		if (options.sortOptions && !(options.sortOptions instanceof SortOptions)) {
+			this.sortOptions = new SortOptions(options.sortOptions);
 		}
 	}
 }
