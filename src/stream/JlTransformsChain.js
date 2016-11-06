@@ -4,7 +4,6 @@ const Transform = require('stream').Transform;
 const JlTransform = require('./JlTransform');
 const Terminator = require('./Terminator');
 
-
 class JlTransformsChain extends Transform
 {
 	constructor(streams = null)
@@ -40,7 +39,7 @@ class JlTransformsChain extends Transform
 		});
 
 		for (let i = 0; i < streams.length - 1; i++) {
-			if (streams[i] instanceof Terminator) {
+			if (streams[i].isTerminator) {
 				continue;
 			}
 

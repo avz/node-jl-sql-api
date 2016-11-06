@@ -7,6 +7,8 @@ class Terminator extends Writable
 		super({
 			objectMode: true
 		});
+
+		this.isTerminator = true;
 	}
 
 	_write(chunk, charset, cb)
