@@ -13,6 +13,12 @@ const JlPassThrough = require('./stream/JlPassThrough');
 
 class Select
 {
+	/**
+	 *
+	 * @param {PreparingContext} preparingContext
+	 * @param {RuntimeContext} runtimeContext
+	 * @param {Node} ast
+	 */
 	constructor(preparingContext, runtimeContext, ast)
 	{
 		if (ast.joins.length) {
@@ -27,7 +33,14 @@ class Select
 			throw new Error('LIMIT is not supported yet');
 		}
 
+		/**
+		 * @type {PreparingContext}
+		 */
 		this.preparingContext = preparingContext;
+
+		/**
+		 * @type {PreparingContext}
+		 */
 		this.runtimeContext = runtimeContext;
 		this.sqlToJs = preparingContext.sqlToJs;
 		this.ast = ast;
@@ -93,7 +106,7 @@ class Select
 
 	createSorterInstance(orders)
 	{
-		if (this.preparingContext.externalSort) {
+		if (this.preparingContext.options.externalSort) {
 			return new SorterExternal(orders);
 		} else {
 			return new SorterInMemory(orders);

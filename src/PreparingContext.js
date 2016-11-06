@@ -1,5 +1,6 @@
 const SqlNodes = require('./sql/Nodes');
 const AggregationFunction = require('./AggregationFunction');
+const PublicApiOptions = require('./PublicApiOptions');
 
 /**
  * Контекст, который используется на этапе подготовки запроса.
@@ -13,7 +14,10 @@ class PreparingContext
 		this.sqlToJs = sqlToJs;
 		this.functionsMap = functionsMap;
 
-		this.externalSort = false;
+		/**
+		 * @type {PublicApiOptions}
+		 */
+		this.options = new PublicApiOptions;
 	}
 
 	isAggregationExpression(expression)

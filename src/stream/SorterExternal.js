@@ -4,13 +4,18 @@ const Order = require('../Order');
 const SortWrapper = require('../external/sort/SortWrapper');
 const CutWrapper = require('../external/CutWrapper');
 const SortInputTransform = require('../external/sort/SortInputTransform');
+const SortOptions = require('../external/sort/SortOptions');
 const LinesSplitter = require('./LinesSplitter');
 const JsonParser = require('./JsonParser');
 const Terminator = require('./Terminator');
 
 class SorterExternal extends JlTransformsChain
 {
-	constructor(orders)
+	/**
+	 * @param {Order[]} orders
+	 * @param {SortOptions} options
+	 */
+	constructor(orders, options = new SortOptions)
 	{
 		if (!orders.length) {
 			throw new Error('Empty orders');
@@ -22,12 +27,12 @@ class SorterExternal extends JlTransformsChain
 
 		const preparedSortInput = new SortInputTransform(orders);
 
-		const options = {
-			separator: preparedSortInput.columnSeparator,
-			keys: this.keysDefinition(orders)
-		};
+		const combinedOptions = options.clone();
 
-		const sort = new SortWrapper(options);
+		combinedOptions.separator = preparedSortInput.columnSeparator;
+		combinedOptions.keys = this.keysDefinition(orders);
+
+		const sort = new SortWrapper(combinedOptions);
 		const cut = new CutWrapper(
 			preparedSortInput.columnSeparator,
 			(orders.length + 1) + '-'

@@ -10,6 +10,12 @@ const path = require('path');
 
 class Engine
 {
+	/**
+	 *
+	 * @param {string} sql
+	 * @param {PublicApiOptions} options
+	 * @returns {Select}
+	 */
 	createSelect(sql, options = {})
 	{
 		const functionsMap = this.createFunctionsMap();
@@ -25,7 +31,7 @@ class Engine
 			functionsMap
 		);
 
-		preparingContext.externalSort = !!options.externalSort;
+		preparingContext.options = options;
 
 		const select = new Select(preparingContext, runtimeContext, SqlParser.parse(sql));
 		return select;

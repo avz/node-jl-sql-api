@@ -1,5 +1,8 @@
 class SortWrapper
 {
+	/**
+	 * @param {SortOptions} options
+	 */
 	constructor(options)
 	{
 		var sortCmd = options.path || 'sort';
