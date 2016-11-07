@@ -1,6 +1,6 @@
 const BasicColumn = require('./BasicColumn');
 const AggregationColumn = require('./AggregationColumn');
-const PropertiesPicker = require('./stream/PropertiesPicker');
+const PropertiesPicker = require('./PropertiesPicker');
 const AggregationCallRuntime = require('./AggregationCallRuntime');
 
 class Aggregation

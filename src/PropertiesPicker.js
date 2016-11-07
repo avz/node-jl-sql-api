@@ -1,31 +1,5 @@
-const JlTransform = require('./JlTransform');
-
-class PropertiesPicker extends JlTransform
+class PropertiesPicker
 {
-	constructor(paths)
-	{
-		super(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS);
-
-		this.paths = paths;
-	}
-
-	_transform(chunk, encoding, cb)
-	{
-		var result = [];
-
-		for (let i = 0; i < chunk.length; i++) {
-			var dest = {};
-
-			this.copyProperties(this.paths, chunk[i], dest);
-
-			result.push(dest);
-		}
-
-		this.push(result);
-
-		cb();
-	}
-
 	copyProperties(paths, from, to)
 	{
 		if (paths instanceof Map) {

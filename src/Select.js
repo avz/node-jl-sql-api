@@ -2,7 +2,7 @@ const ColumnsAnalyser = require('./ColumnsAnalyser');
 const SorterInMemory = require('./stream/SorterInMemory');
 const SorterExternal = require('./stream/SorterExternal');
 const Filter = require('./stream/Filter');
-const PropertiesPicker = require('./stream/PropertiesPicker');
+const PropertiesPickerTransformer = require('./stream/PropertiesPickerTransformer');
 const Groupper = require('./stream/Groupper');
 const Order = require('./Order');
 const Aggregation = require('./Aggregation');
@@ -157,7 +157,7 @@ class Select
 				m.set(path, column.valueSource());
 			}
 
-			pipeline.push(new PropertiesPicker(m));
+			pipeline.push(new PropertiesPickerTransformer(m));
 		}
 
 		const having = this.having();
