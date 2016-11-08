@@ -1,5 +1,6 @@
 const JlTransform = require('./JlTransform');
 const PropertiesPicker = require('../PropertiesPicker');
+const DataRow = require('../DataRow');
 
 class PropertiesPickerTransformer extends JlTransform
 {
@@ -16,9 +17,9 @@ class PropertiesPickerTransformer extends JlTransform
 		var result = [];
 
 		for (let i = 0; i < chunk.length; i++) {
-			var dest = {};
+			var dest = new DataRow({});
 
-			this.propertiesPicker.copyProperties(this.paths, chunk[i], dest);
+			this.propertiesPicker.copyProperties(this.paths, chunk[i], dest.sources);
 
 			result.push(dest);
 		}

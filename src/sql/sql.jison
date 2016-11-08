@@ -10,6 +10,7 @@ var Nodes = require('./Nodes.js');
 
 %%
 \s+	{}
+
 ","	{ return ','; }
 "NULL"	{ return 'NULL'; }
 "TRUE"	{ return 'TRUE'; }
@@ -60,8 +61,9 @@ var Nodes = require('./Nodes.js');
 "!="	{ return '!='; }
 "!"	{ return '!'; }
 
-\`(\\.|[^\\`])*\`	{ return 'IDENT'; }
-([a-z_][a-z0-9_-]*)	{ return 'IDENT'; }
+(\@([a-z_][a-z0-9_-]*|))	{ return 'DATA_SOURCE_IDENT'; }
+\`(\\.|[^\\`])*\`		{ return 'IDENT'; }
+([a-z_][a-z0-9_-]*)		{ return 'IDENT'; }
 
 <<EOF>>	{ return 'EOF'; }
 
@@ -113,6 +115,10 @@ keywords
 	| INNER { $$ = $1 }
 ;
 
+dataSourceIdent
+	: 'DATA_SOURCE_IDENT' { $$ = new Nodes.DataSourceIdent($1) }
+;
+
 ident
 	: 'IDENT' { $$ = new Nodes.Ident($1); }
 	| keywords { $$ = new Nodes.Ident($1); }
@@ -120,7 +126,8 @@ ident
 
 complexIdent
 	: complexIdent '.' ident { $1.fragments.push($3.name); $$ = $1; }
-	| ident { $$ = new Nodes.ComplexIdent($1.name); }
+	| ident { $$ = new Nodes.ComplexIdent('@'); $$.fragments.push($1.name) }
+	| dataSourceIdent { $$ = new Nodes.ComplexIdent($1.name); }
 ;
 
 number: 'NUMBER' { $$ = new Nodes.Number($1); };
@@ -157,8 +164,8 @@ expression
 	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), []); }
 	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($1)), [$3]); }
 	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($1)), []); }
-	| 'COUNT' { $$ = new Nodes.ColumnIdent($1); }
-	| complexIdent { $$ = new Nodes.ColumnIdent(); $$.fragments = $1.fragments; }
+	| 'COUNT' { $$ = new Nodes.ColumnIdent('@'); $$.fragments.push($1) }
+	| complexIdent { $$ = new Nodes.ColumnIdent(); $$.fragments = $1.fragments }
 	| const { $$ = $1; }
 	| '(' expression ')' { $$ = new Nodes.Brackets($2); }
 ;
@@ -170,7 +177,7 @@ expressionsList
 
 column
 	: expression 'AS' complexIdent { $$ = new Nodes.Column($1, $3); }
-	| expression 'AS' 'COUNT' { $$ = new Nodes.Column($1, new Nodes.ColumnIdent($3)); }
+	| expression 'AS' 'COUNT' { var ci = new Nodes.ColumnIdent('@'); ci.fragments.push($3); $$ = new Nodes.Column($1, ci); }
 	| expression            { $$ = new Nodes.Column($1); }
 ;
 

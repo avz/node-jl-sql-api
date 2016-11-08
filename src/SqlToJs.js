@@ -12,6 +12,9 @@ class SqlToJs
 		this.aggregationPropertyName = 'this.' + this.runtimeContext.aggregationsPropertyName;
 
 		this.rowArgumentName = 'row';
+
+		/* TODO config */
+		this.rowVarName = 'row.sources';
 	}
 
 	nodeToCode(node)
@@ -47,7 +50,7 @@ class SqlToJs
 		 * JS: ((item.a || undefined) && (item.a.b || undefined) && item.a.b.c)
 		 */
 		var levels = [];
-		var rel = this.rowArgumentName;
+		var rel = this.rowVarName;
 		const frags = columnIdent.fragments;
 
 		for (let i = 0; i < frags.length - 1; i++) {

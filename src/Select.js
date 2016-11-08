@@ -5,11 +5,14 @@ const Filter = require('./stream/Filter');
 const PropertiesPickerTransformer = require('./stream/PropertiesPickerTransformer');
 const Groupper = require('./stream/Groupper');
 const Order = require('./Order');
+const Mapper = require('./stream/Mapper');
 const Aggregation = require('./Aggregation');
 const AggregationColumn = require('./AggregationColumn');
 const JlTransformsChain = require('./stream/JlTransformsChain');
 const JlTransform = require('./stream/JlTransform');
 const JlPassThrough = require('./stream/JlPassThrough');
+const DataRow = require('./DataRow');
+const DataStream = require('./DataStream');
 
 class Select
 {
@@ -136,7 +139,9 @@ class Select
 
 	stream()
 	{
-		const pipeline = [];
+		const pipeline = [
+			new Mapper(row => new DataRow({'@': row})) // '@' - DataStream.DEFAULT_NAME
+		];
 
 		const filter = this.filter();
 		if (filter) {
@@ -170,9 +175,11 @@ class Select
 			pipeline.push(sorter);
 		}
 
-		if (!pipeline.length) {
-			return new JlPassThrough(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS)
-		}
+		pipeline.push(
+			new Mapper(row => {
+				return row.sources[DataStream.DEFAULT_NAME];
+			})
+		);
 
 		return new JlTransformsChain(pipeline);
 	}

@@ -1,4 +1,5 @@
 const SqlNodes = require('./sql/Nodes');
+const DataRow = require('./DataRow');
 
 class BasicColumn
 {
@@ -24,7 +25,10 @@ class BasicColumn
 			 * оптимизированный вариант для случая, когда значение просто
 			 * берётся из свойства без всякой обработки
 			 */
-			return this.expression.fragments;
+			const path = this.expression.fragments.slice();
+			path.unshift(DataRow.SOURCES_PROPERTY);
+
+			return path;
 		}
 
 		return this.preparingContext.sqlToJs.nodeToFunction(this.expression);

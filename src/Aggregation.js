@@ -2,6 +2,7 @@ const BasicColumn = require('./BasicColumn');
 const AggregationColumn = require('./AggregationColumn');
 const PropertiesPicker = require('./PropertiesPicker');
 const AggregationCallRuntime = require('./AggregationCallRuntime');
+const DataRow = require('./DataRow');
 
 class Aggregation
 {
@@ -58,9 +59,9 @@ class Aggregation
 
 	result()
 	{
-		const row = {};
+		const row = new DataRow({});
 
-		this.propertiesPicker.copyPropertiesMap(this.resultSetsMap, this.lastRow, row);
+		this.propertiesPicker.copyPropertiesMap(this.resultSetsMap, this.lastRow, row.sources);
 
 		return row;
 	}
