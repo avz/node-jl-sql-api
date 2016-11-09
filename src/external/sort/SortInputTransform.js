@@ -21,7 +21,7 @@ class SortInputTransform extends Transform
 			const columnValues = [];
 			for (const order of this.orders) {
 				const v = order.valueFunction(row);
-				const json = v === undefined ? '' : JSON.stringify(v);
+				const json = v === undefined ? '' : JSON.stringify(v + '');
 
 				columnValues.push(v);
 			}
