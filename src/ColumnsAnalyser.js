@@ -35,6 +35,10 @@ class ColumnsAnalyser
 
 		if (column.alias) {
 			alias = column.alias.fragments;
+			if (alias[0] !== '@') {
+				throw new Error('You can\'t use aliases targeted on source');
+			}
+
 		} else if (column.expression instanceof SqlNodes.ColumnIdent) {
 			alias = column.expression.fragments;
 		}
