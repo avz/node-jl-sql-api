@@ -44,8 +44,11 @@ class SorterInMemory extends JlTransform
 			for (let i = 0; i < this.orders.length; i++) {
 				const order = this.orders[i];
 
-				const v1 = order.valueFunction(row1);
-				const v2 = order.valueFunction(row2);
+				let v1 = order.valueFunction(row1);
+				let v2 = order.valueFunction(row2);
+
+				v1 = v1 === undefined ? '' : JSON.stringify(v1);
+				v2 = v2 === undefined ? '' : JSON.stringify(v2);
 
 				const direction = order.direction === Order.DIRECTION_DESC ? -1 : 1;
 
