@@ -2,8 +2,9 @@ const Nodes = require('./sql/Nodes');
 
 class Join
 {
-	constructor(preparingContext, joiningDataStream, ast)
+	constructor(type, preparingContext, joiningDataStream, ast)
 	{
+		this.type = type;
 		this.preparingContext = preparingContext;
 		this.joiningDataStream = joiningDataStream;
 		this.ast = ast;
@@ -56,5 +57,8 @@ class Join
 		this.mainDataStreamSortingsColumns = sortingMain;
 	}
 }
+
+Join.LEFT = 'LEFT';
+Join.INNER = 'INNER';
 
 module.exports = Join;

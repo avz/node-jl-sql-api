@@ -1,5 +1,6 @@
 const JlTransform = require('./JlTransform');
 const Readable = require('stream').Readable;
+const Join = require('../Join');
 
 class Joiner extends Readable
 {
@@ -117,6 +118,23 @@ class Joiner extends Readable
 	{
 		let outputBuffer = [];
 
+		const nextMainRow = () => {
+			const row = this.mainBuffer.shift();
+
+			/*
+			 * поменялась mainRow - надо сгенерить пачку смердженных строк
+			 * и вернуть присоединяемые строки обратно в обработку т.к. они,
+			 * возможно, будут нужны для следующей строки основного потока
+			 */
+			if (this.currentKeyBuffer.length) {
+				return this.generateOutputFromCurrentKeyBuffer();
+			} else if (this.join.type === Join.LEFT && row) {
+				return [row];
+			}
+
+			return [];
+		};
+
 		while (this.mainBuffer.length && this.joiningBuffer.length) {
 			const mainRow = this.mainBuffer[0];
 			const joiningRow = this.joiningBuffer[0];
@@ -139,27 +157,25 @@ class Joiner extends Readable
 				this.currentKeyBuffer.push(joiningRow);
 
 				this.joiningBuffer.shift();
-			} else if (joiningKey > mainKey) {
-				this.mainBuffer.shift();
 
-				/*
-				 * поменялась mainRow - надо сгенерить пачку смердженных строк
-				 * и вернуть присоединяемые строки обратно в обработку т.к. они,
-				 * возможно, будут нужны для следующей строки основного потока
-				 */
-				if (this.currentKeyBuffer.length) {
-					outputBuffer = this.generateOutputFromCurrentKeyBuffer();
+			} else if (joiningKey > mainKey) {
+
+				outputBuffer = nextMainRow();
+				if (outputBuffer.length) {
 					break;
 				}
+
 			} else { // mainKey > joiningKey
 				this.joiningBuffer.shift();
 			}
 		}
 
 		if (!this.joiningBuffer.length && this.joiningEnded) {
-			outputBuffer = outputBuffer.concat(this.generateOutputFromCurrentKeyBuffer());
-			this.mainBuffer.shift();
-			this.ended = true;
+			outputBuffer = outputBuffer.concat(nextMainRow());
+
+			if (this.mainBuffer.length && this.mainEnded) {
+				setImmediate(this.dataChanged.bind(this));
+			}
 		}
 
 		if (!this.mainBuffer.length && this.mainEnded) {

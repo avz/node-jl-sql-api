@@ -89,8 +89,14 @@ class Select
 				throw new Error('JOINed data source must have simple name, but found: ' + joinAst.table.ident.fragments.join('.'));
 			}
 
-			if (!(joinAst instanceof Nodes.InnerJoin)) {
-				throw new Error('INNER JOIN only supported yet');
+			let joinType;
+
+			if (joinAst instanceof Nodes.LeftJoin) {
+				joinType = Join.LEFT;
+			} else if (joinAst instanceof Nodes.InnerJoin) {
+				joinType = Join.INNER;
+			} else {
+				throw new Error('INNER ans LEFT JOINs only supported yet');
 			}
 
 			const dataStreamName = joinAst.table.ident.fragments[0];
@@ -103,7 +109,7 @@ class Select
 				throw new Error('Data stream not found for JOIN: ' + dataStreamName);
 			}
 
-			joins.push(new Join(this.preparingContext, dataStream, joinAst.expression));
+			joins.push(new Join(joinType, this.preparingContext, dataStream, joinAst.expression));
 		}
 
 		return joins;
