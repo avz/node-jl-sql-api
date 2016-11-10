@@ -190,20 +190,22 @@ class Joiner extends Readable
 
 	_read()
 	{
-		const output = this.popOutput();
+		setImmediate(() => {
+			const output = this.popOutput();
 
-		if (output.length) {
-			this.needOutput = false;
-			this.push(output);
-		} else {
-			this.needOutput = true;
-			this.tryResumeAll();
-		}
+			if (output.length) {
+				this.needOutput = false;
+				this.push(output);
+			} else {
+				this.needOutput = true;
+				this.tryResumeAll();
+			}
 
-		if (this.ended) {
-			this.push(null);
-			return;
-		}
+			if (this.ended) {
+				this.push(null);
+				return;
+			}
+		});
 	}
 
 	mergeRows(mainRow, joiningRow)
