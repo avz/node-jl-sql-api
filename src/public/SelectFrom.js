@@ -10,6 +10,10 @@ const PassThrough = require('stream').PassThrough;
 
 const DataStream = require('../DataStream');
 
+const JsonParser = require('../stream/JsonParser');
+const LinesSplitter = require('../stream/LinesSplitter');
+const ChunkJoiner = require('../stream/ChunkJoiner');
+
 class SelectFrom
 {
 	constructor(select, inputStream)
@@ -75,6 +79,22 @@ class SelectFrom
 		stream.end(array);
 
 		this.additionalStreams.push(new DataStream(name, stream));
+
+		return this;
+	}
+
+	addJsonStream(name, stream)
+	{
+		const chain = stream.pipe(new LinesSplitter).pipe(new JsonParser);
+
+		this.additionalStreams.push(new DataStream(name, chain));
+
+		return this;
+	}
+
+	addObjectsStream(name, stream)
+	{
+		this.additionalStreams.push(new DataStream(name, stream.pipe(new ChunkJoiner)));
 
 		return this;
 	}
