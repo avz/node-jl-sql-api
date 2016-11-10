@@ -56,6 +56,7 @@ class Joiner extends Readable
 	mainStreamEnd()
 	{
 		this.mainEnded = true;
+		this.needOutput = true;
 
 		this.dataChanged();
 	}
@@ -158,6 +159,7 @@ class Joiner extends Readable
 		if (!this.joiningBuffer.length && this.joiningEnded) {
 			outputBuffer = outputBuffer.concat(this.generateOutputFromCurrentKeyBuffer());
 			this.mainBuffer.shift();
+			this.ended = true;
 		}
 
 		if (!this.mainBuffer.length && this.mainEnded) {
@@ -172,12 +174,11 @@ class Joiner extends Readable
 
 	_read()
 	{
-
 		const output = this.popOutput();
 
 		if (output.length) {
-			this.push(output);
 			this.needOutput = false;
+			this.push(output);
 		} else {
 			this.needOutput = true;
 			this.tryResumeAll();

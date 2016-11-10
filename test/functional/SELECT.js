@@ -213,46 +213,134 @@ describe('SELECT', () => {
 		});
 
 		describe('`SELECT ... INNER JOIN ...`', () => {
-			const inputHost = [
-				{hostSomeProp: 101, hostKeyProp: 1},
-				{hostSomeProp: 102, hostKeyProp: 1},
-				{hostSomeProp: 103, hostKeyProp: 2},
-				{hostSomeProp: 104, hostKeyProp: 3},
-			];
+			const dataSets = [
+				{
+					host: [
+						{hostSomeProp: 101, hostKeyProp: 1},
+						{hostSomeProp: 102, hostKeyProp: 1},
+						{hostSomeProp: 103, hostKeyProp: 2},
+						{hostSomeProp: 104, hostKeyProp: 3}
+					],
+					child: [
+						{someProp: 201, keyProp: 1},
+						{someProp: 202, keyProp: 1},
+						{someProp: 203, keyProp: '1'},
+						{someProp: 204, keyProp: 3}
+					],
+					result: [
+						{hostSomeProp: 101, hostKeyProp: 1, keyProp: 1, someProp: 201},
+						{hostSomeProp: 101, hostKeyProp: 1, keyProp: 1, someProp: 202},
+						{hostSomeProp: 101, hostKeyProp: 1, keyProp: '1', someProp: 203},
+						{hostSomeProp: 102, hostKeyProp: 1, keyProp: 1, someProp: 201},
+						{hostSomeProp: 102, hostKeyProp: 1, keyProp: 1, someProp: 202},
+						{hostSomeProp: 102, hostKeyProp: 1, keyProp: '1', someProp: 203},
+						{hostSomeProp: 104, hostKeyProp: 3, keyProp: 3, someProp: 204}
+					]
+				},
+				{
+					host: [
+						{hostSomeProp: 101, hostKeyProp: 1},
+						{hostSomeProp: 102, hostKeyProp: 1},
+						{hostSomeProp: 103, hostKeyProp: 2},
+						{hostSomeProp: 104, hostKeyProp: 3}
+					],
+					child: [
+						{someProp: 201, keyProp: 1},
+						{someProp: 202, keyProp: 1},
+						{someProp: 203, keyProp: '1'},
+						{someProp: 204, keyProp: 3}
+					],
+					result: [
+						{hostSomeProp: 101, hostKeyProp: 1, keyProp: 1, someProp: 201},
+						{hostSomeProp: 101, hostKeyProp: 1, keyProp: 1, someProp: 202},
+						{hostSomeProp: 101, hostKeyProp: 1, keyProp: '1', someProp: 203},
+						{hostSomeProp: 102, hostKeyProp: 1, keyProp: 1, someProp: 201},
+						{hostSomeProp: 102, hostKeyProp: 1, keyProp: 1, someProp: 202},
+						{hostSomeProp: 102, hostKeyProp: 1, keyProp: '1', someProp: 203},
+						{hostSomeProp: 104, hostKeyProp: 3, keyProp: 3, someProp: 204}
+					]
+				},
+				{
+					host: [
+						{hostSomeProp: 101, hostKeyProp: 1},
+					],
+					child: [
+						{someProp: 201, keyProp: 1},
+						{someProp: 202, keyProp: 1},
+						{someProp: 203, keyProp: '1'},
+						{someProp: 204, keyProp: 3}
+					],
+					result: [
+						{hostSomeProp: 101, hostKeyProp: 1, keyProp: 1, someProp: 201},
+						{hostSomeProp: 101, hostKeyProp: 1, keyProp: 1, someProp: 202},
+						{hostSomeProp: 101, hostKeyProp: 1, keyProp: '1', someProp: 203},
+					]
+				},
+				{
+					host: [
+						{hostSomeProp: 101, hostKeyProp: 1},
+						{hostSomeProp: 102, hostKeyProp: 1},
+						{hostSomeProp: 103, hostKeyProp: 2},
+						{hostSomeProp: 104, hostKeyProp: 3}
+					],
+					child: [
+						{someProp: 201, keyProp: 1},
+					],
+					result: [
+						{hostSomeProp: 101, hostKeyProp: 1, keyProp: 1, someProp: 201},
+						{hostSomeProp: 102, hostKeyProp: 1, keyProp: 1, someProp: 201},
+					]
+				},
+				{
+					host: [
+					],
+					child: [
+						{someProp: 201, keyProp: 1},
+						{someProp: 202, keyProp: 1},
+						{someProp: 203, keyProp: '1'},
+						{someProp: 204, keyProp: 3}
+					],
+					result: [
+					]
+				},
+				{
+					host: [
+						{hostSomeProp: 101, hostKeyProp: 1},
+						{hostSomeProp: 102, hostKeyProp: 1},
+						{hostSomeProp: 103, hostKeyProp: 2},
+						{hostSomeProp: 104, hostKeyProp: 3}
+					],
+					child: [
+					],
+					result: [
+					]
+				}
+			]
 
-			const inputChild = [
-				{someProp: 201, keyProp: 1},
-				{someProp: 202, keyProp: 1},
-				{someProp: 203, keyProp: '1'},
-				{someProp: 204, keyProp: 3},
-			];
+			for (const dsi in dataSets) {
+				const ds = dataSets[dsi]
 
-			let output;
+				describe('dataset #' + (parseInt(dsi) + 1), () => {
+					let output;
 
-			before(done => {
-				jlSql.query(
-						'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp INNER JOIN @child ON @child.keyProp = hostKeyProp'
-					)
-					.fromArrayOfObjects(inputHost)
-					.addArrayOfObjectsStream('@child', inputChild)
-					.toArrayOfObjects((r) => {
-						output = r;
-						done();
-					})
-				;
-			});
+					before(done => {
+						jlSql.query(
+								'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp INNER JOIN @child ON @child.keyProp = hostKeyProp'
+							)
+							.fromArrayOfObjects(ds.host)
+							.addArrayOfObjectsStream('@child', ds.child)
+							.toArrayOfObjects((r) => {
+								output = r;
+								done();
+							})
+						;
+					});
 
-			it('valid result', () => {
-				assert.deepEqual(output, [
-					{hostSomeProp: 101, hostKeyProp: 1, keyProp: 1, someProp: 201},
-					{hostSomeProp: 101, hostKeyProp: 1, keyProp: 1, someProp: 202},
-					{hostSomeProp: 101, hostKeyProp: 1, keyProp: '1', someProp: 203},
-					{hostSomeProp: 102, hostKeyProp: 1, keyProp: 1, someProp: 201},
-					{hostSomeProp: 102, hostKeyProp: 1, keyProp: 1, someProp: 202},
-					{hostSomeProp: 102, hostKeyProp: 1, keyProp: '1', someProp: 203},
-					{hostSomeProp: 104, hostKeyProp: 3, keyProp: 3, someProp: 204},
-				]);
-			});
+					it('valid result', () => {
+						assert.deepEqual(output, ds.result);
+					});
+				});
+			}
 		});
 	};
 
