@@ -2,9 +2,12 @@ const ColumnsAnalyser = require('./ColumnsAnalyser');
 const SorterInMemory = require('./stream/SorterInMemory');
 const SorterExternal = require('./stream/SorterExternal');
 const Filter = require('./stream/Filter');
+const Joiner = require('./stream/Joiner');
 const PropertiesPickerTransformer = require('./stream/PropertiesPickerTransformer');
 const Groupper = require('./stream/Groupper');
 const Order = require('./Order');
+const Terminator = require('./stream/Terminator');
+const Join = require('./Join');
 const Mapper = require('./stream/Mapper');
 const Aggregation = require('./Aggregation');
 const AggregationColumn = require('./AggregationColumn');
@@ -13,6 +16,7 @@ const JlTransform = require('./stream/JlTransform');
 const JlPassThrough = require('./stream/JlPassThrough');
 const DataRow = require('./DataRow');
 const DataStream = require('./DataStream');
+const Nodes = require('./sql/Nodes');
 
 class Select
 {
@@ -24,10 +28,6 @@ class Select
 	 */
 	constructor(preparingContext, runtimeContext, ast)
 	{
-		if (ast.joins.length) {
-			throw new Error('Joins is not supported yet');
-		}
-
 		if (ast.table) {
 			throw new Error('FROM is not supported yet');
 		}
@@ -78,6 +78,35 @@ class Select
 		}
 
 		return new Filter(this.sqlToJs.nodeToFunction(this.ast.having));
+	}
+
+	joins(dataStreams)
+	{
+		const joins = [];
+
+		for (const joinAst of this.ast.joins) {
+			if (joinAst.table.ident.fragments.length > 1) {
+				throw new Error('JOINed data source must have simple name, but found: ' + joinAst.table.ident.fragments.join('.'));
+			}
+
+			if (!(joinAst instanceof Nodes.InnerJoin)) {
+				throw new Error('INNER JOIN only supported yet');
+			}
+
+			const dataStreamName = joinAst.table.ident.fragments[0];
+
+			const dataStream = dataStreams.find(dataStream => {
+				return dataStream.name === dataStreamName;
+			});
+
+			if (!dataStream) {
+				throw new Error('Data stream not found for JOIN: ' + dataStreamName);
+			}
+
+			joins.push(new Join(this.preparingContext, dataStream, joinAst.expression));
+		}
+
+		return joins;
 	}
 
 	orders(ordersOrGroups)
@@ -137,11 +166,53 @@ class Select
 		return chain;
 	}
 
-	stream()
+	joinerPipeline(join)
+	{
+		if (join.mainDataStreamSortingsColumns.length !== 1 || join.mainDataStreamSortingsColumns.length !== 1) {
+			throw new Error('Not implemented');
+		}
+
+
+		const joiningWrapper = new Mapper(row => {
+			const s = {};
+			s[join.joiningDataStream.name] = row;
+			return new DataRow(s)
+		});
+
+		const joiningSorter = this.createSorterInstance(this.orders(
+			join.joiningDataStreamSortingsColumns.map(e => new Nodes.Brackets(e))
+		));
+
+		const mainSorter = this.createSorterInstance(this.orders(
+			join.mainDataStreamSortingsColumns.map(e => new Nodes.Brackets(e))
+		));
+
+		const joiner = new Joiner(
+			join,
+			this.sqlToJs.nodeToFunction(join.mainDataStreamSortingsColumns[0]),
+			mainSorter,
+			this.sqlToJs.nodeToFunction(join.joiningDataStreamSortingsColumns[0]),
+			join.joiningDataStream.stream.pipe(joiningWrapper).pipe(joiningSorter)
+		);
+
+		return [
+			mainSorter,
+			new Terminator,
+			joiner
+		];
+	}
+
+	stream(dataStreams = [])
 	{
 		const pipeline = [
 			new Mapper(row => new DataRow({'@': row})) // '@' - DataStream.DEFAULT_NAME
 		];
+
+		const joins = this.joins(dataStreams);
+
+		for (const join of joins) {
+			pipeline.push.apply(pipeline, this.joinerPipeline(join));
+		}
 
 		const filter = this.filter();
 		if (filter) {

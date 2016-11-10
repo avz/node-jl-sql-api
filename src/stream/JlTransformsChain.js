@@ -39,7 +39,7 @@ class JlTransformsChain extends Transform
 		});
 
 		for (let i = 0; i < streams.length - 1; i++) {
-			if (streams[i].isTerminator) {
+			if (streams[i].isTerminator || streams[i + 1].isTerminator) {
 				continue;
 			}
 

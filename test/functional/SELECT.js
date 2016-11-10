@@ -211,6 +211,49 @@ describe('SELECT', () => {
 				assert.strictEqual(output[0].deepUndef, undefined);
 			})
 		});
+
+		describe('`SELECT ... INNER JOIN ...`', () => {
+			const inputHost = [
+				{hostSomeProp: 101, hostKeyProp: 1},
+				{hostSomeProp: 102, hostKeyProp: 1},
+				{hostSomeProp: 103, hostKeyProp: 2},
+				{hostSomeProp: 104, hostKeyProp: 3},
+			];
+
+			const inputChild = [
+				{someProp: 201, keyProp: 1},
+				{someProp: 202, keyProp: 1},
+				{someProp: 203, keyProp: '1'},
+				{someProp: 204, keyProp: 3},
+			];
+
+			let output;
+
+			before(done => {
+				jlSql.query(
+						'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp INNER JOIN @child ON @child.keyProp = hostKeyProp'
+					)
+					.fromArrayOfObjects(inputHost)
+					.addArrayOfObjectsStream('@child', inputChild)
+					.toArrayOfObjects((r) => {
+						output = r;
+						done();
+					})
+				;
+			});
+
+			it('valid result', () => {
+				assert.deepEqual(output, [
+					{hostSomeProp: 101, hostKeyProp: 1, keyProp: 1, someProp: 201},
+					{hostSomeProp: 101, hostKeyProp: 1, keyProp: 1, someProp: 202},
+					{hostSomeProp: 101, hostKeyProp: 1, keyProp: '1', someProp: 203},
+					{hostSomeProp: 102, hostKeyProp: 1, keyProp: 1, someProp: 201},
+					{hostSomeProp: 102, hostKeyProp: 1, keyProp: 1, someProp: 202},
+					{hostSomeProp: 102, hostKeyProp: 1, keyProp: '1', someProp: 203},
+					{hostSomeProp: 104, hostKeyProp: 3, keyProp: 3, someProp: 204},
+				]);
+			});
+		});
 	};
 
 	describe('in-memory sort', () => {

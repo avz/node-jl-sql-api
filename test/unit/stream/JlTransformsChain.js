@@ -14,7 +14,6 @@ class SlowConsumer
 				let d
 				while((d = readableStream.read())) {
 					if (d) {
-//						console.error('consumed', d)
 						this.consumed++;
 					}
 				}

@@ -13,7 +13,7 @@ class PublicApi
 		if (!(options instanceof PublicApiOptions)) {
 			options = new PublicApiOptions(options);
 		}
-		
+
 		this.options = options;
 		this.engine = new Engine();
 	}

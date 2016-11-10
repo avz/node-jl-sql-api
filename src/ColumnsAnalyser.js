@@ -40,7 +40,8 @@ class ColumnsAnalyser
 			}
 
 		} else if (column.expression instanceof SqlNodes.ColumnIdent) {
-			alias = column.expression.fragments;
+			alias = column.expression.fragments.slice();
+			alias[0] = '@';
 		}
 
 		if (!alias) {
