@@ -11,7 +11,10 @@ class Joiner extends Readable
 	 */
 	constructor(join, mainValueCb, mainStreamSorted, joiningValueCb, joiningStreamSorted)
 	{
-		super({objectMode: true});
+		super({
+			objectMode: true,
+			highWaterMark: 1
+		});
 
 		this.inputType = JlTransform.ARRAYS_OF_OBJECTS;
 		this.outputType = JlTransform.ARRAYS_OF_OBJECTS;
@@ -24,6 +27,8 @@ class Joiner extends Readable
 		this.currentKey = undefined;
 		this.currentKeyMainRow = undefined;
 		this.currentKeyBuffer = new Joiner.KeyBuffer;
+
+		this.keyBufferFlusher = null;
 
 		this.mainBuffer = new Joiner.InputBuffer(mainStreamSorted);
 		this.joiningBuffer = new Joiner.InputBuffer(joiningStreamSorted);
@@ -48,11 +53,11 @@ class Joiner extends Readable
 				this.mainBuffer.next();
 
 				if (!this.currentKeyBuffer.isEmpty()) {
-					cb(this.generateOutputFromCurrentKeyBuffer());
+					this.startFlushKeyBuffer(cb);
 				} else if (this.join.type === Join.LEFT) {
 					cb([mainRow]);
 				} else {
-					setImmediate(this.popOutput.bind(this, cb));
+					this.readNextChunk(cb);
 				}
 			};
 
@@ -105,33 +110,47 @@ class Joiner extends Readable
 		});
 	}
 
-	_read()
+	readNextChunk(cb)
 	{
 		setImmediate(() => {
-			this.popOutput(rows => {
-				this.push(rows);
-			});
+			if (this.keyBufferFlusher) {
+				this.flushKeyBufferChunk(cb);
+			} else {
+				this.popOutput(cb);
+			}
 		});
 	}
 
-	mergeRows(mainRow, joiningRow)
+	_read()
 	{
-		const merged = JSON.parse(JSON.stringify(mainRow));
-
-		merged.sources[this.join.joiningDataStream.name] = joiningRow.sources[this.join.joiningDataStream.name];
-
-		return merged;
+		this.readNextChunk(rows => {
+			this.push(rows);
+		});
 	}
 
-	generateOutputFromCurrentKeyBuffer()
+	startFlushKeyBuffer(cb)
 	{
-		const outputBuffer = [];
+		this.keyBufferFlusher = new Joiner.KeyBufferFlusher(
+			this.currentKeyMainRow,
+			this.join.joiningDataStream.name,
+			this.currentKeyBuffer,
+			1000
+		);
+		this.flushKeyBufferChunk(cb);
+	}
 
-		for (const joiningRow of this.currentKeyBuffer.items) {
-			outputBuffer.push(this.mergeRows(this.currentKeyMainRow, joiningRow));
-		}
+	flushKeyBufferChunk(cb)
+	{
+		this.keyBufferFlusher.readChunk(chunk => {
+			if (chunk === null) {
+				// буфер кончился, надо читать дальше
+				this.keyBufferFlusher = null;
+				this.readNextChunk(cb);
+				return;
+			}
 
-		return outputBuffer;
+			cb(chunk);
+		});
 	}
 }
 
@@ -255,6 +274,49 @@ Joiner.KeyBuffer = class Joiner_KeyBuffer
 	isEmpty()
 	{
 		return !this.items.length;
+	}
+}
+
+Joiner.KeyBufferFlusher = class Joiner_KeyBufferFlusher
+{
+	constructor(mainRow, joiningStreamName, keyBuffer, chunkSize)
+	{
+		this.mainRow = mainRow;
+		this.joiningStreamName = joiningStreamName;
+		this.keyBuffer = keyBuffer;
+		this.offset = 0;
+		this.chunkSize = chunkSize;
+	}
+
+	readChunk(cb)
+	{
+		const chunk = [];
+
+		for (; this.offset < this.keyBuffer.items.length; this.offset++) {
+			const joiningRow = this.keyBuffer.items[this.offset];
+
+			chunk.push(this.mergeRows(this.mainRow, joiningRow));
+
+			if (chunk.length >= this.chunkSize) {
+				break;
+			}
+		}
+
+		if (!chunk.length) {
+			cb(null);
+			return;
+		}
+
+		cb(chunk);
+	}
+
+	mergeRows(mainRow, joiningRow)
+	{
+		const merged = JSON.parse(JSON.stringify(mainRow));
+
+		merged.sources[this.joiningStreamName] = joiningRow.sources[this.joiningStreamName];
+
+		return merged;
 	}
 }
 
