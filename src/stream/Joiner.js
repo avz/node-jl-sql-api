@@ -88,7 +88,7 @@ class Joiner extends Readable
 						this.currentKeyBuffer.push(joiningRow);
 
 						this.joiningBuffer.next();
-						continueJoining(cb);
+						setImmediate(() => continueJoining(cb));
 
 					} else if (joiningKey > mainKey) {
 
@@ -96,7 +96,7 @@ class Joiner extends Readable
 					} else { // mainKey > joiningKey
 						this.joiningBuffer.next();
 
-						continueJoining(cb);
+						setImmediate(() => continueJoining(cb));
 					}
 				})
 			}
@@ -107,8 +107,10 @@ class Joiner extends Readable
 
 	_read()
 	{
-		this.popOutput(rows => {
-			this.push(rows);
+		setImmediate(() => {
+			this.popOutput(rows => {
+				this.push(rows);
+			});
 		});
 	}
 
