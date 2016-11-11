@@ -25,13 +25,6 @@ class Joiner extends Readable
 		this.currentKeyMainRow = undefined;
 		this.currentKeyBuffer = new Joiner.KeyBuffer;
 
-		this.needOutput = false;
-
-		this.mainEnded = false;
-		this.joiningEnded = false;
-
-		this.ended = false;
-
 		this.mainBuffer = new Joiner.InputBuffer(mainStreamSorted);
 		this.joiningBuffer = new Joiner.InputBuffer(joiningStreamSorted);
 	}
