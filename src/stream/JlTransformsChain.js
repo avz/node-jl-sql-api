@@ -9,7 +9,8 @@ class JlTransformsChain extends Transform
 	constructor(streams = null)
 	{
 		super({
-			objectMode: true
+			objectMode: true,
+			highWaterMark: 1
 		});
 
 		this.inputType = JlTransform.ANY;
