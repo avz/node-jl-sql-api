@@ -1,6 +1,7 @@
 const JlTransform = require('./JlTransform');
 const Readable = require('stream').Readable;
 const Join = require('../Join');
+const EventEmitter = require('events');
 
 class Joiner extends Readable
 {
@@ -16,19 +17,13 @@ class Joiner extends Readable
 		this.outputType = JlTransform.ARRAYS_OF_OBJECTS;
 
 		this.join = join;
-		this.mainStreamSorted = mainStreamSorted;
-		this.joiningStreamSorted = joiningStreamSorted;
 
 		this.mainValueCb = mainValueCb;
 		this.joiningValueCb = joiningValueCb;
 
 		this.currentKey = undefined;
 		this.currentKeyMainRow = undefined;
-		this.currentKeyBuffer = [];
-
-		this.maxBufferSize = 16;
-		this.mainBuffer = [];
-		this.joiningBuffer = [];
+		this.currentKeyBuffer = new Joiner.KeyBuffer;
 
 		this.needOutput = false;
 
@@ -37,62 +32,8 @@ class Joiner extends Readable
 
 		this.ended = false;
 
-		mainStreamSorted.on('data', this.mainStreamData.bind(this));
-		mainStreamSorted.on('end', this.mainStreamEnd.bind(this));
-		joiningStreamSorted.on('data', this.joiningStreamData.bind(this));
-		joiningStreamSorted.on('end', this.joiningStreamEnd.bind(this));
-	}
-
-	mainStreamData(data)
-	{
-		this.mainBuffer = this.mainBuffer.concat(data);
-
-		if (this.mainBuffer.length >= this.maxBufferSize) {
-			this.mainStreamSorted.pause();
-		}
-
-		this.dataChanged();
-	}
-
-	mainStreamEnd()
-	{
-		this.mainEnded = true;
-		this.needOutput = true;
-
-		this.dataChanged();
-	}
-
-	joiningStreamData(data)
-	{
-		this.joiningBuffer = this.joiningBuffer.concat(data);
-
-		if (this.joiningBuffer.length >= this.maxBufferSize) {
-			this.joiningStreamSorted.pause();
-		}
-
-		this.dataChanged();
-	}
-
-	joiningStreamEnd()
-	{
-		this.joiningEnded = true;
-
-		this.dataChanged();
-	}
-
-	tryResumeAll()
-	{
-		if (this.mainBuffer.length < this.maxBufferSize) {
-			if (this.mainStreamSorted.isPaused()) {
-				this.mainStreamSorted.resume();
-			}
-		}
-
-		if (this.joiningBuffer.length < this.maxBufferSize) {
-			if (this.joiningStreamSorted.isPaused()) {
-				this.joiningStreamSorted.resume();
-			}
-		}
+		this.mainBuffer = new Joiner.InputBuffer(mainStreamSorted);
+		this.joiningBuffer = new Joiner.InputBuffer(joiningStreamSorted);
 	}
 
 	mainKey(row)
@@ -107,104 +48,74 @@ class Joiner extends Readable
 		return v === undefined ? '' : JSON.stringify(v + '');
 	}
 
-	dataChanged()
+	popOutput(cb)
 	{
-		if (this.needOutput) {
-			this._read();
-		}
-	}
+		this.mainBuffer.head(mainRow => {
+			const nextMainRow = (cb) => {
+				this.mainBuffer.next();
 
-	popOutput()
-	{
-		let outputBuffer = [];
+				if (!this.currentKeyBuffer.isEmpty()) {
+					cb(this.generateOutputFromCurrentKeyBuffer());
+				} else if (this.join.type === Join.LEFT) {
+					cb([mainRow]);
+				} else {
+					setImmediate(this.popOutput.bind(this, cb));
+				}
+			};
 
-		const nextMainRow = () => {
-			const row = this.mainBuffer.shift();
-
-			/*
-			 * поменялась mainRow - надо сгенерить пачку смердженных строк
-			 * и вернуть присоединяемые строки обратно в обработку т.к. они,
-			 * возможно, будут нужны для следующей строки основного потока
-			 */
-			if (this.currentKeyBuffer.length) {
-				return this.generateOutputFromCurrentKeyBuffer();
-			} else if (this.join.type === Join.LEFT && row) {
-				return [row];
+			if (!mainRow) {
+				cb(null);
+				return;
 			}
-
-			return [];
-		};
-
-		while (this.mainBuffer.length && this.joiningBuffer.length) {
-			const mainRow = this.mainBuffer[0];
-			const joiningRow = this.joiningBuffer[0];
 
 			const mainKey = this.mainKey(mainRow);
-			const joiningKey = this.joiningKey(joiningRow);
 
-			this.currentKeyMainRow = mainRow;
+			if (this.currentKeyMainRow !== mainRow) {
+				this.currentKeyMainRow = mainRow;
 
-			if (this.currentKey !== mainKey) {
+				if (this.currentKey === mainKey) {
+					nextMainRow(cb);
+					return;
+				}
+
 				this.currentKey = mainKey;
-
-				if (this.currentKeyBuffer.length) {
-					// буфер должен очищаться при завершении ключа
-					throw new Error('assert');
-				}
+				this.currentKeyBuffer.clear();
 			}
 
-			if (mainKey === joiningKey) {
-				this.currentKeyBuffer.push(joiningRow);
+			const continueJoining = (cb) => {
+				this.joiningBuffer.head((joiningRow) => {
+					if (!joiningRow) {
+						nextMainRow(cb);
+						return;
+					}
 
-				this.joiningBuffer.shift();
+					const joiningKey = this.joiningKey(joiningRow);
 
-			} else if (joiningKey > mainKey) {
+					if (mainKey === joiningKey) {
+						this.currentKeyBuffer.push(joiningRow);
 
-				outputBuffer = nextMainRow();
-				if (outputBuffer.length) {
-					break;
-				}
+						this.joiningBuffer.next();
+						continueJoining(cb);
 
-			} else { // mainKey > joiningKey
-				this.joiningBuffer.shift();
+					} else if (joiningKey > mainKey) {
+
+						nextMainRow(cb);
+					} else { // mainKey > joiningKey
+						this.joiningBuffer.next();
+
+						continueJoining(cb);
+					}
+				})
 			}
-		}
 
-		if (!this.joiningBuffer.length && this.joiningEnded) {
-			outputBuffer = outputBuffer.concat(nextMainRow());
-
-			if (this.mainBuffer.length && this.mainEnded) {
-				setImmediate(this.dataChanged.bind(this));
-			}
-		}
-
-		if (!this.mainBuffer.length && this.mainEnded) {
-			outputBuffer = outputBuffer.concat(this.generateOutputFromCurrentKeyBuffer());
-			this.ended = true;
-		}
-
-		this.tryResumeAll();
-
-		return outputBuffer;
+			continueJoining(cb);
+		});
 	}
 
 	_read()
 	{
-		setImmediate(() => {
-			const output = this.popOutput();
-
-			if (output.length) {
-				this.needOutput = false;
-				this.push(output);
-			} else {
-				this.needOutput = true;
-				this.tryResumeAll();
-			}
-
-			if (this.ended) {
-				this.push(null);
-				return;
-			}
+		this.popOutput(rows => {
+			this.push(rows);
 		});
 	}
 
@@ -221,16 +132,134 @@ class Joiner extends Readable
 	{
 		const outputBuffer = [];
 
-		for (const joiningRow of this.currentKeyBuffer) {
+		for (const joiningRow of this.currentKeyBuffer.items) {
 			outputBuffer.push(this.mergeRows(this.currentKeyMainRow, joiningRow));
 		}
 
-		// возвращаем для обработки обрабтно в очередь
-		this.joiningBuffer = this.currentKeyBuffer.concat(this.joiningBuffer);
-
-		this.currentKeyBuffer = [];
-
 		return outputBuffer;
+	}
+}
+
+Joiner.InputBuffer = class Joiner_InputBuffer extends EventEmitter
+{
+	constructor(readableStream, maxSize = 16)
+	{
+		super();
+
+		this.stream = readableStream;
+		this.maxSize = maxSize;
+		this.items = [];
+		this.offset = 0;
+
+		this.streamEnded = false;
+		this.ended = false;
+
+		this.itemHandler = null;
+
+		this.stream.on('end', () => {
+			this.streamEnded = true;
+
+			if (this.itemHandler) {
+				const itemHandler = this.itemHandler;
+				this.itemHandler = null;
+
+				this.head(itemHandler);
+			}
+		});
+
+		this.stream.on('data', data => {
+			if (this.isEmpty()) {
+				this.offset = 0;
+				this.items = data;
+			}
+
+			if (this.items.length > this.maxSize) {
+				this.stream.pause();
+			}
+
+			if (this.itemHandler) {
+				const itemHandler = this.itemHandler;
+				this.itemHandler = null;
+
+				this.head(itemHandler);
+			}
+		});
+	}
+
+	head(cb)
+	{
+		if (this.isEmpty()) {
+			if (this.streamEnded) {
+				cb(null);
+			} else {
+				if (this.itemHandler) {
+					throw new Error('Only one item handle is allowed');
+				}
+
+				this.itemHandler = cb;
+			}
+
+		} else {
+			cb(this.items[this.offset]);
+		}
+	}
+
+	next()
+	{
+		if (this.offset + 1 > this.items.length) {
+			throw new Error('shift behind end');
+		}
+
+		this.offset++;
+
+		if (this.isEmpty()) {
+			if (this.streamEnded) {
+				setImmediate(() => {
+					this.emit('end');
+				})
+			} else {
+				this.stream.resume();
+			}
+		}
+	}
+
+	isEmpty()
+	{
+		return this.offset >= this.items.length;
+	}
+
+	isEnded()
+	{
+		return this.streamEnded && this.isEmpty();
+	}
+
+	_optimize()
+	{
+		this.items = this.items.slice(this.offset);
+		this.offset = 0;
+	}
+}
+
+Joiner.KeyBuffer = class Joiner_KeyBuffer
+{
+	constructor()
+	{
+		this.items = [];
+	}
+
+	push(item)
+	{
+		this.items.push(item);
+	}
+
+	clear()
+	{
+		this.items = [];
+	}
+
+	isEmpty()
+	{
+		return !this.items.length;
 	}
 }
 
