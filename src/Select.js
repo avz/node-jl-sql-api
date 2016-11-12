@@ -254,7 +254,7 @@ class Select
 
 		pipeline.push(
 			new Mapper(row => {
-				return row.sources[DataStream.DEFAULT_NAME];
+				return row.sources[DataStream.DEFAULT_NAME] || {};
 			})
 		);
 
