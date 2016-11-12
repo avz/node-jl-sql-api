@@ -5,7 +5,8 @@ class JlPassThrough extends PassThrough
 	constructor(inputType, outputType)
 	{
 		super({
-			objectMode: true
+			objectMode: true,
+			highWaterMark: 1
 		});
 
 		this.inputType = inputType;

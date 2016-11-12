@@ -2,6 +2,12 @@ const JlTransform = require('./JlTransform');
 const Readable = require('stream').Readable;
 const Join = require('../Join');
 const EventEmitter = require('events');
+const ReadWriteTmpFileStream = require('./ReadWriteTmpFileStream');
+
+const JsonStringifier = require('./JsonStringifier');
+const JsonParser = require('./JsonParser');
+const LinesJoiner = require('./LinesJoiner');
+const LinesSplitter = require('./LinesSplitter');
 
 class Joiner extends Readable
 {
@@ -90,10 +96,10 @@ class Joiner extends Readable
 					const joiningKey = this.joiningKey(joiningRow);
 
 					if (mainKey === joiningKey) {
-						this.currentKeyBuffer.push(joiningRow);
-
-						this.joiningBuffer.next();
-						setImmediate(() => continueJoining(cb));
+						this.currentKeyBuffer.push(joiningRow, () => {
+							this.joiningBuffer.next();
+							setImmediate(() => continueJoining(cb));
+						});
 
 					} else if (joiningKey > mainKey) {
 
@@ -130,12 +136,11 @@ class Joiner extends Readable
 
 	startFlushKeyBuffer(cb)
 	{
-		this.keyBufferFlusher = new Joiner.KeyBufferFlusher(
+		this.keyBufferFlusher = this.currentKeyBuffer.startFlush(
 			this.currentKeyMainRow,
-			this.join.joiningDataStream.name,
-			this.currentKeyBuffer,
-			1000
+			this.join.joiningDataStream.name
 		);
+
 		this.flushKeyBufferChunk(cb);
 	}
 
@@ -259,31 +264,154 @@ Joiner.KeyBuffer = class Joiner_KeyBuffer
 	constructor()
 	{
 		this.items = [];
+		this.maxInMemorySize = 16000;
+
+		this.fileStorage = null;
 	}
 
-	push(item)
+	push(item, cb)
 	{
+		if (this.fileStorage) {
+			this._pushToFileStorage(item, cb);
+			return;
+		}
+
 		this.items.push(item);
+
+		if (this.items.length > this.maxInMemorySize) {
+			this._convertToFileStorage(cb);
+		} else {
+			cb();
+		}
+	}
+
+	_pushToFileStorage(row, cb)
+	{
+		this.fileStorage.write(row, cb);
+	}
+
+	_convertToFileStorage(cb)
+	{
+		this.fileStorage = new Joiner.KeyBufferFileStorage(this.items);
+		this.items = [];
+		this.fileStorage.once('create', cb);
 	}
 
 	clear()
 	{
 		this.items = [];
+
+		if (this.fileStorage) {
+			this.fileStorage.closeSync();
+			this.fileStorage = null;
+		}
 	}
 
 	isEmpty()
 	{
-		return !this.items.length;
+		return !(this.items.length || this.fileStorage);
+	}
+
+	read(lastOffset, cb)
+	{
+		if (this.fileStorage) {
+			this._readFileStorage(lastOffset, cb);
+			return;
+		}
+
+		throw new Error('Not implemented');
+	}
+
+	_readFileStorage(readable, cb)
+	{
+		if (!readable) {
+			readable = this.fileStorage.createReadStream();
+			readable.on('end', () => {
+				readable.ended = true;
+
+				if (readable.endHandler) {
+					readable.endHandler();
+				}
+			})
+		}
+
+		if (readable.ended) {
+			cb(null, readable);
+		} else {
+			readable.endHandler = () => {
+				readable.endHandler = null;
+				cb(null, readable);
+			};
+
+			readable.once('data', (rows) => {
+				readable.endHandler = null;
+				cb(rows, readable);
+			});
+		}
+	}
+
+	startFlush(mainRow, joiningStreamName)
+	{
+		if (this.fileStorage) {
+			return new Joiner.KeyBufferFlusher_External(
+				mainRow,
+				joiningStreamName,
+				this,
+				1000
+			);
+		}
+
+		return new Joiner.KeyBufferFlusher_InMemory(
+			mainRow,
+			joiningStreamName,
+			this.items,
+			1000
+		);
 	}
 }
 
-Joiner.KeyBufferFlusher = class Joiner_KeyBufferFlusher
+Joiner.KeyBufferFileStorage = class Joiner_KeyBufferFileStorage extends EventEmitter
 {
-	constructor(mainRow, joiningStreamName, keyBuffer, chunkSize)
+	constructor(items)
+	{
+		super();
+
+		this.file = new ReadWriteTmpFileStream;
+
+		this.file.once('open', () => {
+			this.file.write(items.map(JSON.stringify).join('\n') + '\n', err => {
+				if (err) {
+					throw err;
+				}
+
+				this.emit('create');
+			});
+		})
+	}
+
+	write(row, cb)
+	{
+		this.file.write(JSON.stringify(row) + '\n', cb);
+	}
+
+	createReadStream()
+	{
+		return this.file.createReadStream().pipe(new LinesSplitter).pipe(new JsonParser);
+	}
+
+	closeSync()
+	{
+		this.file.closeSync();
+	}
+}
+
+Joiner.KeyBufferFlusher_InMemory = class Joiner_KeyBufferFlusher_InMemory
+{
+	constructor(mainRow, joiningStreamName, items, chunkSize)
 	{
 		this.mainRow = mainRow;
 		this.joiningStreamName = joiningStreamName;
-		this.keyBuffer = keyBuffer;
+		this.items = items;
 		this.offset = 0;
 		this.chunkSize = chunkSize;
 	}
@@ -292,8 +420,8 @@ Joiner.KeyBufferFlusher = class Joiner_KeyBufferFlusher
 	{
 		const chunk = [];
 
-		for (; this.offset < this.keyBuffer.items.length; this.offset++) {
-			const joiningRow = this.keyBuffer.items[this.offset];
+		for (; this.offset < this.items.length; this.offset++) {
+			const joiningRow = this.items[this.offset];
 
 			chunk.push(this.mergeRows(this.mainRow, joiningRow));
 
@@ -308,6 +436,61 @@ Joiner.KeyBufferFlusher = class Joiner_KeyBufferFlusher
 		}
 
 		cb(chunk);
+	}
+
+	mergeRows(mainRow, joiningRow)
+	{
+		const merged = JSON.parse(JSON.stringify(mainRow));
+
+		merged.sources[this.joiningStreamName] = joiningRow.sources[this.joiningStreamName];
+
+		return merged;
+	}
+}
+
+Joiner.KeyBufferFlusher_External = class Joiner_KeyBufferFlusher
+{
+	constructor(mainRow, joiningStreamName, keyBuffer, chunkSize)
+	{
+		this.mainRow = mainRow;
+		this.joiningStreamName = joiningStreamName;
+		this.keyBuffer = keyBuffer;
+		this.chunkSize = chunkSize;
+
+		this.lastOffset = null;
+	}
+
+	readChunk(cb)
+	{
+		const chunk = [];
+
+		const popNext = () => {
+			this.keyBuffer.read(this.lastOffset, (joiningRows, offset) => {
+				this.lastOffset = offset;
+
+				if (!joiningRows) {
+					if (chunk.length) {
+						cb(chunk);
+					} else {
+						cb(null);
+					}
+					return;
+				}
+
+				for (const joiningRow of joiningRows) {
+					chunk.push(this.mergeRows(this.mainRow, joiningRow));
+				}
+
+				if (chunk.length >= this.chunkSize) {
+					cb(chunk);
+					return;
+				}
+
+				setImmediate(popNext);
+			});
+		};
+
+		popNext();
 	}
 
 	mergeRows(mainRow, joiningRow)
