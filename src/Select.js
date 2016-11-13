@@ -145,9 +145,9 @@ class Select
 	createSorterInstance(orders)
 	{
 		if (this.preparingContext.options.externalSort) {
-			return new SorterExternal(orders);
+			return new SorterExternal(orders, this.preparingContext.options.sortOptions);
 		} else {
-			return new SorterInMemory(orders);
+			return new SorterInMemory(orders, this.preparingContext.options.sortOptions);
 		}
 	}
 
@@ -194,6 +194,7 @@ class Select
 		));
 
 		const joiner = new Joiner(
+			this.preparingContext,
 			join,
 			this.sqlToJs.nodeToFunction(join.mainDataStreamSortingsColumns[0]),
 			mainSorter,

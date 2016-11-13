@@ -15,7 +15,7 @@ class SorterExternal extends JlTransformsChain
 	 * @param {Order[]} orders
 	 * @param {SortOptions} options
 	 */
-	constructor(orders, options = new SortOptions)
+	constructor(orders, options)
 	{
 		if (!orders.length) {
 			throw new Error('Empty orders');

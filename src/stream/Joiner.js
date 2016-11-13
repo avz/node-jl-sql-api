@@ -15,12 +15,14 @@ class Joiner extends Readable
 	 *
 	 * @param {Join} join
 	 */
-	constructor(join, mainValueCb, mainStreamSorted, joiningValueCb, joiningStreamSorted)
+	constructor(preparingContext, join, mainValueCb, mainStreamSorted, joiningValueCb, joiningStreamSorted)
 	{
 		super({
 			objectMode: true,
 			highWaterMark: 1
 		});
+
+		this.preparingContext = preparingContext;
 
 		this.inputType = JlTransform.ARRAYS_OF_OBJECTS;
 		this.outputType = JlTransform.ARRAYS_OF_OBJECTS;
@@ -261,8 +263,9 @@ Joiner.InputBuffer = class Joiner_InputBuffer extends EventEmitter
 
 Joiner.KeyBuffer = class Joiner_KeyBuffer
 {
-	constructor()
+	constructor(preparingContext)
 	{
+		this.prepringContext = preparingContext;
 		this.items = [];
 		this.maxInMemorySize = 16000;
 
@@ -292,7 +295,8 @@ Joiner.KeyBuffer = class Joiner_KeyBuffer
 
 	_convertToFileStorage(cb)
 	{
-		this.fileStorage = new Joiner.KeyBufferFileStorage(this.items);
+		const tmpdir = this.preparingContext.sortOptions.tmpDir || require('os').tmpdir();
+		this.fileStorage = new Joiner.KeyBufferFileStorage(tmpdir, this.items);
 		this.items = [];
 		this.fileStorage.once('create', cb);
 	}
@@ -372,11 +376,11 @@ Joiner.KeyBuffer = class Joiner_KeyBuffer
 
 Joiner.KeyBufferFileStorage = class Joiner_KeyBufferFileStorage extends EventEmitter
 {
-	constructor(items)
+	constructor(tmpdir, items)
 	{
 		super();
 
-		this.file = new ReadWriteTmpFileStream;
+		this.file = new ReadWriteTmpFileStream('join_', tmpdir);
 
 		this.file.once('open', () => {
 			this.file.write(items.map(JSON.stringify).join('\n') + '\n', err => {
