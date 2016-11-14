@@ -110,7 +110,7 @@ class SelectFrom
 			return [location];
 		}
 
-		if (typeof(location) !== 'string') {
+		if (!(location instanceof Array)) {
 			throw new Error('Array or string expected');
 		}
 
