@@ -21,6 +21,7 @@ const Nodes = require('./sql/Nodes');
 const SqlNotSupported = require('./error/SqlNotSupported');
 const SqlLogicError = require('./error/SqlLogicError');
 const NotSupported = require('./error/NotSupported');
+const DataSourceNotFound = require('./error/DataSourceNotFound');
 
 class Select
 {
@@ -100,9 +101,10 @@ class Select
 			}
 
 			let tableAlias = joinAst.table.alias && joinAst.table.alias.name;
+			const dataSourcePath = joinAst.table.location.fragments;
 
 			if (!tableAlias) {
-				tableAlias = dataSourceResolversPool.extractAlias(joinAst.table.location.fragments);
+				tableAlias = dataSourceResolversPool.extractAlias(dataSourcePath);
 				if (tableAlias !== null) {
 					tableAlias = '@' + tableAlias;
 				}
@@ -112,7 +114,11 @@ class Select
 				throw new SqlLogicError('Tables must have an alias');
 			}
 
-			const dataSource = dataSourceResolversPool.resolve(joinAst.table.location.fragments);
+			const dataSource = dataSourceResolversPool.resolve(dataSourcePath);
+
+			if (!dataSource) {
+				throw new DataSourceNotFound(dataSourcePath);
+			}
 
 			joins.push(new Join(
 				joinType,
