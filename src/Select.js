@@ -95,7 +95,16 @@ class Select
 				throw new Error('INNER ans LEFT JOINs only supported yet');
 			}
 
-			if (!joinAst.table.alias) {
+			let tableAlias = joinAst.table.alias && joinAst.table.alias.name;
+
+			if (!tableAlias) {
+				tableAlias = dataStreamResolversPool.extractAlias(joinAst.table.location.fragments);
+				if (tableAlias !== null) {
+					tableAlias = '@' + tableAlias;
+				}
+			}
+
+			if (!tableAlias) {
 				throw new Error('Tables must have an alias');
 			}
 
@@ -105,7 +114,7 @@ class Select
 				joinType,
 				this.preparingContext,
 				dataStream,
-				joinAst.table.alias.name,
+				tableAlias,
 				joinAst.expression
 			));
 		}

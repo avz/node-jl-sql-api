@@ -4,6 +4,11 @@ class DataStreamResolver
 	{
 		throw new Error('Not implemented');
 	}
+
+	extractAlias(location)
+	{
+		return null;
+	}
 }
 
 module.exports = DataStreamResolver;
