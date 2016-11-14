@@ -9,6 +9,8 @@ const LinesSplitter = require('./LinesSplitter');
 const JsonParser = require('./JsonParser');
 const Terminator = require('./Terminator');
 
+const ProgramError = require('../error/ProgramError');
+
 class SorterExternal extends JlTransformsChain
 {
 	/**
@@ -18,7 +20,7 @@ class SorterExternal extends JlTransformsChain
 	constructor(orders, options)
 	{
 		if (!orders.length) {
-			throw new Error('Empty orders');
+			throw new ProgramError('Empty orders');
 		}
 
 		super();

@@ -1,6 +1,8 @@
 const JlTransform = require('./JlTransform');
 const Order = require('../Order');
 
+const ProgramError = require('../error/ProgramError');
+
 /**
  * Тупейший алгоритм сортировки: сохраняем всё в памятьЮ а потом сортируем
  * TODO Переделать на нормальную схему
@@ -10,7 +12,7 @@ class SorterInMemory extends JlTransform
 	constructor(orders)
 	{
 		if (!orders.length) {
-			throw new Error('Empty orders');
+			throw new ProgramError('Empty orders');
 		}
 
 		super(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS);

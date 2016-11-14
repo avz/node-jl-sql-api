@@ -1,4 +1,5 @@
 const BasicFunction = require('./BasicFunction');
+const ProgramError = require('./error/ProgramError');
 
 class RuntimeContext
 {
@@ -12,7 +13,7 @@ class RuntimeContext
 
 		for (const [path, func] of functionsMap) {
 			if (path.length > 1) {
-				throw new Error('Multilevel names for functions is not supported');
+				throw new ProgramError('Multilevel names for functions is not supported');
 			}
 
 			if (!(func.prototype instanceof BasicFunction)) {

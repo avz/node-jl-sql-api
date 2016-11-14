@@ -14,6 +14,8 @@ const JsonParser = require('../stream/JsonParser');
 const LinesSplitter = require('../stream/LinesSplitter');
 const ChunkJoiner = require('../stream/ChunkJoiner');
 
+const ProgramError = require('../error/ProgramError');
+
 class SelectFrom
 {
 	constructor(select, inputStream)
@@ -56,7 +58,7 @@ class SelectFrom
 	toArrayOfObjects(cb)
 	{
 		if (typeof(cb) !== 'function') {
-			throw new Error('Function argument expected');
+			throw new ProgramError('Function argument expected');
 		}
 
 		const output = this.toObjectsStream();
@@ -110,7 +112,7 @@ class SelectFrom
 		}
 
 		if (!(location instanceof Array)) {
-			throw new Error('Array or string expected');
+			throw new ProgramError('Array or string expected');
 		}
 
 		return location;

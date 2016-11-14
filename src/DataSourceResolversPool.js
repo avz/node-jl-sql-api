@@ -1,3 +1,5 @@
+const DataSourceNotFound = require('./error/DataSourceNotFound');
+
 class DataSourceResolversPool
 {
 	constructor()
@@ -19,7 +21,7 @@ class DataSourceResolversPool
 			}
 		}
 
-		throw new Error('Data stream not found: ' + pathFragments.join('.'));
+		throw new DataSourceNotFound(pathFragments);
 	}
 
 	extractAlias(pathFragments) {

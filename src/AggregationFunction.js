@@ -1,3 +1,5 @@
+const ImplementationRequired = require('./error/ImplementationRequired');
+
 /**
  * Methods execution sequence:
  *	- constructor()
@@ -31,7 +33,7 @@ class AggregationFunction
 	 */
 	init()
 	{
-		throw new Error('not implemented');
+		throw new ImplementationRequired;
 	}
 
 	/**
@@ -41,7 +43,7 @@ class AggregationFunction
 	 */
 	update(args)
 	{
-		throw new Error('not implemented');
+		throw new ImplementationRequired;
 	}
 
 	/**
@@ -50,7 +52,7 @@ class AggregationFunction
 	 */
 	result()
 	{
-		throw new Error('not implemented');
+		throw new ImplementationRequired;
 	}
 
 	/**
@@ -59,7 +61,7 @@ class AggregationFunction
 	 */
 	deinit()
 	{
-		throw new Error('not implemented');
+		throw new ImplementationRequired;
 	}
 }
 

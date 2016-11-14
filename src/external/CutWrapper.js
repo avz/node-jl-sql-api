@@ -1,10 +1,15 @@
+const ChildProcessError = require('../error/ChildProcessError');
+
 class CutWrapper
 {
 	constructor(columnSeparator, columnsDef)
 	{
+		const cmd = 'cut';
+		const args = ['-d', columnSeparator, '-f', columnsDef];
+
 		const p = require('child_process').spawn(
-			'cut',
-			['-d', columnSeparator, '-f', columnsDef],
+			cmd,
+			args,
 			{
 				stdio: [
 					'pipe',
@@ -16,7 +21,7 @@ class CutWrapper
 
 		p.on('close', (code, signal) => {
 			if (code !== 0) {
-				throw new Error('cut error: code=' + code + ', signal=' + signal);
+				throw new ChildProcessError(cmd, args, code, signal);
 			}
 		})
 

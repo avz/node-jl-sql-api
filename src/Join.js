@@ -1,4 +1,5 @@
 const Nodes = require('./sql/Nodes');
+const SqlNotSupported = require('./error/SqlNotSupported');
 
 class Join
 {
@@ -23,15 +24,15 @@ class Join
 		}
 
 		if (!(ast instanceof Nodes.ComparsionOperation)) {
-			throw new Error('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
+			throw new SqlNotSupported('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
 		}
 
 		if (ast.operator !== '=') {
-			throw new Error('Only operator = is supported yet in JOIN ON');
+			throw new SqlNotSupported('Only operator = is supported yet in JOIN ON');
 		}
 
 		if (!(ast.left instanceof Nodes.ColumnIdent) || !(ast.right instanceof Nodes.ColumnIdent)) {
-			throw new Error('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
+			throw new SqlNotSupported('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
 		}
 
 		const sortingJoining = [];
@@ -50,7 +51,7 @@ class Join
 		}
 
 		if (sortingJoining.length !== 1 || sortingMain.length !== 1) {
-			throw new Error('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
+			throw new SqlNotSupported('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
 		}
 
 		this.joiningDataSourceSortingsColumns = sortingJoining;

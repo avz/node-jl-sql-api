@@ -18,6 +18,10 @@ const DataRow = require('./DataRow');
 const DataSource = require('./DataSource');
 const Nodes = require('./sql/Nodes');
 
+const SqlNotSupported = require('./error/SqlNotSupported');
+const SqlLogicError = require('./error/SqlLogicError');
+const NotSupported = require('./error/NotSupported');
+
 class Select
 {
 	/**
@@ -29,11 +33,11 @@ class Select
 	constructor(preparingContext, runtimeContext, ast)
 	{
 		if (ast.table) {
-			throw new Error('FROM is not supported yet');
+			throw new SqlNotSupported('FROM is not supported yet');
 		}
 
 		if (ast.limit) {
-			throw new Error('LIMIT is not supported yet');
+			throw new SqlNotSupported('LIMIT is not supported yet');
 		}
 
 		/**
@@ -92,7 +96,7 @@ class Select
 			} else if (joinAst instanceof Nodes.InnerJoin) {
 				joinType = Join.INNER;
 			} else {
-				throw new Error('INNER ans LEFT JOINs only supported yet');
+				throw new SqlNotSupported('INNER ans LEFT JOINs only supported yet');
 			}
 
 			let tableAlias = joinAst.table.alias && joinAst.table.alias.name;
@@ -105,7 +109,7 @@ class Select
 			}
 
 			if (!tableAlias) {
-				throw new Error('Tables must have an alias');
+				throw new SqlLogicError('Tables must have an alias');
 			}
 
 			const dataSource = dataSourceResolversPool.resolve(joinAst.table.location.fragments);
@@ -182,7 +186,7 @@ class Select
 	joinerPipeline(join)
 	{
 		if (join.mainDataSourceSortingsColumns.length !== 1 || join.mainDataSourceSortingsColumns.length !== 1) {
-			throw new Error('Not implemented');
+			throw new NotSupported;
 		}
 
 
@@ -286,7 +290,7 @@ class Select
 		}
 
 		if (!this.columns.size) {
-			throw new Error('`SELECT * ... GROUP BY ...` does not make sense');
+			throw new SqlLogicError('`SELECT * ... GROUP BY ...` does not make sense');
 		}
 
 		const keyGenerators = this.ast.groups.map(g => this.sqlToJs.nodeToFunction(g.expression));

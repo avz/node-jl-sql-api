@@ -1,3 +1,5 @@
+const ProgramError = require('../../error/ProgramError');
+
 class SortOptions
 {
 	constructor(options = {})
@@ -18,7 +20,7 @@ class SortOptions
 
 		for (const k in options) {
 			if (!this.hasOwnProperty(k)) {
-				throw new Error('Unknown option: ' + k);
+				throw new ProgramError('Unknown option: ' + k);
 			}
 
 			this[k] = options[k];

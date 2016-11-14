@@ -1,3 +1,6 @@
+const AlreadyExists = require('./error/AlreadyExists');
+const NotFound = require('./error/NotFound');
+
 class ComplexIdentsMap
 {
 	constructor()
@@ -20,7 +23,7 @@ class ComplexIdentsMap
 		const key = this._key(path);
 
 		if (this.map[key]) {
-			throw new Error('Ident already exists: ', path.join('.§'));
+			throw new AlreadyExists('ident ', path.join('.'));
 		}
 
 		this.map[key] = object;
@@ -36,7 +39,7 @@ class ComplexIdentsMap
 		const f = this.get(path);
 
 		if (!f) {
-			throw new Error('Ident not found: ' + path.join('.'));
+			throw new NotFound('ident ' + path.join('.'));
 		}
 
 		return f;

@@ -1,13 +1,16 @@
+const ImplementationRequired = require('./error/ImplementationRequired');
+const SqlFunctionArgumentError = require('./error/SqlFunctionArgumentError');
+
 class BasicFunction
 {
 	call(args)
 	{
-		throw new Error('not implemented');
+		throw new ImplementationRequired;
 	}
 
 	argumentException(text)
 	{
-		return new Error(text);
+		return new SqlFunctionArgumentError(text);
 	}
 
 	needArgumentsCount(args, count)

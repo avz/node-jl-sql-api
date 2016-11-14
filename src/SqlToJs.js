@@ -1,6 +1,8 @@
 const SqlNodes = require('./sql/Nodes');
 const AggregationFunction = require('./AggregationFunction');
 
+const ProgramError = require('./error/ProgramError');
+
 class SqlToJs
 {
 	constructor(functionsMap, runtimeContext)
@@ -24,7 +26,7 @@ class SqlToJs
 		const codeConstructorName = 'codeFrom_' + nodeType;
 
 		if (!(codeConstructorName in this)) {
-			throw new Error('Unknown node type: ' + nodeType);
+			throw new ProgramError('Unknown node type: ' + nodeType);
 		}
 
 		return this[codeConstructorName](node);

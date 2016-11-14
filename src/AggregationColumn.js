@@ -2,6 +2,7 @@ const SqlNodes = require('./sql/Nodes');
 const BasicColumn = require('./BasicColumn');
 const AggregationFunction = require('./AggregationFunction');
 const AggregationCall = require('./AggregationCall');
+const SqlLogicError = require('./error/SqlLogicError');
 
 class AggregationColumn extends BasicColumn
 {
@@ -33,7 +34,7 @@ class AggregationColumn extends BasicColumn
 
 			for (let arg of node.args) {
 				if (this.preparingContext.isAggregationExpression(arg)) {
-					throw new Error('Nested aggregation function is not alowed');
+					throw new SqlLogicError('Nested aggregation function is not alowed');
 				}
 			}
 
@@ -45,7 +46,7 @@ class AggregationColumn extends BasicColumn
 
 	valueSource()
 	{
-		throw new Error('Not allowed for aggregation columns');
+		throw new SqlLogicError('Not allowed for aggregation columns');
 	}
 }
 

@@ -9,6 +9,9 @@ const JsonParser = require('./JsonParser');
 const LinesJoiner = require('./LinesJoiner');
 const LinesSplitter = require('./LinesSplitter');
 
+const ProgramError = require('../error/ProgramError');
+const NotSupported = require('../error/NotSupported');
+
 class Joiner extends Readable
 {
 	/**
@@ -214,7 +217,7 @@ Joiner.InputBuffer = class Joiner_InputBuffer extends EventEmitter
 				cb(null);
 			} else {
 				if (this.itemHandler) {
-					throw new Error('Only one item handle is allowed');
+					throw new ProgramError('Only one item handle is allowed');
 				}
 
 				this.itemHandler = cb;
@@ -228,7 +231,7 @@ Joiner.InputBuffer = class Joiner_InputBuffer extends EventEmitter
 	next()
 	{
 		if (this.offset + 1 > this.items.length) {
-			throw new Error('shift behind end');
+			throw new ProgramError('shift behind end');
 		}
 
 		this.offset++;
@@ -323,7 +326,7 @@ Joiner.KeyBuffer = class Joiner_KeyBuffer
 			return;
 		}
 
-		throw new Error('Not implemented');
+		throw new NotSupported;
 	}
 
 	_readFileStorage(readable, cb)

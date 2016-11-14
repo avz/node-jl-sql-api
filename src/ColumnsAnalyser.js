@@ -1,6 +1,7 @@
 const SqlNodes = require('./sql/Nodes');
 const BasicColumn = require('./BasicColumn');
 const AggregationColumn = require('./AggregationColumn');
+const SqlLogicError = require('./error/SqlLogicError');
 
 const AggregationFunction = require('./AggregationFunction');
 
@@ -36,7 +37,7 @@ class ColumnsAnalyser
 		if (column.alias) {
 			alias = column.alias.fragments;
 			if (alias[0] !== '@') {
-				throw new Error('You can\'t use aliases targeted on source');
+				throw new SqlLogicError('You can\'t use aliases targeted on source');
 			}
 
 		} else if (column.expression instanceof SqlNodes.ColumnIdent) {
@@ -45,7 +46,7 @@ class ColumnsAnalyser
 		}
 
 		if (!alias) {
-			throw new Error('All columns must have the alias');
+			throw new SqlLogicError('All columns must have the alias');
 		}
 
 		return this.column(

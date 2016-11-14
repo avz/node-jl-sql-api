@@ -1,8 +1,10 @@
+const ImplementationRequired = require('./error/ImplementationRequired');
+
 class DataSourceResolver
 {
 	resolve(location, cb)
 	{
-		throw new Error('Not implemented');
+		throw new ImplementationRequired;
 	}
 
 	extractAlias(location)

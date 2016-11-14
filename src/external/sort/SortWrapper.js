@@ -1,3 +1,5 @@
+const ChildProcessError = require('../../error/ChildProcessError');
+
 class SortWrapper
 {
 	/**
@@ -50,7 +52,7 @@ class SortWrapper
 
 		p.on('close', function(code, signal) {
 			if (code !== 0) {
-				throw new Error('External sort error, return code=' + code + ', signal=' + signal);
+				throw new ChildProcessError(sortCmd, args, code, signal);
 			}
 		})
 

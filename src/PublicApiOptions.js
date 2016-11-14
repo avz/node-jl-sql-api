@@ -1,4 +1,5 @@
 const SortOptions = require('./external/sort/SortOptions');
+const ProgramError = require('./error/ProgramError');
 
 class PublicApiOptions
 {
@@ -9,7 +10,7 @@ class PublicApiOptions
 
 		for (const k in options) {
 			if (!this.hasOwnProperty(k)) {
-				throw new Error('Unknown option: ' + k);
+				throw new ProgramError('Unknown API option: ' + k);
 			}
 
 			this[k] = options[k];
