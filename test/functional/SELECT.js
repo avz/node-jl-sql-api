@@ -335,7 +335,7 @@ describe('SELECT', () => {
 									sql
 								)
 								.fromArrayOfObjects(ds.host)
-								.addArrayOfObjectsStream('@child', ds.child)
+								.addArrayOfObjectsStream('child', ds.child)
 								.toArrayOfObjects((r) => {
 									output = r;
 									done();
@@ -354,7 +354,7 @@ describe('SELECT', () => {
 				doTests(
 					dataSets,
 					'innerResult',
-					'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp INNER JOIN @child ON @child.keyProp = hostKeyProp'
+					'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp INNER JOIN `child` AS @child ON @child.keyProp = hostKeyProp'
 				)
 			});
 
@@ -362,7 +362,7 @@ describe('SELECT', () => {
 				doTests(
 					dataSets,
 					'leftResult',
-					'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp LEFT JOIN @child ON @child.keyProp = hostKeyProp'
+					'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp LEFT JOIN `child` AS @child ON @child.keyProp = hostKeyProp'
 				)
 			});
 

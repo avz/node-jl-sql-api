@@ -27,7 +27,7 @@ class SelectFrom
 	{
 		const chain = new JlTransformsChain([
 			this.inputStream,
-			this.select.stream(this.additionalStreams),
+			this.select.select.stream(this.select.dataStreamResolversPool),
 			new ChunkSplitter
 		]);
 
@@ -42,7 +42,7 @@ class SelectFrom
 	{
 		const chain = new JlTransformsChain([
 			this.inputStream,
-			this.select.stream(this.additionalStreams),
+			this.select.select.stream(this.select.dataStreamResolversPool),
 			new JsonStringifier,
 			new LinesJoiner
 		]);
@@ -72,31 +72,49 @@ class SelectFrom
 		});
 	}
 
-	addArrayOfObjectsStream(name, array)
+	addArrayOfObjectsStream(location, array)
 	{
 		const stream = new JlPassThrough(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS);
 
 		stream.end(array);
 
-		this.additionalStreams.push(new DataStream(name, stream));
+		this.select.dataStreamApiResolver.addDataStream(this._path(location), new DataStream(stream));
 
 		return this;
 	}
 
-	addJsonStream(name, stream)
+	addJsonStream(location, stream)
 	{
 		const chain = stream.pipe(new LinesSplitter).pipe(new JsonParser);
 
-		this.additionalStreams.push(new DataStream(name, chain));
+		this.select.dataStreamApiResolver.addDataStream(
+			this._path(location),
+			new DataStream(chain)
+		);
 
 		return this;
 	}
 
-	addObjectsStream(name, stream)
+	addObjectsStream(location, stream)
 	{
-		this.additionalStreams.push(new DataStream(name, stream.pipe(new ChunkJoiner)));
+		this.select.dataStreamApiResolver.addDataStream(
+			this._path(location),
+			new DataStream(stream.pipe(new ChunkJoiner))
+		);
 
 		return this;
+	}
+
+	_path(location) {
+		if (typeof(location) === 'string') {
+			return [location];
+		}
+
+		if (typeof(location) !== 'string') {
+			throw new Error('Array or string expected');
+		}
+
+		return location;
 	}
 }
 

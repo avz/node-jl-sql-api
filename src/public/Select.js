@@ -8,11 +8,23 @@ const ChunkJoiner = require('../stream/ChunkJoiner');
 
 const SelectFrom = require('./SelectFrom');
 
+const DataStreamApiResolver = require('../DataStreamApiResolver');
+const DataStreamResolversPool = require('../DataStreamResolversPool');
+
 class Select
 {
-	constructor(select)
+	constructor(select, dataStreamResolvers = [])
 	{
 		this.select = select;
+		this.dataStreamApiResolver = new DataStreamApiResolver;
+
+		this.dataStreamResolversPool = new DataStreamResolversPool;
+
+		for (const resolver of dataStreamResolvers) {
+			this.dataStreamResolversPool.add(resolver);
+		}
+
+		this.dataStreamResolversPool.add(this.dataStreamApiResolver);
 	}
 
 	fromJsonStream(stream)
@@ -24,7 +36,7 @@ class Select
 
 		const input = new JlTransformsChain(chain);
 
-		return new SelectFrom(this.select, input);
+		return new SelectFrom(this, input);
 	}
 
 	fromObjectsStream(stream)
@@ -35,7 +47,7 @@ class Select
 			input = new JlTransformsChain([stream, input]);
 		}
 
-		return new SelectFrom(this.select, input);
+		return new SelectFrom(this, input);
 	}
 
 	fromArrayOfObjects(array)
@@ -44,7 +56,7 @@ class Select
 
 		stream.end(array);
 
-		return new SelectFrom(this.select, stream);
+		return new SelectFrom(this, stream);
 	}
 }
 

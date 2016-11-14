@@ -2,17 +2,17 @@ const Node = require('../Node');
 
 class Table extends Node
 {
-	constructor(ident, alias = null)
+	constructor(location, alias = null)
 	{
 		super();
 
 		this.alias = alias;
-		this.ident = ident;
+		this.location = location;
 	}
 
 	childNodes()
 	{
-		return [this.ident];
+		return [this.location];
 	}
 }
 

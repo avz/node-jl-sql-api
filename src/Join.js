@@ -2,11 +2,12 @@ const Nodes = require('./sql/Nodes');
 
 class Join
 {
-	constructor(type, preparingContext, joiningDataStream, ast)
+	constructor(type, preparingContext, joiningDataStream, joiningDataStreamName, ast)
 	{
 		this.type = type;
 		this.preparingContext = preparingContext;
 		this.joiningDataStream = joiningDataStream;
+		this.joiningDataStreamName = joiningDataStreamName;
 		this.ast = ast;
 
 
@@ -37,13 +38,13 @@ class Join
 		const sortingJoining = [];
 		const sortingMain = [];
 
-		if (ast.left.fragments[0] === this.joiningDataStream.name) {
+		if (ast.left.fragments[0] === this.joiningDataStreamName) {
 			sortingJoining.push(ast.left);
 		} else {
 			sortingMain.push(ast.left);
 		}
 
-		if (ast.right.fragments[0] === this.joiningDataStream.name) {
+		if (ast.right.fragments[0] === this.joiningDataStreamName) {
 			sortingJoining.push(ast.right);
 		} else {
 			sortingMain.push(ast.right);

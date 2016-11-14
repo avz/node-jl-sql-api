@@ -140,7 +140,7 @@ class Joiner extends Readable
 	{
 		this.keyBufferFlusher = this.currentKeyBuffer.startFlush(
 			this.currentKeyMainRow,
-			this.join.joiningDataStream.name
+			this.join.joiningDataStreamName
 		);
 
 		this.flushKeyBufferChunk(cb);

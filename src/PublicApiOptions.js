@@ -17,7 +17,7 @@ class PublicApiOptions
 
 		if (!options.sortOptions) {
 			this.sortOptions = new SortOptions({});
-		} else if(options.sortOptions instanceof SortOptions) {
+		} else if(!(options.sortOptions instanceof SortOptions)) {
 			this.sortOptions = new SortOptions(options.sortOptions);
 		}
 	}

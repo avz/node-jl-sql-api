@@ -3,9 +3,8 @@
  */
 class DataStream
 {
-	constructor(name, stream)
+	constructor(stream)
 	{
-		this.name = name;
 		this.stream = stream;
 	}
 }

@@ -80,15 +80,11 @@ class Select
 		return new Filter(this.sqlToJs.nodeToFunction(this.ast.having));
 	}
 
-	joins(dataStreams)
+	joins(dataStreamResolversPool)
 	{
 		const joins = [];
 
 		for (const joinAst of this.ast.joins) {
-			if (joinAst.table.ident.fragments.length > 1) {
-				throw new Error('JOINed data source must have simple name, but found: ' + joinAst.table.ident.fragments.join('.'));
-			}
-
 			let joinType;
 
 			if (joinAst instanceof Nodes.LeftJoin) {
@@ -99,17 +95,19 @@ class Select
 				throw new Error('INNER ans LEFT JOINs only supported yet');
 			}
 
-			const dataStreamName = joinAst.table.ident.fragments[0];
-
-			const dataStream = dataStreams.find(dataStream => {
-				return dataStream.name === dataStreamName;
-			});
-
-			if (!dataStream) {
-				throw new Error('Data stream not found for JOIN: ' + dataStreamName);
+			if (!joinAst.table.alias) {
+				throw new Error('Tables must have an alias');
 			}
 
-			joins.push(new Join(joinType, this.preparingContext, dataStream, joinAst.expression));
+			const dataStream = dataStreamResolversPool.resolve(joinAst.table.location.fragments);
+
+			joins.push(new Join(
+				joinType,
+				this.preparingContext,
+				dataStream,
+				joinAst.table.alias.name,
+				joinAst.expression
+			));
 		}
 
 		return joins;
@@ -181,7 +179,7 @@ class Select
 
 		const joiningWrapper = new Mapper(row => {
 			const s = {};
-			s[join.joiningDataStream.name] = row;
+			s[join.joiningDataStreamName] = row;
 			return new DataRow(s)
 		});
 
@@ -209,13 +207,13 @@ class Select
 		];
 	}
 
-	stream(dataStreams = [])
+	stream(dataStreamResolversPool)
 	{
 		const pipeline = [
 			new Mapper(row => new DataRow({'@': row})) // '@' - DataStream.DEFAULT_NAME
 		];
 
-		const joins = this.joins(dataStreams);
+		const joins = this.joins(dataStreamResolversPool);
 
 		for (const join of joins) {
 			pipeline.push.apply(pipeline, this.joinerPipeline(join));

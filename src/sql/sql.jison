@@ -192,8 +192,8 @@ selectColumns: selectClause columns { $1.columns = $2; $$ = $1; };
 selectColumns: selectClause '*' { $1.columns = null; $$ = $1; };
 
 table
-	: complexIdent AS ident { $$ = new Nodes.Table(new Nodes.TableIdent($1), new Nodes.TableAlias($3)); }
-	| complexIdent { $$ = new Nodes.Table(new Nodes.TableIdent($1)); }
+	: complexIdent AS dataSourceIdent { $$ = new Nodes.Table(new Nodes.TableLocation($1), new Nodes.TableAlias($3)); }
+	| complexIdent { $$ = new Nodes.Table(new Nodes.TableLocation($1)); }
 ;
 
 selectFrom
