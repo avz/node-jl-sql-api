@@ -1,23 +1,23 @@
-const DataStreamResolver = require('./DataStreamResolver');
+const DataSourceResolver = require('./DataSourceResolver');
 const ComplexIdentsMap = require('./ComplexIdentsMap');
 
-class DataStreamApiResolver extends DataStreamResolver
+class DataSourceApiResolver extends DataSourceResolver
 {
 	constructor()
 	{
 		super();
 
-		this.streams = new ComplexIdentsMap;
+		this.sources = new ComplexIdentsMap;
 	}
 
-	addDataStream(pathFragments, stream)
+	addDataSource(pathFragments, source)
 	{
-		this.streams.add(pathFragments, stream);
+		this.sources.add(pathFragments, source);
 	}
 
 	resolve(pathFragments)
 	{
-		return this.streams.get(pathFragments);
+		return this.sources.get(pathFragments);
 	}
 
 	extractAlias(pathFragments)
@@ -34,4 +34,4 @@ class DataStreamApiResolver extends DataStreamResolver
 	}
 }
 
-module.exports = DataStreamApiResolver;
+module.exports = DataSourceApiResolver;

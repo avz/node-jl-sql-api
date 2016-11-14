@@ -8,23 +8,23 @@ const ChunkJoiner = require('../stream/ChunkJoiner');
 
 const SelectFrom = require('./SelectFrom');
 
-const DataStreamApiResolver = require('../DataStreamApiResolver');
-const DataStreamResolversPool = require('../DataStreamResolversPool');
+const DataSourceApiResolver = require('../DataSourceApiResolver');
+const DataSourceResolversPool = require('../DataSourceResolversPool');
 
 class Select
 {
-	constructor(select, dataStreamResolvers = [])
+	constructor(select, dataSourceResolvers = [])
 	{
 		this.select = select;
-		this.dataStreamApiResolver = new DataStreamApiResolver;
+		this.dataSourceApiResolver = new DataSourceApiResolver;
 
-		this.dataStreamResolversPool = new DataStreamResolversPool;
+		this.dataSourceResolversPool = new DataSourceResolversPool;
 
-		for (const resolver of dataStreamResolvers) {
-			this.dataStreamResolversPool.add(resolver);
+		for (const resolver of dataSourceResolvers) {
+			this.dataSourceResolversPool.add(resolver);
 		}
 
-		this.dataStreamResolversPool.add(this.dataStreamApiResolver);
+		this.dataSourceResolversPool.add(this.dataSourceApiResolver);
 	}
 
 	fromJsonStream(stream)

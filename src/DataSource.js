@@ -1,7 +1,7 @@
 /**
  * Аналог таблицы в SQL, отсюда берутся данные для дальнейшей обработки
  */
-class DataStream
+class DataSource
 {
 	constructor(stream)
 	{
@@ -9,6 +9,6 @@ class DataStream
 	}
 }
 
-DataStream.DEFAULT_NAME = '@';
+DataSource.DEFAULT_NAME = '@';
 
-module.exports = DataStream;
+module.exports = DataSource;

@@ -2,17 +2,17 @@ const Nodes = require('./sql/Nodes');
 
 class Join
 {
-	constructor(type, preparingContext, joiningDataStream, joiningDataStreamName, ast)
+	constructor(type, preparingContext, joiningSourceStream, joiningDataSsourceName, ast)
 	{
 		this.type = type;
 		this.preparingContext = preparingContext;
-		this.joiningDataStream = joiningDataStream;
-		this.joiningDataStreamName = joiningDataStreamName;
+		this.joiningDataSource = joiningSourceStream;
+		this.joiningDataSourceName = joiningDataSsourceName;
 		this.ast = ast;
 
 
-		this.joiningDataStreamSortingsColumns = [];
-		this.mainDataStreamSortingsColumns = [];
+		this.joiningDataSourceSortingsColumns = [];
+		this.mainDataSourceSortingsColumns = [];
 
 		this.parseAst(ast);
 	}
@@ -38,13 +38,13 @@ class Join
 		const sortingJoining = [];
 		const sortingMain = [];
 
-		if (ast.left.fragments[0] === this.joiningDataStreamName) {
+		if (ast.left.fragments[0] === this.joiningDataSourceName) {
 			sortingJoining.push(ast.left);
 		} else {
 			sortingMain.push(ast.left);
 		}
 
-		if (ast.right.fragments[0] === this.joiningDataStreamName) {
+		if (ast.right.fragments[0] === this.joiningDataSourceName) {
 			sortingJoining.push(ast.right);
 		} else {
 			sortingMain.push(ast.right);
@@ -54,8 +54,8 @@ class Join
 			throw new Error('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
 		}
 
-		this.joiningDataStreamSortingsColumns = sortingJoining;
-		this.mainDataStreamSortingsColumns = sortingMain;
+		this.joiningDataSourceSortingsColumns = sortingJoining;
+		this.mainDataSourceSortingsColumns = sortingMain;
 	}
 }
 

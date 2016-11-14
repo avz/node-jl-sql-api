@@ -15,7 +15,7 @@ const JlTransformsChain = require('./stream/JlTransformsChain');
 const JlTransform = require('./stream/JlTransform');
 const JlPassThrough = require('./stream/JlPassThrough');
 const DataRow = require('./DataRow');
-const DataStream = require('./DataStream');
+const DataSource = require('./DataSource');
 const Nodes = require('./sql/Nodes');
 
 class Select
@@ -80,7 +80,7 @@ class Select
 		return new Filter(this.sqlToJs.nodeToFunction(this.ast.having));
 	}
 
-	joins(dataStreamResolversPool)
+	joins(dataSourceResolversPool)
 	{
 		const joins = [];
 
@@ -98,7 +98,7 @@ class Select
 			let tableAlias = joinAst.table.alias && joinAst.table.alias.name;
 
 			if (!tableAlias) {
-				tableAlias = dataStreamResolversPool.extractAlias(joinAst.table.location.fragments);
+				tableAlias = dataSourceResolversPool.extractAlias(joinAst.table.location.fragments);
 				if (tableAlias !== null) {
 					tableAlias = '@' + tableAlias;
 				}
@@ -108,12 +108,12 @@ class Select
 				throw new Error('Tables must have an alias');
 			}
 
-			const dataStream = dataStreamResolversPool.resolve(joinAst.table.location.fragments);
+			const dataSource = dataSourceResolversPool.resolve(joinAst.table.location.fragments);
 
 			joins.push(new Join(
 				joinType,
 				this.preparingContext,
-				dataStream,
+				dataSource,
 				tableAlias,
 				joinAst.expression
 			));
@@ -181,32 +181,32 @@ class Select
 
 	joinerPipeline(join)
 	{
-		if (join.mainDataStreamSortingsColumns.length !== 1 || join.mainDataStreamSortingsColumns.length !== 1) {
+		if (join.mainDataSourceSortingsColumns.length !== 1 || join.mainDataSourceSortingsColumns.length !== 1) {
 			throw new Error('Not implemented');
 		}
 
 
 		const joiningWrapper = new Mapper(row => {
 			const s = {};
-			s[join.joiningDataStreamName] = row;
+			s[join.joiningDataSourceName] = row;
 			return new DataRow(s)
 		});
 
 		const joiningSorter = this.createSorterInstance(this.orders(
-			join.joiningDataStreamSortingsColumns.map(e => new Nodes.Brackets(e))
+			join.joiningDataSourceSortingsColumns.map(e => new Nodes.Brackets(e))
 		));
 
 		const mainSorter = this.createSorterInstance(this.orders(
-			join.mainDataStreamSortingsColumns.map(e => new Nodes.Brackets(e))
+			join.mainDataSourceSortingsColumns.map(e => new Nodes.Brackets(e))
 		));
 
 		const joiner = new Joiner(
 			this.preparingContext,
 			join,
-			this.sqlToJs.nodeToFunction(join.mainDataStreamSortingsColumns[0]),
+			this.sqlToJs.nodeToFunction(join.mainDataSourceSortingsColumns[0]),
 			mainSorter,
-			this.sqlToJs.nodeToFunction(join.joiningDataStreamSortingsColumns[0]),
-			join.joiningDataStream.stream.pipe(joiningWrapper).pipe(joiningSorter)
+			this.sqlToJs.nodeToFunction(join.joiningDataSourceSortingsColumns[0]),
+			join.joiningDataSource.stream.pipe(joiningWrapper).pipe(joiningSorter)
 		);
 
 		return [
@@ -216,13 +216,13 @@ class Select
 		];
 	}
 
-	stream(dataStreamResolversPool)
+	stream(dataSourceResolversPool)
 	{
 		const pipeline = [
-			new Mapper(row => new DataRow({'@': row})) // '@' - DataStream.DEFAULT_NAME
+			new Mapper(row => new DataRow({'@': row})) // '@' - DataSource.DEFAULT_NAME
 		];
 
-		const joins = this.joins(dataStreamResolversPool);
+		const joins = this.joins(dataSourceResolversPool);
 
 		for (const join of joins) {
 			pipeline.push.apply(pipeline, this.joinerPipeline(join));
@@ -262,7 +262,7 @@ class Select
 
 		pipeline.push(
 			new Mapper(row => {
-				return row.sources[DataStream.DEFAULT_NAME] || {};
+				return row.sources[DataSource.DEFAULT_NAME] || {};
 			})
 		);
 

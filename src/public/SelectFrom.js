@@ -8,7 +8,7 @@ const ChunkSplitter = require('../stream/ChunkSplitter');
 
 const PassThrough = require('stream').PassThrough;
 
-const DataStream = require('../DataStream');
+const DataSource = require('../DataSource');
 
 const JsonParser = require('../stream/JsonParser');
 const LinesSplitter = require('../stream/LinesSplitter');
@@ -20,14 +20,13 @@ class SelectFrom
 	{
 		this.select = select;
 		this.inputStream = inputStream;
-		this.additionalStreams = [];
 	}
 
 	toObjectsStream(stream)
 	{
 		const chain = new JlTransformsChain([
 			this.inputStream,
-			this.select.select.stream(this.select.dataStreamResolversPool),
+			this.select.select.stream(this.select.dataSourceResolversPool),
 			new ChunkSplitter
 		]);
 
@@ -42,7 +41,7 @@ class SelectFrom
 	{
 		const chain = new JlTransformsChain([
 			this.inputStream,
-			this.select.select.stream(this.select.dataStreamResolversPool),
+			this.select.select.stream(this.select.dataSourceResolversPool),
 			new JsonStringifier,
 			new LinesJoiner
 		]);
@@ -78,7 +77,7 @@ class SelectFrom
 
 		stream.end(array);
 
-		this.select.dataStreamApiResolver.addDataStream(this._path(location), new DataStream(stream));
+		this.select.dataSourceApiResolver.addDataSource(this._path(location), new DataSource(stream));
 
 		return this;
 	}
@@ -87,9 +86,9 @@ class SelectFrom
 	{
 		const chain = stream.pipe(new LinesSplitter).pipe(new JsonParser);
 
-		this.select.dataStreamApiResolver.addDataStream(
+		this.select.dataSourceApiResolver.addDataSource(
 			this._path(location),
-			new DataStream(chain)
+			new DataSource(chain)
 		);
 
 		return this;
@@ -97,9 +96,9 @@ class SelectFrom
 
 	addObjectsStream(location, stream)
 	{
-		this.select.dataStreamApiResolver.addDataStream(
+		this.select.dataSourceApiResolver.addDataSource(
 			this._path(location),
-			new DataStream(stream.pipe(new ChunkJoiner))
+			new DataSource(stream.pipe(new ChunkJoiner))
 		);
 
 		return this;

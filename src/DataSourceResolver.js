@@ -1,4 +1,4 @@
-class DataStreamResolver
+class DataSourceResolver
 {
 	resolve(location, cb)
 	{
@@ -11,4 +11,4 @@ class DataStreamResolver
 	}
 }
 
-module.exports = DataStreamResolver;
+module.exports = DataSourceResolver;

@@ -140,7 +140,7 @@ class Joiner extends Readable
 	{
 		this.keyBufferFlusher = this.currentKeyBuffer.startFlush(
 			this.currentKeyMainRow,
-			this.join.joiningDataStreamName
+			this.join.joiningDataSourceName
 		);
 
 		this.flushKeyBufferChunk(cb);
@@ -354,12 +354,12 @@ Joiner.KeyBuffer = class Joiner_KeyBuffer
 		}
 	}
 
-	startFlush(mainRow, joiningStreamName)
+	startFlush(mainRow, joiningSourceName)
 	{
 		if (this.fileStorage) {
 			return new Joiner.KeyBufferFlusher_External(
 				mainRow,
-				joiningStreamName,
+				joiningSourceName,
 				this,
 				1000
 			);
@@ -367,7 +367,7 @@ Joiner.KeyBuffer = class Joiner_KeyBuffer
 
 		return new Joiner.KeyBufferFlusher_InMemory(
 			mainRow,
-			joiningStreamName,
+			joiningSourceName,
 			this.items,
 			1000
 		);
@@ -411,10 +411,10 @@ Joiner.KeyBufferFileStorage = class Joiner_KeyBufferFileStorage extends EventEmi
 
 Joiner.KeyBufferFlusher_InMemory = class Joiner_KeyBufferFlusher_InMemory
 {
-	constructor(mainRow, joiningStreamName, items, chunkSize)
+	constructor(mainRow, joiningSourceName, items, chunkSize)
 	{
 		this.mainRow = mainRow;
-		this.joiningStreamName = joiningStreamName;
+		this.joiningSourceName = joiningSourceName;
 		this.items = items;
 		this.offset = 0;
 		this.chunkSize = chunkSize;
@@ -446,7 +446,7 @@ Joiner.KeyBufferFlusher_InMemory = class Joiner_KeyBufferFlusher_InMemory
 	{
 		const merged = JSON.parse(JSON.stringify(mainRow));
 
-		merged.sources[this.joiningStreamName] = joiningRow.sources[this.joiningStreamName];
+		merged.sources[this.joiningSourceName] = joiningRow.sources[this.joiningSourceName];
 
 		return merged;
 	}
@@ -454,10 +454,10 @@ Joiner.KeyBufferFlusher_InMemory = class Joiner_KeyBufferFlusher_InMemory
 
 Joiner.KeyBufferFlusher_External = class Joiner_KeyBufferFlusher
 {
-	constructor(mainRow, joiningStreamName, keyBuffer, chunkSize)
+	constructor(mainRow, joiningSourceName, keyBuffer, chunkSize)
 	{
 		this.mainRow = mainRow;
-		this.joiningStreamName = joiningStreamName;
+		this.joiningSourceName = joiningSourceName;
 		this.keyBuffer = keyBuffer;
 		this.chunkSize = chunkSize;
 
@@ -501,7 +501,7 @@ Joiner.KeyBufferFlusher_External = class Joiner_KeyBufferFlusher
 	{
 		const merged = JSON.parse(JSON.stringify(mainRow));
 
-		merged.sources[this.joiningStreamName] = joiningRow.sources[this.joiningStreamName];
+		merged.sources[this.joiningSourceName] = joiningRow.sources[this.joiningSourceName];
 
 		return merged;
 	}

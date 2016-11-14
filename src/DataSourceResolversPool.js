@@ -1,4 +1,4 @@
-class DataStreamResolversPool
+class DataSourceResolversPool
 {
 	constructor()
 	{
@@ -13,9 +13,9 @@ class DataStreamResolversPool
 	resolve(pathFragments)
 	{
 		for (const resolver of this.resolvers) {
-			const stream = resolver.resolve(pathFragments);
-			if (stream) {
-				return stream;
+			const source = resolver.resolve(pathFragments);
+			if (source) {
+				return source;
 			}
 		}
 
@@ -34,4 +34,4 @@ class DataStreamResolversPool
 	}
 }
 
-module.exports = DataStreamResolversPool;
+module.exports = DataSourceResolversPool;
