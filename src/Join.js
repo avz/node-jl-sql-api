@@ -2,14 +2,13 @@ const Nodes = require('./sql/Nodes');
 
 class Join
 {
-	constructor(type, preparingContext, joiningSourceStream, joiningDataSsourceName, ast)
+	constructor(type, preparingContext, joiningSourceStream, joiningDataSourceName, ast)
 	{
 		this.type = type;
 		this.preparingContext = preparingContext;
 		this.joiningDataSource = joiningSourceStream;
-		this.joiningDataSourceName = joiningDataSsourceName;
+		this.joiningDataSourceName = joiningDataSourceName;
 		this.ast = ast;
-
 
 		this.joiningDataSourceSortingsColumns = [];
 		this.mainDataSourceSortingsColumns = [];
