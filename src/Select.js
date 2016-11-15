@@ -8,7 +8,7 @@ const Groupper = require('./stream/Groupper');
 const Order = require('./Order');
 const Terminator = require('./stream/Terminator');
 const Join = require('./Join');
-const Mapper = require('./stream/Mapper');
+const Mutator = require('./stream/Mutator');
 const Aggregation = require('./Aggregation');
 const AggregationColumn = require('./AggregationColumn');
 const JlTransformsChain = require('./stream/JlTransformsChain');
@@ -196,7 +196,7 @@ class Select
 		}
 
 
-		const joiningWrapper = new Mapper(row => {
+		const joiningWrapper = new Mutator(row => {
 			const s = {};
 			s[join.joiningDataSourceName] = row;
 			return new DataRow(s)
@@ -229,7 +229,7 @@ class Select
 	stream(dataSourceResolversPool)
 	{
 		const pipeline = [
-			new Mapper(row => new DataRow({'@': row})) // '@' - DataSource.DEFAULT_NAME
+			new Mutator(row => new DataRow({'@': row})) // '@' - DataSource.DEFAULT_NAME
 		];
 
 		const joins = this.joins(dataSourceResolversPool);
@@ -271,7 +271,7 @@ class Select
 		}
 
 		pipeline.push(
-			new Mapper(row => {
+			new Mutator(row => {
 				return row.sources[DataSource.DEFAULT_NAME] || {};
 			})
 		);

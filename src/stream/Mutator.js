@@ -1,7 +1,7 @@
 const JlTransform = require('./JlTransform');
 const DataRow = require('../DataRow');
 
-class Mapper extends JlTransform
+class Mutator extends JlTransform
 {
 	constructor(func)
 	{
@@ -24,4 +24,4 @@ class Mapper extends JlTransform
 	}
 }
 
-module.exports = Mapper;
+module.exports = Mutator;
