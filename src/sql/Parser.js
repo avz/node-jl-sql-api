@@ -99,10 +99,10 @@ case 23:
  $$[$0-2].fragments.push($$[$0].name); this.$ = $$[$0-2]; 
 break;
 case 24:
- this.$ = new Nodes.ComplexIdent('@'); this.$.fragments.push($$[$0].name) 
+ this.$ = new Nodes.ComplexIdent(['@', $$[$0].name]); 
 break;
 case 25:
- this.$ = new Nodes.ComplexIdent($$[$0].name); 
+ this.$ = new Nodes.ComplexIdent([$$[$0].name]); 
 break;
 case 26:
  this.$ = new Nodes.Number($$[$0]); 
@@ -147,16 +147,16 @@ case 52:
  this.$ = new Nodes.Call(new Nodes.FunctionIdent($$[$0-2]), []); 
 break;
 case 53:
- this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($$[$0-3])), [$$[$0-1]]); 
+ this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $$[$0-3]])), [$$[$0-1]]); 
 break;
 case 54:
- this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent($$[$0-3])), []); 
+ this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $$[$0-3]])), []); 
 break;
 case 55:
- this.$ = new Nodes.ColumnIdent('@'); this.$.fragments.push($$[$0]) 
+ this.$ = new Nodes.ColumnIdent(['@', $$[$0]]) 
 break;
 case 56:
- this.$ = new Nodes.ColumnIdent(); this.$.fragments = $$[$0].fragments 
+ this.$ = new Nodes.ColumnIdent($$[$0].fragments) 
 break;
 case 58:
  this.$ = new Nodes.Brackets($$[$0-1]); 
@@ -171,7 +171,7 @@ case 61:
  this.$ = new Nodes.Column($$[$0-2], $$[$0]); 
 break;
 case 62:
- var ci = new Nodes.ColumnIdent('@'); ci.fragments.push($$[$0]); this.$ = new Nodes.Column($$[$0-2], ci); 
+ var ci = new Nodes.ColumnIdent(['@', $$[$0]]); this.$ = new Nodes.Column($$[$0-2], ci); 
 break;
 case 63:
  this.$ = new Nodes.Column($$[$0]); 

@@ -6,7 +6,7 @@ class FunctionIdent extends Node
 	{
 		super();
 
-		this.fragments = complexIdent.fragments;
+		this.fragments = complexIdent.fragments.slice(1);
 	}
 }
 

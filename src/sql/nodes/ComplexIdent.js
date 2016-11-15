@@ -2,11 +2,11 @@ const Node = require('../Node');
 
 class ComplexIdent extends Node
 {
-	constructor(ident)
+	constructor(fragments)
 	{
 		super();
 
-		this.fragments = [ident];
+		this.fragments = fragments;
 	}
 }
 
