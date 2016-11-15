@@ -16,6 +16,7 @@ class JlTransformsChain extends Transform
 		this.inputType = JlTransform.ANY;
 		this.outputType = JlTransform.ANY;
 
+		this.streams = [];
 		this.firstStream = null;
 		this.lastStream = null;
 
@@ -26,6 +27,7 @@ class JlTransformsChain extends Transform
 
 	init(streams)
 	{
+		this.streams = streams;
 		this.firstStream = streams[0];
 		this.lastStream = streams[streams.length - 1];
 

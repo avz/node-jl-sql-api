@@ -1,6 +1,7 @@
 const Engine = require('./Engine');
 const PublicSelect = require('./public/Select');
 const PublicApiOptions = require('./PublicApiOptions');
+const Explainer = require('./Explainer');
 
 class PublicApi
 {
@@ -26,6 +27,13 @@ class PublicApi
 	query(sql)
 	{
 		return new PublicSelect(this.engine.createSelect(sql, this.options));
+	}
+
+	explain(select)
+	{
+		const e = new Explainer();
+
+		return e.createExplain(select);
 	}
 }
 

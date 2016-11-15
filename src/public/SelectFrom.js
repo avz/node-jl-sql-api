@@ -71,6 +71,8 @@ class SelectFrom
 		output.on('end', function() {
 			cb(objects);
 		});
+
+		return output;
 	}
 
 	addArrayOfObjectsStream(location, array)
