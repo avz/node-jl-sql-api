@@ -38,12 +38,8 @@ class PreparingContext
 			}
 		}
 
-		for (let node in expression.eachChildNodeRecursive()) {
-			if (!(node instanceof SqlNodes.Call)) {
-				continue;
-			}
-
-			if (callIsAggregation(node)) {
+		for (const node of expression.eachChildNodeRecursive()) {
+			if (this.isAggregationExpression(node)) {
 				return true;
 			}
 		}

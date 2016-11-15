@@ -2,6 +2,8 @@ const SqlNodes = require('./sql/Nodes');
 const BasicColumn = require('./BasicColumn');
 const AggregationColumn = require('./AggregationColumn');
 const SqlLogicError = require('./error/SqlLogicError');
+const BasicExpression = require('./BasicExpression');
+const AggregationExpression = require('./AggregationExpression');
 
 const AggregationFunction = require('./AggregationFunction');
 
@@ -12,12 +14,12 @@ class ColumnsAnalyser
 		this.preparingContext = preparingContext;
 	}
 
-	analyse(select)
+	analyseColumns(columns)
 	{
 		const columnsMap = new Map();
 
-		if (select.columns) {
-			for (let selectColumn of select.columns) {
+		if (columns) {
+			for (let selectColumn of columns) {
 				const column = this.analyseColumn(selectColumn);
 
 				columnsMap.set(column.alias, column);
@@ -25,6 +27,15 @@ class ColumnsAnalyser
 		}
 
 		return columnsMap;
+	}
+
+	analyseExpression(expression)
+	{
+		if (this.preparingContext.isAggregationExpression(expression)) {
+			return new AggregationExpression(this.preparingContext, expression);
+		} else {
+			return new BasicExpression(this.preparingContext, expression);
+		}
 	}
 
 	/**

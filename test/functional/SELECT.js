@@ -162,6 +162,59 @@ describe('SELECT', () => {
 			});
 		});
 
+		describe('`SELECT ... GROUP BY ... ORDER BY SUM(...)`', () => {
+			const input = [
+				{k: 1},
+				{k: 1},
+				{k: 1},
+				{k: 1},
+				{k: 1},
+
+				{k: 2},
+				{k: 2},
+
+				{k: 3},
+			];
+
+			it('ASC', done => {
+				jlSql.query('SELECT k GROUP BY k ORDER BY SUM(k)')
+					.fromArrayOfObjects(input)
+					.toArrayOfObjects((r) => {
+						assert.deepEqual(r, [{k: 3}, {k: 2}, {k: 1}])
+						done();
+					})
+				;
+			});
+
+			it('DESC', done => {
+				jlSql.query('SELECT k GROUP BY k ORDER BY SUM(k) DESC')
+					.fromArrayOfObjects(input)
+					.toArrayOfObjects((r) => {
+						assert.deepEqual(r, [{k: 1}, {k: 2}, {k: 3}])
+						done();
+					})
+				;
+			});
+		});
+
+		it('`SELECT ... ORDER BY SUM(...)`', (done) => {
+			const input = [
+				{k: 1},
+				{k: 1},
+
+				{k: 2},
+				{k: 2},
+			];
+
+			jlSql.query('SELECT k ORDER BY SUM(k)')
+				.fromArrayOfObjects(input)
+				.toArrayOfObjects((r) => {
+					assert.strictEqual(r.length, 1);
+					done();
+				})
+			;
+		});
+
 		describe('`SELECT ... AS alias[.deepAlias[. ...]]`', () => {
 			const input = [{a: 10}];
 

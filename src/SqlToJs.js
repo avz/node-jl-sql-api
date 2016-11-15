@@ -17,6 +17,7 @@ class SqlToJs
 
 		/* TODO config */
 		this.rowVarName = 'row.sources';
+		this.aggregationCacheVarName = 'row.aggregationCache';
 	}
 
 	nodeToCode(node)
@@ -95,12 +96,21 @@ class SqlToJs
 			 * Конкретно этот код используется только для генерации результата агрегации,
 			 * а обновления, инициализация и очистка происходят в группировщике
 			 */
-			return (
-				this.aggregationPropertyName + '[' + JSON.stringify(call.id) + ']'
-				+ '('
-				+ call.args.map(this.nodeToCode.bind(this)).join(', ')
+			const nodeKey = JSON.stringify(call.id);
+
+			const code =
+				'( ' + nodeKey + ' in ' + this.aggregationCacheVarName
+					+ ' ? ' + this.aggregationCacheVarName + '[' + nodeKey + ']'
+					+ ' : ('
+						+ this.aggregationPropertyName + '[' + nodeKey + ']'
+						+ '('
+							+ call.args.map(this.nodeToCode.bind(this)).join(', ')
+						+ ')'
+					+ ')'
 				+ ')'
-			);
+			;
+
+			return code;
 		}
 
 		return (

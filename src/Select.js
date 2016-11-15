@@ -11,6 +11,7 @@ const Join = require('./Join');
 const Mutator = require('./stream/Mutator');
 const Aggregation = require('./Aggregation');
 const AggregationColumn = require('./AggregationColumn');
+const AggregationExpression = require('./AggregationExpression');
 const JlTransformsChain = require('./stream/JlTransformsChain');
 const JlTransform = require('./stream/JlTransform');
 const JlPassThrough = require('./stream/JlPassThrough');
@@ -54,7 +55,21 @@ class Select
 		this.ast = ast;
 
 		const columnsAnalyser = new ColumnsAnalyser(preparingContext);
-		this.columns = columnsAnalyser.analyse(ast);
+		this.columns = columnsAnalyser.analyseColumns(ast.columns);
+
+		this.expressions = [];
+
+		for (const [path, column] of this.columns) {
+			this.expressions.push(column);
+		}
+
+		for (const order of this.ast.orders) {
+			this.expressions.push(columnsAnalyser.analyseExpression(order.expression));
+		}
+
+		if (this.ast.having) {
+			this.expressions.push(columnsAnalyser.analyseExpression(this.ast.having));
+		}
 	}
 
 	sorter()
@@ -150,8 +165,8 @@ class Select
 
 	hasAggregationColumns()
 	{
-		for (const [path, column] of this.columns) {
-			if (column instanceof AggregationColumn) {
+		for (const expression of this.expressions) {
+			if (expression instanceof AggregationExpression) {
 				return true;
 			}
 		}
@@ -292,7 +307,7 @@ class Select
 			/*
 			 * For aggregation queries without GROUP BY, e.g. `SELECT SUM(c) AS sum`
 			 */
-			return new Groupper(() => [null], new Aggregation(this.runtimeContext, this.columns));
+			return new Groupper(() => [null], new Aggregation(this.runtimeContext, this.expressions));
 		}
 
 		if (!this.columns.size) {
@@ -305,7 +320,7 @@ class Select
 			return keyGenerators.map(g => g(row));
 		};
 
-		return new Groupper(keyGeneratorCb, new Aggregation(this.runtimeContext, this.columns));
+		return new Groupper(keyGeneratorCb, new Aggregation(this.runtimeContext, this.expressions));
 	}
 }
 

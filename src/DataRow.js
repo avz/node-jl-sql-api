@@ -15,9 +15,11 @@ class DataRow
 	constructor(sources)
 	{
 		this.sources = sources;
+		this.aggregationCache = {};
 	}
 }
 
 DataRow.SOURCES_PROPERTY = 'sources';
+DataRow.AGGREGATION_CACHE_PROPERTY = 'aggregationCache';
 
 module.exports = DataRow;
