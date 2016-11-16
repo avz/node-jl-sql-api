@@ -142,11 +142,11 @@ const
 
 expression
 	: DISTINCT expression       { $$ = new Nodes.Distinct($2); }
-	| expression '*' expression { $$ = new Nodes.BinaryOperation($2, $1, $3); }
-	| expression '%' expression { $$ = new Nodes.BinaryOperation($2, $1, $3); }
-	| expression '/' expression { $$ = new Nodes.BinaryOperation($2, $1, $3); }
-	| expression '+' expression { $$ = new Nodes.BinaryOperation($2, $1, $3); }
-	| expression '-' expression { $$ = new Nodes.BinaryOperation($2, $1, $3); }
+	| expression '*' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| expression '%' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| expression '/' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| expression '+' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| expression '-' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| expression '=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| expression '!==' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| expression '===' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
@@ -157,8 +157,8 @@ expression
 	| expression '>=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| expression '<' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| expression '<=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
-	| '-' expression { $$ = new Nodes.UnaryOperation($1, $2); }
-	| '!' expression { $$ = new Nodes.UnaryOperation($1, $2); }
+	| '-' expression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
+	| '!' expression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
 	| expression 'IN' '(' expressionsList ')' { $$ = new Nodes.In($1, $4); }
 	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), $3); }
 	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), []); }

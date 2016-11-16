@@ -126,7 +126,7 @@ case 32:
  this.$ = new Nodes.Distinct($$[$0]); 
 break;
 case 33: case 34: case 35: case 36: case 37:
- this.$ = new Nodes.BinaryOperation($$[$0-1], $$[$0-2], $$[$0]); 
+ this.$ = new Nodes.BinaryArithmeticOperation($$[$0-1], $$[$0-2], $$[$0]); 
 break;
 case 38: case 39: case 40: case 41: case 44: case 45: case 46: case 47:
  this.$ = new Nodes.ComparsionOperation($$[$0-1], $$[$0-2], $$[$0]); 
@@ -134,8 +134,11 @@ break;
 case 42: case 43:
  this.$ = new Nodes.LogicalOperation($$[$0-1], $$[$0-2], $$[$0]); 
 break;
-case 48: case 49:
- this.$ = new Nodes.UnaryOperation($$[$0-1], $$[$0]); 
+case 48:
+ this.$ = new Nodes.UnaryArithmeticOperation($$[$0-1], $$[$0]); 
+break;
+case 49:
+ this.$ = new Nodes.UnaryLogicalOperation($$[$0-1], $$[$0]); 
 break;
 case 50:
  this.$ = new Nodes.In($$[$0-4], $$[$0-1]); 

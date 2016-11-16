@@ -151,9 +151,24 @@ class SqlToJs
 		return unary.operator + this.nodeToCode(unary.right);
 	}
 
+	codeFrom_UnaryLogicalOperation(unary)
+	{
+		return this.codeFrom_UnaryOperation(unary);
+	}
+
+	codeFrom_UnaryArithmeticalOperation(unary)
+	{
+		return this.codeFrom_UnaryOperation(unary);
+	}
+
 	codeFrom_BinaryOperation(binary)
 	{
 		return this.nodeToCode(binary.left) + ' ' + binary.operator + ' ' + this.nodeToCode(binary.right);
+	}
+
+	codeFrom_BinaryArithmeticOperation(binary)
+	{
+		return this.codeFrom_BinaryOperation(binary);
 	}
 
 	codeFrom_ComparsionOperation(comp)
