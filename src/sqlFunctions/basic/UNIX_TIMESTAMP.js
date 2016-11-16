@@ -1,7 +1,13 @@
 const BasicFunction = require('../../BasicFunction');
+const DataType = require('../../DataType');
 
 class UNIX_TIMESTAMP extends BasicFunction
 {
+	static dataType()
+	{
+		return DataType.NUMBER;
+	}
+
 	call(args)
 	{
 		let now = new Date;

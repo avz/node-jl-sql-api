@@ -1,7 +1,13 @@
 const BasicFunction = require('../../BasicFunction');
+const DataType = require('../../DataType');
 
 class FROM_UNIXTIME extends BasicFunction
 {
+	static dataType()
+	{
+		return DataType.DATE;
+	}
+
 	call(args)
 	{
 		this.needArgumentsCount(args, 1);

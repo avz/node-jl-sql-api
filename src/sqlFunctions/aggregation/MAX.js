@@ -1,4 +1,5 @@
 const AggregationFunction = require('../../AggregationFunction');
+const DataType = require('../../DataType');
 
 class MIN extends AggregationFunction
 {
@@ -8,6 +9,12 @@ class MIN extends AggregationFunction
 
 		this.max = null;
 	}
+
+	static dataType()
+	{
+		return DataType.MIXED;
+	}
+
 
 	init()
 	{

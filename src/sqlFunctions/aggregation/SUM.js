@@ -1,4 +1,5 @@
 const AggregationFunction = require('../../AggregationFunction');
+const DataType = require('../../DataType');
 
 class SUM extends AggregationFunction
 {
@@ -7,6 +8,11 @@ class SUM extends AggregationFunction
 		super();
 
 		this.sum = 0;
+	}
+
+	static dataType()
+	{
+		return DataType.NUMBER;
 	}
 
 	init()

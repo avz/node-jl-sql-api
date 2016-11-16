@@ -1,7 +1,13 @@
 const BasicFunction = require('../../BasicFunction');
+const DataType = require('../../DataType');
 
 class DATE extends BasicFunction
 {
+	static dataType()
+	{
+		return DataType.STRING;
+	}
+
 	call(args)
 	{
 		let now = new Date;

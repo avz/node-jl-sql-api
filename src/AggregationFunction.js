@@ -63,6 +63,11 @@ class AggregationFunction
 	{
 		throw new ImplementationRequired;
 	}
+
+	static dataType()
+	{
+		throw new ImplementationRequired;
+	}
 }
 
 module.exports = AggregationFunction;

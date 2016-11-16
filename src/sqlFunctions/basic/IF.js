@@ -1,7 +1,13 @@
 const BasicFunction = require('../../BasicFunction');
+const DataType = require('../../DataType');
 
 class IF extends BasicFunction
 {
+	static dataType()
+	{
+		return DataType.MIXED;
+	}
+
 	call(args)
 	{
 		this.needArgumentsCount(args, 3);

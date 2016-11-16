@@ -19,6 +19,11 @@ class BasicFunction
 			throw this.argumentException('not enough arguments');
 		}
 	}
+
+	static dataType()
+	{
+		throw new ImplementationRequired;
+	}
 }
 
 module.exports = BasicFunction;
