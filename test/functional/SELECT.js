@@ -97,6 +97,43 @@ describe('SELECT', () => {
 			});
 		});
 
+		describe('`SELECT ... ORDER BY NUMBER(...)`', () => {
+			const input = [
+				{a: 2, b: 2},
+				{a: '1', b: 3},
+				{a: 3, b: 6},
+				{a: 3, b: 4},
+				{a: 1, b: 5},
+				{a: 10, b: 6}
+			];
+
+			let output;
+
+			before(done => {
+				jlSql.query('SELECT * ORDER BY NUMBER(a), b')
+					.fromArrayOfObjects(input)
+					.toArrayOfObjects((r) => {
+						output = r;
+						done();
+					})
+				;
+			});
+
+			it('ordered', () => {
+				assert.deepEqual(
+					output,
+					[
+						{a: 1, b: 3},
+						{a: '1', b: 5},
+						{a: 2, b: 2},
+						{a: 3, b: 4},
+						{a: 3, b: 6},
+						{a: 10, b: 6},
+					]
+				);
+			});
+		});
+
 		describe('`SELECT ... GROUP BY [field[, ...]]`', () => {
 			const input = [
 				{a: 2, b: 2},

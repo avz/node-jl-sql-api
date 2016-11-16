@@ -8,6 +8,7 @@ const SortOptions = require('../external/sort/SortOptions');
 const LinesSplitter = require('./LinesSplitter');
 const JsonParser = require('./JsonParser');
 const Terminator = require('./Terminator');
+const DataType = require('../DataType');
 
 const ProgramError = require('../error/ProgramError');
 
@@ -58,9 +59,20 @@ class SorterExternal extends JlTransformsChain
 
 		for (const i in orders) {
 			const order = orders[i];
+			const dataType = order.valueFunction.dataType;
 
 			const sn = parseInt(i) + 1;
-			keys.push(sn + ',' + sn + (order.direction === Order.DIRECTION_DESC ? 'r' : ''));
+			let def = sn + ',' + sn;
+
+			if (order.direction === Order.DIRECTION_DESC) {
+				def += 'r'
+			}
+
+			if (dataType === DataType.NUMBER) {
+				def += 'n';
+			}
+
+			keys.push(def);
 		}
 
 		return keys;

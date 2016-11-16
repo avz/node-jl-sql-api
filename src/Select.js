@@ -155,6 +155,7 @@ class Select
 
 		const orders = ordersOrGroups.map(item => {
 			const valueFunc = this.sqlToJs.nodeToFunction(item.expression);
+			valueFunc.dataType = this.preparingContext.determineExpressionDataType(item.expression);
 			const direction = item.direction === 'DESC' ? Order.DIRECTION_DESC : Order.DIRECTION_ASC;
 
 			return new Order(valueFunc, direction);

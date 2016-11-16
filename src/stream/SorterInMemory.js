@@ -1,5 +1,6 @@
 const JlTransform = require('./JlTransform');
 const Order = require('../Order');
+const DataType = require('../DataType');
 
 const ProgramError = require('../error/ProgramError');
 
@@ -49,8 +50,10 @@ class SorterInMemory extends JlTransform
 				let v1 = order.valueFunction(row1);
 				let v2 = order.valueFunction(row2);
 
-				v1 = v1 === undefined ? '' : JSON.stringify(v1 + '');
-				v2 = v2 === undefined ? '' : JSON.stringify(v2 + '');
+				if (order.valueFunction.dataType === DataType.MIXED) {
+					v1 = v1 === undefined ? '' : JSON.stringify(v1 + '');
+					v2 = v2 === undefined ? '' : JSON.stringify(v2 + '');
+				}
 
 				const direction = order.direction === Order.DIRECTION_DESC ? -1 : 1;
 
