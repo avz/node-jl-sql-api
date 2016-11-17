@@ -417,7 +417,10 @@ describe('SELECT', () => {
 				}
 			];
 
-			const doTests = (dataSet, resultsField, sql) => {
+			const doTests = (maxKeysInMemory, dataSet, resultsField, sql) => {
+				const jlSqlModified = new JlSql(JSON.parse(JSON.stringify(jlSql.options)));
+				jlSqlModified.options.joinOptions.maxKeysInMemory = maxKeysInMemory;
+
 				for (const dsi in dataSets) {
 					const ds = dataSets[dsi]
 
@@ -425,7 +428,7 @@ describe('SELECT', () => {
 						let output;
 
 						before(done => {
-							jlSql.query(
+							jlSqlModified.query(
 									sql
 								)
 								.fromArrayOfObjects(ds.host)
@@ -444,22 +447,27 @@ describe('SELECT', () => {
 				}
 			};
 
-			describe('INNER JOIN', () => {
-				doTests(
-					dataSets,
-					'innerResult',
-					'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp INNER JOIN `child` AS @child ON @child.keyProp = hostKeyProp'
-				)
-			});
+			for (const maxKeysInMemory of [1, 3, 16000]) {
+				describe('Key buffer size = ' + maxKeysInMemory, () => {
+					describe('INNER JOIN', () => {
+						doTests(
+							maxKeysInMemory,
+							dataSets,
+							'innerResult',
+							'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp INNER JOIN `child` AS @child ON @child.keyProp = hostKeyProp'
+						)
+					});
 
-			describe('LEFT JOIN', () => {
-				doTests(
-					dataSets,
-					'leftResult',
-					'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp LEFT JOIN `child` AS @child ON @child.keyProp = hostKeyProp'
-				)
-			});
-
+					describe('LEFT JOIN', () => {
+						doTests(
+							maxKeysInMemory,
+							dataSets,
+							'leftResult',
+							'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp LEFT JOIN `child` AS @child ON @child.keyProp = hostKeyProp'
+						)
+					});
+				});
+			}
 		});
 	};
 

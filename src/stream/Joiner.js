@@ -37,7 +37,7 @@ class Joiner extends Readable
 
 		this.currentKey = undefined;
 		this.currentKeyMainRow = undefined;
-		this.currentKeyBuffer = new Joiner.KeyBuffer;
+		this.currentKeyBuffer = new Joiner.KeyBuffer(preparingContext);
 
 		this.keyBufferFlusher = null;
 
@@ -268,9 +268,13 @@ Joiner.KeyBuffer = class Joiner_KeyBuffer
 {
 	constructor(preparingContext)
 	{
-		this.prepringContext = preparingContext;
+		if (!preparingContext) {
+			throw new Error();
+		}
+
+		this.preparingContext = preparingContext;
 		this.items = [];
-		this.maxInMemorySize = 16000;
+		this.maxInMemorySize = preparingContext.options.joinOptions.maxKeysInMemory;
 
 		this.fileStorage = null;
 	}
@@ -298,7 +302,7 @@ Joiner.KeyBuffer = class Joiner_KeyBuffer
 
 	_convertToFileStorage(cb)
 	{
-		const tmpdir = this.preparingContext.sortOptions.tmpDir || require('os').tmpdir();
+		const tmpdir = this.preparingContext.options.joinOptions.tmpDir || require('os').tmpdir();
 		this.fileStorage = new Joiner.KeyBufferFileStorage(tmpdir, this.items);
 		this.items = [];
 		this.fileStorage.once('create', cb);
