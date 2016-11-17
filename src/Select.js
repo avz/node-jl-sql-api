@@ -61,7 +61,7 @@ class Select
 
 		this.expressions = [];
 
-		for (const [path, column] of this.columns) {
+		for (const [, column] of this.columns) {
 			this.expressions.push(column);
 		}
 

@@ -3,7 +3,6 @@
 const assert = require('assert');
 const DataSourceResolversPool = require('../../src/DataSourceResolversPool');
 const DataSourceResolver = require('../../src/DataSourceResolver');
-const DataSourceNotFound = require('../../src/error/DataSourceNotFound');
 
 describe('DataSourceResolversPool', () => {
 	const Resolver = class extends DataSourceResolver

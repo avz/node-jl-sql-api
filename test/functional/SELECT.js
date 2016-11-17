@@ -4,7 +4,7 @@ const JlSql = require('../..');
 const assert = require('assert');
 
 describe('SELECT', () => {
-	run = (jlSql) => {
+	const run = (jlSql) => {
 		describe('`SELECT * WHERE ...`', () => {
 			const input = [{hello: "world"}, {hello: "hello"}];
 

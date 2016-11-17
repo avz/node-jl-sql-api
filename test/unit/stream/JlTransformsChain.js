@@ -51,8 +51,6 @@ class Producer extends Readable
 			this.overflow = true;
 		}
 
-		const d = Date.now();
-
 		process.nextTick(() => {
 			if (this.ended) {
 				return;

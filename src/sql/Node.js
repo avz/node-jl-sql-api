@@ -25,7 +25,7 @@ class Node
 			}
 		}
 
-		const type = this.type();
+		let type = this.type();
 
 		if (opts && opts.colors) {
 			const color = util.inspect.colors[util.inspect.styles.special][0];
