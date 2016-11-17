@@ -29,7 +29,7 @@ class MIN extends AggregationFunction
 		}
 
 		if (this.max === null) {
-			this.max = args[0]
+			this.max = args[0];
 		} else {
 			this.max = args[0] > this.max ? args[0] : this.max;
 		}

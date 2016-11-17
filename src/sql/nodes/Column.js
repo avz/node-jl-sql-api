@@ -14,7 +14,7 @@ class Column extends Node
 
 	childNodes()
 	{
-		return [this.expression]
+		return [this.expression];
 	}
 }
 

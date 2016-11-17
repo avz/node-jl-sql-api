@@ -58,7 +58,8 @@ class SqlToJs
 		const frags = columnIdent.fragments;
 
 		for (let i = 0; i < frags.length - 1; i++) {
-			var fragment = frags[i];
+			const fragment = frags[i];
+
 			rel += '[' + JSON.stringify(fragment) + ']';
 			levels.push('(' + rel + ' || undefined)');
 		}
@@ -99,7 +100,7 @@ class SqlToJs
 			 */
 			const nodeKey = JSON.stringify(call.id);
 
-			const code =
+			const code = ('' +
 				'( ' + nodeKey + ' in ' + this.aggregationCacheVarName
 					+ ' ? ' + this.aggregationCacheVarName + '[' + nodeKey + ']'
 					+ ' : ('
@@ -109,7 +110,7 @@ class SqlToJs
 						+ ')'
 					+ ')'
 				+ ')'
-			;
+			);
 
 			return code;
 		}

@@ -15,6 +15,7 @@ class JsonParser extends JlTransform
 
 		for (var i = 0; i < chunk.length; i++) {
 			const json = chunk[i];
+
 			if (/^\s*$/.test(json)) {
 				continue;
 			}

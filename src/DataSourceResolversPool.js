@@ -16,6 +16,7 @@ class DataSourceResolversPool
 	{
 		for (const resolver of this.resolvers) {
 			const source = resolver.resolve(pathFragments);
+
 			if (source) {
 				return source;
 			}
@@ -27,6 +28,7 @@ class DataSourceResolversPool
 	extractAlias(pathFragments) {
 		for (const resolver of this.resolvers) {
 			const alias = resolver.extractAlias(pathFragments);
+
 			if (alias !== null) {
 				return alias;
 			}

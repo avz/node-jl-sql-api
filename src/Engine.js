@@ -34,8 +34,7 @@ class Engine
 
 		preparingContext.options = options;
 
-		const select = new Select(preparingContext, runtimeContext, SqlParser.parse(sql));
-		return select;
+		return new Select(preparingContext, runtimeContext, SqlParser.parse(sql));
 	}
 
 	createFunctionsMap()
@@ -52,6 +51,7 @@ class Engine
 
 			for (const file of files) {
 				const parsed = path.parse(file);
+
 				if (parsed.ext !== '.js') {
 					continue;
 				}

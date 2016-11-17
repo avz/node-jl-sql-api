@@ -20,7 +20,7 @@ class COALESCE extends BasicFunction
 			}
 		}
 
-		return null
+		return null;
 	}
 }
 

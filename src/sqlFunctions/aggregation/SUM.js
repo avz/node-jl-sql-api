@@ -24,6 +24,7 @@ class SUM extends AggregationFunction
 	update(args)
 	{
 		const v = parseFloat(args[0]);
+
 		if (isNaN(v)) {
 			return;
 		}

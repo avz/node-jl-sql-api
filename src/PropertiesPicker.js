@@ -20,8 +20,9 @@ class PropertiesPicker
 
 	copyPropertiesMap(paths, from, to)
 	{
-		for (let [alias, source] of paths) {
+		for (const [alias, source] of paths) {
 			let value;
+
 			if (typeof(source) === 'function') {
 				value = source(from);
 			} else {
@@ -72,6 +73,7 @@ class PropertiesPicker
 
 			if (pathOffset >= path.length - 1) {
 				obj[seg] = value;
+
 				return true;
 			}
 

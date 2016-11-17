@@ -19,12 +19,14 @@ class ReadWriteTmpFileStream extends EventEmitter
 		fs.open(p, 'wx+', 0, (err, fd) => {
 			if (err) {
 				this.emit('error', err);
+
 				return;
 			}
 
 			fs.unlink(p, (err) => {
 				if (err) {
 					this.emit('error', err);
+
 					return;
 				}
 

@@ -24,8 +24,9 @@ class Aggregation
 				continue;
 			}
 
-			for (let ac of expression.aggregationCalls) {
+			for (const ac of expression.aggregationCalls) {
 				const state = new AggregationCallRuntime(ac);
+
 				this.aggregationCalls.push(state);
 
 				aggregations[ac.node.id] = state.result.bind(state);
@@ -46,14 +47,14 @@ class Aggregation
 
 	init()
 	{
-		for (let call of this.aggregationCalls) {
+		for (const call of this.aggregationCalls) {
 			call.instance.init();
 		}
 	}
 
 	update(row)
 	{
-		for (let call of this.aggregationCalls) {
+		for (const call of this.aggregationCalls) {
 			call.update(row);
 		}
 

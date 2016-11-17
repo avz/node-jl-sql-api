@@ -6,7 +6,7 @@ const assert = require('assert');
 describe('SELECT', () => {
 	const run = (jlSql) => {
 		describe('`SELECT * WHERE ...`', () => {
-			const input = [{hello: "world"}, {hello: "hello"}];
+			const input = [{hello: 'world'}, {hello: 'hello'}];
 
 			let output;
 
@@ -31,7 +31,7 @@ describe('SELECT', () => {
 		});
 
 		describe('`SELECT [field[, ...]]`', () => {
-			const input = [{f1: "11", f2: "12", f3: "13"}];
+			const input = [{f1: '11', f2: '12', f3: '13'}];
 
 			let output;
 
@@ -144,7 +144,7 @@ describe('SELECT', () => {
 				{a: 3, b: 4},
 				{a: 1, b: 5},
 				{b: 7},
-				{a: null,b: 8}
+				{a: null, b: 8}
 			];
 
 			let output;
@@ -223,7 +223,7 @@ describe('SELECT', () => {
 				jlSql.query('SELECT k GROUP BY k ORDER BY SUM(k)')
 					.fromArrayOfObjects(input)
 					.toArrayOfObjects((r) => {
-						assert.deepEqual(r, [{k: 3}, {k: 2}, {k: 1}])
+						assert.deepEqual(r, [{k: 3}, {k: 2}, {k: 1}]);
 						done();
 					})
 				;
@@ -233,7 +233,7 @@ describe('SELECT', () => {
 				jlSql.query('SELECT k GROUP BY k ORDER BY SUM(k) DESC')
 					.fromArrayOfObjects(input)
 					.toArrayOfObjects((r) => {
-						assert.deepEqual(r, [{k: 1}, {k: 2}, {k: 3}])
+						assert.deepEqual(r, [{k: 1}, {k: 2}, {k: 3}]);
 						done();
 					})
 				;
@@ -288,7 +288,7 @@ describe('SELECT', () => {
 
 			it('alias to alias', () => {
 				assert.strictEqual(output[0].nonexistentAlias, undefined);
-			})
+			});
 
 			it('direct column to alias mapping', () => {
 				assert.strictEqual(output[0].aliasForA, input[0].a);
@@ -305,7 +305,7 @@ describe('SELECT', () => {
 
 			it('alias to undefined does not make empty deep object', () => {
 				assert.strictEqual(output[0].deepUndef, undefined);
-			})
+			});
 		});
 
 		describe('`SELECT ... XXX JOIN ...`', () => {
@@ -421,10 +421,11 @@ describe('SELECT', () => {
 
 			const doTests = (maxKeysInMemory, dataSet, resultsField, sql) => {
 				const jlSqlModified = new JlSql(JSON.parse(JSON.stringify(jlSql.options)));
+
 				jlSqlModified.options.joinOptions.maxKeysInMemory = maxKeysInMemory;
 
 				for (const dsi in dataSets) {
-					const ds = dataSets[dsi]
+					const ds = dataSets[dsi];
 
 					describe('dataset #' + (parseInt(dsi) + 1), () => {
 						let output;
@@ -457,7 +458,7 @@ describe('SELECT', () => {
 							dataSets,
 							'innerResult',
 							'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp INNER JOIN `child` AS @child ON @child.keyProp = hostKeyProp'
-						)
+						);
 					});
 
 					describe('LEFT JOIN', () => {
@@ -466,7 +467,7 @@ describe('SELECT', () => {
 							dataSets,
 							'leftResult',
 							'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp LEFT JOIN `child` AS @child ON @child.keyProp = hostKeyProp'
-						)
+						);
 					});
 				});
 			}

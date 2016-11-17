@@ -8,11 +8,15 @@ class Ident extends Node
 	{
 		super();
 
-		if(name[0] === '`') {
-			name = name.substr(1, name.length - 2);
+		let refinedName;
+
+		if (name[0] === '`') {
+			refinedName = name.substr(1, name.length - 2);
+		} else {
+			refinedName = name;
 		}
 
-		this.name = name;
+		this.name = refinedName;
 	}
 }
 

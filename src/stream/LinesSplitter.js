@@ -18,10 +18,10 @@ class LinesSplitter extends JlTransform
 
 		var bucket = [];
 
-		if(lines.length > 1) {
+		if (lines.length > 1) {
 			bucket.push(this.tail + lines[0]);
 
-			for(var i = 1; i < lines.length - 1; i++) {
+			for (var i = 1; i < lines.length - 1; i++) {
 				bucket.push(lines[i]);
 			}
 
@@ -30,7 +30,7 @@ class LinesSplitter extends JlTransform
 			this.tail += lines[lines.length - 1];
 		}
 
-		if(bucket.length) {
+		if (bucket.length) {
 			this.push(bucket);
 		}
 
@@ -39,7 +39,7 @@ class LinesSplitter extends JlTransform
 
 	_flush(cb)
 	{
-		if(this.tail.length) {
+		if (this.tail.length) {
 			this.push([this.tail]);
 			this.tail = '';
 		}

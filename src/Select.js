@@ -57,6 +57,7 @@ class Select
 		this.ast = ast;
 
 		const columnsAnalyser = new ColumnsAnalyser(preparingContext);
+
 		this.columns = columnsAnalyser.analyseColumns(ast.columns);
 
 		this.expressions = [];
@@ -77,6 +78,7 @@ class Select
 	sorter()
 	{
 		const orders = this.orders(this.ast.orders);
+
 		if (!orders.length) {
 			return null;
 		}
@@ -157,8 +159,9 @@ class Select
 
 		const orders = ordersOrGroups.map(item => {
 			const valueFunc = this.sqlToJs.nodeToFunction(item.expression);
-			valueFunc.dataType = this.expressionAnalyser.determineExpressionDataType(item.expression);
 			const direction = item.direction === 'DESC' ? Order.DIRECTION_DESC : Order.DIRECTION_ASC;
+
+			valueFunc.dataType = this.expressionAnalyser.determineExpressionDataType(item.expression);
 
 			return new Order(valueFunc, direction);
 		});
@@ -216,8 +219,10 @@ class Select
 
 		const joiningWrapper = new Mutator(row => {
 			const s = {};
+
 			s[join.joiningDataSourceName] = row;
-			return new DataRow(s)
+
+			return new DataRow(s);
 		});
 
 		const joiningSorter = this.createSorterInstance(this.orders(
@@ -253,15 +258,17 @@ class Select
 		const joins = this.joins(dataSourceResolversPool);
 
 		for (const join of joins) {
-			pipeline.push.apply(pipeline, this.joinerPipeline(join));
+			pipeline.push(...this.joinerPipeline(join));
 		}
 
 		const filter = this.filter();
+
 		if (filter) {
 			pipeline.push(filter);
 		}
 
 		const groupper = this.groupper();
+
 		if (groupper) {
 			pipeline.push(groupper);
 		} else if (this.columns.size) {
@@ -279,11 +286,13 @@ class Select
 		}
 
 		const having = this.having();
+
 		if (having) {
 			pipeline.push(having);
 		}
 
 		const sorter = this.sorter();
+
 		if (sorter) {
 			pipeline.push(sorter);
 		}

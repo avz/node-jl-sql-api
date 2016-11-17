@@ -22,7 +22,9 @@ class Join
 	parseAst(ast)
 	{
 		if (ast instanceof Nodes.Brackets) {
-			return this.parseAst(ast.expression);
+			this.parseAst(ast.expression);
+
+			return;
 		}
 
 		if (!(ast instanceof Nodes.ComparsionOperation)) {

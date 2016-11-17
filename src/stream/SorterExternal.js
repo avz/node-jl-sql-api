@@ -65,7 +65,7 @@ class SorterExternal extends JlTransformsChain
 			let def = sn + ',' + sn;
 
 			if (order.direction === Order.DIRECTION_DESC) {
-				def += 'r'
+				def += 'r';
 			}
 
 			if (dataType === DataType.NUMBER) {

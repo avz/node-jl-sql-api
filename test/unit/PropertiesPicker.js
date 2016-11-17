@@ -48,7 +48,7 @@ describe('PropertiesPicker', () => {
 		it('property of null and undefined', () => {
 			assert.strictEqual(picker.getProperty(['topNull', 'p1', 'p2'], undefined));
 			assert.strictEqual(picker.getProperty(['topUndefined', 'p1', 'p2'], undefined));
-		})
+		});
 	});
 
 	describe('setProperty()', () => {

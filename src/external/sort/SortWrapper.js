@@ -24,17 +24,18 @@ class SortWrapper
 			'-t': options.separator,
 			'--parallel': options.threads,
 	//		'--compress-program': options.compress
-		}
+		};
 
 		const args = [];
 
 		for (const opt in argsHash) {
 			const optval = argsHash[opt];
 
-			if(optval === null || optval === undefined || optval === false)
+			if (optval === null || optval === undefined || optval === false) {
 				continue;
+			}
 
-			if(optval === true) {
+			if (optval === true) {
 				args.push(opt);
 			} else {
 				args.push(opt);
@@ -56,7 +57,7 @@ class SortWrapper
 			if (code !== 0) {
 				throw new ChildProcessError(sortCmd, args, code, signal);
 			}
-		})
+		});
 
 		this.process = p;
 		this.stdin = p.stdin;

@@ -21,7 +21,7 @@ class ColumnsAnalyser
 		const columnsMap = new Map();
 
 		if (columns) {
-			for (let selectColumn of columns) {
+			for (const selectColumn of columns) {
 				const column = this.analyseColumn(selectColumn);
 
 				columnsMap.set(column.alias, column);

@@ -9,6 +9,7 @@ const nodesRoot = path.join(__dirname, 'nodes');
 
 fs.readdirSync(path.join(__dirname, 'nodes')).forEach(function(file) {
 	const p = path.parse(file);
+
 	if (p.ext !== '.js') {
 		return;
 	}

@@ -28,7 +28,7 @@ class MIN extends AggregationFunction
 		}
 
 		if (this.min === null) {
-			this.min = args[0]
+			this.min = args[0];
 		} else {
 			this.min = args[0] < this.min ? args[0] : this.min;
 		}

@@ -25,6 +25,7 @@ class SUM extends AggregationFunction
 	{
 		if (!args.length) {
 			this.count++;
+
 			return;
 		}
 

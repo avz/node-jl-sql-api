@@ -8,7 +8,7 @@ class Boolean extends Node
 	{
 		super();
 
-		this.needle = needle
+		this.needle = needle;
 		this.haystack = haystack;
 	}
 

@@ -25,7 +25,7 @@ class CutWrapper
 			if (code !== 0) {
 				throw new ChildProcessError(cmd, args, code, signal);
 			}
-		})
+		});
 
 		this.process = p;
 		this.stdin = p.stdin;

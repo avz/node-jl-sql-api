@@ -19,8 +19,8 @@ class Node
 	{
 		var obj = {};
 
-		for (let k in this) {
-			if(this.hasOwnProperty(k)) {
+		for (const k in this) {
+			if (this.hasOwnProperty(k)) {
 				obj[k] = this[k];
 			}
 		}
@@ -45,10 +45,10 @@ class Node
 	{
 		const childs = this.childNodes();
 
-		for (let child of childs) {
+		for (const child of childs) {
 			yield child;
 
-			for (let subchild of child.eachChildNodeRecursive()) {
+			for (const subchild of child.eachChildNodeRecursive()) {
 				yield subchild;
 			}
 		}
@@ -58,7 +58,7 @@ class Node
 	{
 		const nodes = [];
 
-		for (let f of this.eachChildNodeRecursive()) {
+		for (const f of this.eachChildNodeRecursive()) {
 			nodes.push(f);
 		}
 

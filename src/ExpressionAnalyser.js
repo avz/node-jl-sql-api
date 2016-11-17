@@ -21,7 +21,7 @@ class ExpressionAnalyser
 			}
 
 			return false;
-		}
+		};
 
 		if (expression instanceof SqlNodes.Call) {
 			if (callIsAggregation(expression)) {
@@ -64,6 +64,7 @@ class ExpressionAnalyser
 
 		if (expression instanceof SqlNodes.Call) {
 			const func = this.preparingContext.functionsMap.need(expression.function.fragments);
+
 			return func.dataType();
 		}
 

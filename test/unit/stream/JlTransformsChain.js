@@ -13,8 +13,9 @@ class SlowConsumer
 
 		readableStream.on('readable', () => {
 			const reader = () => {
-				let d
-				while((d = readableStream.read())) {
+				let d;
+
+				while ((d = readableStream.read())) {
 					if (d) {
 						this.consumed++;
 					}
@@ -75,7 +76,7 @@ describe('JlTransformsChain', () => {
 			chain.on('end', () => {
 				assert.ok(producer.produced - consumer.consumed < 100);
 				done();
-			})
+			});
 		}, 10);
 	});
 

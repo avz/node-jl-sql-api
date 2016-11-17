@@ -26,6 +26,7 @@ class BasicExpression
 			 * берётся из свойства без всякой обработки
 			 */
 			const path = this.expression.fragments.slice();
+
 			path.unshift(DataRow.SOURCES_PROPERTY);
 
 			return path;

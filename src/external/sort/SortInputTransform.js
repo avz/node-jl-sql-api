@@ -22,6 +22,7 @@ class SortInputTransform extends Transform
 
 		for (const row of chunk) {
 			const columnValues = [];
+
 			for (const order of this.orders) {
 				let v = order.valueFunction(row);
 

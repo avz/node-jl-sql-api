@@ -13,11 +13,12 @@ class PublicApi
 	 */
 	constructor(options = new PublicApiOptions)
 	{
-		if (!(options instanceof PublicApiOptions)) {
-			options = new PublicApiOptions(options);
+		if (options instanceof PublicApiOptions) {
+			this.options = options;
+		} else {
+			this.options = new PublicApiOptions(options);
 		}
 
-		this.options = options;
 		this.engine = new Engine();
 	}
 

@@ -19,9 +19,9 @@ describe('DataSourceResolversPool', () => {
 				return null;
 			}
 
-			path = path.slice(1);
+			const p = path.slice(1);
 
-			return this.prefix + '::path::' + path.join('/');
+			return this.prefix + '::path::' + p.join('/');
 		}
 
 		extractAlias(path)
@@ -30,11 +30,11 @@ describe('DataSourceResolversPool', () => {
 				return null;
 			}
 
-			path = path.slice(1);
+			const p = path.slice(1);
 
-			return this.prefix + '::alias::' + path.join('/');
+			return this.prefix + '::alias::' + p.join('/');
 		}
-	}
+	};
 
 	const resolver1 = new Resolver('first');
 	const resolver2 = new Resolver('second');
@@ -42,6 +42,7 @@ describe('DataSourceResolversPool', () => {
 
 	describe('resolve()', () => {
 		const pool = new DataSourceResolversPool;
+
 		pool.add(resolver1);
 		pool.add(resolver2);
 		pool.add(resolver3);
@@ -59,6 +60,7 @@ describe('DataSourceResolversPool', () => {
 
 	describe('extractAlias()', () => {
 		const pool = new DataSourceResolversPool;
+
 		pool.add(resolver1);
 		pool.add(resolver2);
 		pool.add(resolver3);

@@ -27,17 +27,18 @@ class AggregationExpression extends BasicExpression
 
 		const nodes = this.expression.childNodesRecursive().concat([this.expression]);
 
-		for (let node of nodes) {
+		for (const node of nodes) {
 			if (!(node instanceof SqlNodes.Call)) {
 				continue;
 			}
 
 			const func = this.preparingContext.functionsMap.need(node.function.fragments);
+
 			if (!(func.prototype instanceof AggregationFunction)) {
 				continue;
 			}
 
-			for (let arg of node.args) {
+			for (const arg of node.args) {
 				if (this.expressionAnalyser.isAggregationExpression(arg)) {
 					throw new SqlLogicError('Nested aggregation function is not alowed');
 				}

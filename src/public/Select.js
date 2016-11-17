@@ -32,6 +32,7 @@ class Select
 	fromJsonStream(stream)
 	{
 		const chain = [new LinesSplitter, new JsonParser];
+
 		if (stream) {
 			chain.unshift(stream);
 		}
