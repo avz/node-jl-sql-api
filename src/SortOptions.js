@@ -1,4 +1,4 @@
-const ProgramError = require('../../error/ProgramError');
+const ProgramError = require('./error/ProgramError');
 
 class SortOptions
 {
