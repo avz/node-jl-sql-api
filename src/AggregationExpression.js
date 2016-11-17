@@ -4,6 +4,7 @@ const AggregationFunction = require('./AggregationFunction');
 const AggregationCall = require('./AggregationCall');
 const SqlLogicError = require('./error/SqlLogicError');
 const DataRow = require('./DataRow');
+const ExpressionAnalyser = require('./ExpressionAnalyser');
 
 class AggregationExpression extends BasicExpression
 {
@@ -11,6 +12,7 @@ class AggregationExpression extends BasicExpression
 	{
 		super(preparingContext, expression);
 
+		this.expressionAnalyser = new ExpressionAnalyser(preparingContext);
 		this.aggregationCalls = this.createAggregationCalls();
 
 		this.result = () => preparingContext.sqlToJs.nodeToFunction(expression)(new DataRow({}));
@@ -34,7 +36,7 @@ class AggregationExpression extends BasicExpression
 			}
 
 			for (let arg of node.args) {
-				if (this.preparingContext.isAggregationExpression(arg)) {
+				if (this.expressionAnalyser.isAggregationExpression(arg)) {
 					throw new SqlLogicError('Nested aggregation function is not alowed');
 				}
 			}

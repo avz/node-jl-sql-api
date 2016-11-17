@@ -3,6 +3,7 @@ const BasicColumn = require('./BasicColumn');
 const AggregationColumn = require('./AggregationColumn');
 const SqlLogicError = require('./error/SqlLogicError');
 const BasicExpression = require('./BasicExpression');
+const ExpressionAnalyser = require('./ExpressionAnalyser');
 const AggregationExpression = require('./AggregationExpression');
 
 const AggregationFunction = require('./AggregationFunction');
@@ -11,6 +12,7 @@ class ColumnsAnalyser
 {
 	constructor(preparingContext)
 	{
+		this.expressionAnalyser = new ExpressionAnalyser(preparingContext);
 		this.preparingContext = preparingContext;
 	}
 
@@ -31,7 +33,7 @@ class ColumnsAnalyser
 
 	analyseExpression(expression)
 	{
-		if (this.preparingContext.isAggregationExpression(expression)) {
+		if (this.expressionAnalyser.isAggregationExpression(expression)) {
 			return new AggregationExpression(this.preparingContext, expression);
 		} else {
 			return new BasicExpression(this.preparingContext, expression);
@@ -71,7 +73,7 @@ class ColumnsAnalyser
 	 */
 	column(alias, expression)
 	{
-		if (this.preparingContext.isAggregationExpression(expression)) {
+		if (this.expressionAnalyser.isAggregationExpression(expression)) {
 			return new AggregationColumn(this.preparingContext, alias, expression);
 		} else {
 			return new BasicColumn(this.preparingContext, alias, expression);

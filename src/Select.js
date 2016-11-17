@@ -18,6 +18,7 @@ const JlPassThrough = require('./stream/JlPassThrough');
 const DataRow = require('./DataRow');
 const DataSource = require('./DataSource');
 const Nodes = require('./sql/Nodes');
+const ExpressionAnalyser = require('./ExpressionAnalyser');
 
 const SqlNotSupported = require('./error/SqlNotSupported');
 const SqlLogicError = require('./error/SqlLogicError');
@@ -46,6 +47,8 @@ class Select
 		 * @type {PreparingContext}
 		 */
 		this.preparingContext = preparingContext;
+
+		this.expressionAnalyser = new ExpressionAnalyser(this.preparingContext);
 
 		/**
 		 * @type {PreparingContext}
@@ -155,7 +158,7 @@ class Select
 
 		const orders = ordersOrGroups.map(item => {
 			const valueFunc = this.sqlToJs.nodeToFunction(item.expression);
-			valueFunc.dataType = this.preparingContext.determineExpressionDataType(item.expression);
+			valueFunc.dataType = this.expressionAnalyser.determineExpressionDataType(item.expression);
 			const direction = item.direction === 'DESC' ? Order.DIRECTION_DESC : Order.DIRECTION_ASC;
 
 			return new Order(valueFunc, direction);
