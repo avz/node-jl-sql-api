@@ -140,7 +140,9 @@ describe('SELECT', () => {
 				{a: 1, b: 3},
 				{a: 3, b: 6},
 				{a: 3, b: 4},
-				{a: 1, b: 5}
+				{a: 1, b: 5},
+				{b: 7},
+				{a: null,b: 8}
 			];
 
 			let output;
@@ -159,9 +161,11 @@ describe('SELECT', () => {
 				assert.deepEqual(
 					output,
 					[
+						{count: 1},
 						{a: 1, count: 2},
 						{a: 2, count: 1},
-						{a: 3, count: 2}
+						{a: 3, count: 2},
+						{a: null, count: 1}
 					]
 				);
 			});

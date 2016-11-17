@@ -1,4 +1,5 @@
 const Transform = require('stream').Transform;
+const DataType = require('../../DataType');
 
 class SortInputTransform extends Transform
 {
@@ -20,8 +21,11 @@ class SortInputTransform extends Transform
 		for (const row of chunk) {
 			const columnValues = [];
 			for (const order of this.orders) {
-				const v = order.valueFunction(row);
-				const json = v === undefined ? '' : JSON.stringify(v + '');
+				let v = order.valueFunction(row);
+
+				if (order.valueFunction.dataType === DataType.MIXED) {
+					v = v === undefined ? '' : JSON.stringify(v + '');
+				}
 
 				columnValues.push(v);
 			}
