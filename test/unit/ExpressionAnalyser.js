@@ -3,6 +3,7 @@ const PreparingContext = require('../../src/PreparingContext');
 const ExpressionAnalyser = require('../../src/ExpressionAnalyser');
 const FunctionsMap = require('../../src/FunctionsMap');
 const BasicFunction = require('../../src/BasicFunction');
+const AggregationFunction = require('../../src/AggregationFunction');
 const DataType = require('../../src/DataType');
 const SqlParser = require('../../src/sql/Parser');
 
@@ -25,6 +26,9 @@ describe('ExpressionAnalyser', () => {
 			{
 				return DataType.NUMBER;
 			}
+		},
+		AGG: class extends AggregationFunction {
+
 		}
 	};
 
@@ -64,6 +68,28 @@ describe('ExpressionAnalyser', () => {
 				const node = s.columns[0].expression;
 
 				assert.strictEqual(expressionAnalyser.determineExpressionDataType(node), type);
+			});
+		}
+	});
+
+	describe('isAggregationExpression()', () => {
+		const cases = {
+			'AGG(hello)': true,
+			'STRING(hello)': false,
+			'STRING(AGG(hello))': true,
+			'STRING(hello) + AGG(hello)': true,
+			'(STRING(hello) + AGG(hello))': true,
+			'1': false
+		};
+
+		for (const expression in cases) {
+			const isAggregation = cases[expression];
+
+			it('expression: `' + expression + '` must be ' + isAggregation, () => {
+				const s = SqlParser.parse('SELECT ' + expression);
+				const node = s.columns[0].expression;
+
+				assert.strictEqual(expressionAnalyser.isAggregationExpression(node), isAggregation);
 			});
 		}
 	});
