@@ -8,8 +8,6 @@ const JsonStringifier = require('../stream/JsonStringifier');
 const LinesJoiner = require('../stream/LinesJoiner');
 const ChunkSplitter = require('../stream/ChunkSplitter');
 
-const PassThrough = require('stream').PassThrough;
-
 const DataSource = require('../DataSource');
 
 const JsonParser = require('../stream/JsonParser');

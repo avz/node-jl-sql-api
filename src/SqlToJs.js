@@ -1,6 +1,5 @@
 'use strict';
 
-const SqlNodes = require('./sql/Nodes');
 const AggregationFunction = require('./AggregationFunction');
 
 const ProgramError = require('./error/ProgramError');

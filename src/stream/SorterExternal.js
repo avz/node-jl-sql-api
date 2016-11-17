@@ -1,12 +1,10 @@
 'use strict';
 
-const JlTransform = require('./JlTransform');
 const JlTransformsChain = require('./JlTransformsChain');
 const Order = require('../Order');
 const SortWrapper = require('../external/sort/SortWrapper');
 const CutWrapper = require('../external/CutWrapper');
 const SortInputTransform = require('../external/sort/SortInputTransform');
-const SortOptions = require('../SortOptions');
 const LinesSplitter = require('./LinesSplitter');
 const JsonParser = require('./JsonParser');
 const Terminator = require('./Terminator');

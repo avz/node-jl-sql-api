@@ -1,10 +1,7 @@
 'use strict';
 
-const Duplex = require('stream').Duplex;
 const Transform = require('stream').Transform;
-
 const JlTransform = require('./JlTransform');
-const Terminator = require('./Terminator');
 
 class JlTransformsChain extends Transform
 {

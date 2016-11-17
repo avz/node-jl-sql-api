@@ -8,8 +8,6 @@ const BasicExpression = require('./BasicExpression');
 const ExpressionAnalyser = require('./ExpressionAnalyser');
 const AggregationExpression = require('./AggregationExpression');
 
-const AggregationFunction = require('./AggregationFunction');
-
 class ColumnsAnalyser
 {
 	constructor(preparingContext)

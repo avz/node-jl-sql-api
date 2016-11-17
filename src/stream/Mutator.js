@@ -1,7 +1,6 @@
 'use strict';
 
 const JlTransform = require('./JlTransform');
-const DataRow = require('../DataRow');
 
 class Mutator extends JlTransform
 {

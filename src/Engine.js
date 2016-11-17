@@ -2,7 +2,6 @@
 
 const SqlParser = require('./sql/Parser');
 const SqlToJs = require('./SqlToJs');
-const JlTransformsChain = require('./stream/JlTransformsChain');
 const PreparingContext = require('./PreparingContext');
 const RuntimeContext = require('./RuntimeContext');
 const FunctionsMap = require('./FunctionsMap');

@@ -6,9 +6,7 @@ const Join = require('../Join');
 const EventEmitter = require('events');
 const ReadWriteTmpFileStream = require('./ReadWriteTmpFileStream');
 
-const JsonStringifier = require('./JsonStringifier');
 const JsonParser = require('./JsonParser');
-const LinesJoiner = require('./LinesJoiner');
 const LinesSplitter = require('./LinesSplitter');
 
 const ProgramError = require('../error/ProgramError');

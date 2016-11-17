@@ -21,8 +21,6 @@ class Explainer
 			for (const child of stream.streams) {
 				explain.childs.push(this._createItemsByTransform(child));
 			}
-		} else {
-
 		}
 
 		return explain;
