@@ -1,3 +1,5 @@
+'use strict';
+
 const JlTransform = require('../stream/JlTransform');
 const JlTransformsChain = require('../stream/JlTransformsChain');
 const JlPassThrough = require('../stream/JlPassThrough');

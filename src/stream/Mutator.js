@@ -1,3 +1,5 @@
+'use strict';
+
 const JlTransform = require('./JlTransform');
 const DataRow = require('../DataRow');
 

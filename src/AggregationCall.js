@@ -1,3 +1,5 @@
+'use strict';
+
 class AggregationCall
 {
 	constructor(sqlToJs, node, func)

@@ -1,3 +1,5 @@
+'use strict';
+
 const DataSourceResolver = require('./DataSourceResolver');
 const ComplexIdentsMap = require('./ComplexIdentsMap');
 

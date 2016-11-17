@@ -1,3 +1,5 @@
+'use strict';
+
 const Nodes = require('./sql/Nodes');
 const SqlNotSupported = require('./error/SqlNotSupported');
 

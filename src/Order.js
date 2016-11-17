@@ -1,3 +1,5 @@
+'use strict';
+
 class Order
 {
 	constructor(valueFunction, direction, collation = null)

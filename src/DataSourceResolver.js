@@ -1,3 +1,5 @@
+'use strict';
+
 const ImplementationRequired = require('./error/ImplementationRequired');
 
 class DataSourceResolver

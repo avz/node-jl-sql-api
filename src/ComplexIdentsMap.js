@@ -1,3 +1,5 @@
+'use strict';
+
 const AlreadyExists = require('./error/AlreadyExists');
 const NotFound = require('./error/NotFound');
 

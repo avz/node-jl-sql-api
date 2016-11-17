@@ -1,3 +1,5 @@
+'use strict';
+
 const JlTransform = require('./JlTransform');
 const JlTransformsChain = require('./JlTransformsChain');
 const Order = require('../Order');

@@ -1,3 +1,5 @@
+'use strict';
+
 const JlTransform = require('./JlTransform');
 const PropertiesPicker = require('../PropertiesPicker');
 const DataRow = require('../DataRow');

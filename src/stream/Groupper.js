@@ -1,3 +1,5 @@
+'use strict';
+
 const JlTransform = require('./JlTransform');
 
 class Groupper extends JlTransform

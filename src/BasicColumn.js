@@ -1,3 +1,5 @@
+'use strict';
+
 const BasicExpression = require('./BasicExpression');
 
 class BasicColumn extends BasicExpression

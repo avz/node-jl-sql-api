@@ -1,3 +1,5 @@
+'use strict';
+
 const Duplex = require('stream').Duplex;
 const Transform = require('stream').Transform;
 

@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require('assert');
 const DataSourceResolversPool = require('../../src/DataSourceResolversPool');
 const DataSourceResolver = require('../../src/DataSourceResolver');

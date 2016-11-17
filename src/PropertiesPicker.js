@@ -1,3 +1,5 @@
+'use strict';
+
 class PropertiesPicker
 {
 	copyProperties(paths, from, to)

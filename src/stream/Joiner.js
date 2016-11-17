@@ -1,3 +1,5 @@
+'use strict';
+
 const JlTransform = require('./JlTransform');
 const Readable = require('stream').Readable;
 const Join = require('../Join');

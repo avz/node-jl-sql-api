@@ -1,3 +1,5 @@
+'use strict';
+
 const ColumnsAnalyser = require('./ColumnsAnalyser');
 const SorterInMemory = require('./stream/SorterInMemory');
 const SorterExternal = require('./stream/SorterExternal');

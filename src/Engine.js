@@ -1,3 +1,5 @@
+'use strict';
+
 const SqlParser = require('./sql/Parser');
 const SqlToJs = require('./SqlToJs');
 const JlTransformsChain = require('./stream/JlTransformsChain');

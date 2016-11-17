@@ -1,3 +1,5 @@
+'use strict';
+
 const ImplementationRequired = require('./error/ImplementationRequired');
 const SqlFunctionArgumentError = require('./error/SqlFunctionArgumentError');
 

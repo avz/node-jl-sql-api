@@ -1,3 +1,5 @@
+'use strict';
+
 const PassThrough = require('stream').PassThrough;
 
 class JlPassThrough extends PassThrough

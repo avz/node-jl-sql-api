@@ -1,3 +1,5 @@
+'use strict';
+
 const BasicFunction = require('../../BasicFunction');
 const DataType = require('../../DataType');
 

@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require('assert');
 const FunctionMap = require('../../src/FunctionsMap');
 

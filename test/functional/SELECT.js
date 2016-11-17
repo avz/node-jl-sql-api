@@ -1,3 +1,5 @@
+'use strict';
+
 const JlSql = require('../..');
 const assert = require('assert');
 

@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require('assert');
 const JlTransformsChain = require('../../../src/stream/JlTransformsChain');
 const Readable = require('stream').Readable;

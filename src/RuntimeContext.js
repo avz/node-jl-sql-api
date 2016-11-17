@@ -1,3 +1,5 @@
+'use strict';
+
 const BasicFunction = require('./BasicFunction');
 const ProgramError = require('./error/ProgramError');
 

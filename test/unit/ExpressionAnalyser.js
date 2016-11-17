@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require('assert');
 const PreparingContext = require('../../src/PreparingContext');
 const ExpressionAnalyser = require('../../src/ExpressionAnalyser');

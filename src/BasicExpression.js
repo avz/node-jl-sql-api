@@ -1,3 +1,5 @@
+'use strict';
+
 const SqlNodes = require('./sql/Nodes');
 const DataRow = require('./DataRow');
 

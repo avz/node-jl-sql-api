@@ -1,3 +1,5 @@
+'use strict';
+
 const NotFound = require('./NotFound');
 
 class DataSourceNotFound extends NotFound

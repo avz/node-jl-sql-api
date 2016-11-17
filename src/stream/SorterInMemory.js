@@ -1,3 +1,5 @@
+'use strict';
+
 const JlTransform = require('./JlTransform');
 const Order = require('../Order');
 const DataType = require('../DataType');

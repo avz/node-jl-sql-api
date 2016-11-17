@@ -1,3 +1,5 @@
+'use strict';
+
 class ChildProcessError extends Error
 {
 	constructor(cmd, args, statusCode, signal)

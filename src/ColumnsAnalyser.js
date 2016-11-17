@@ -1,3 +1,5 @@
+'use strict';
+
 const SqlNodes = require('./sql/Nodes');
 const BasicColumn = require('./BasicColumn');
 const AggregationColumn = require('./AggregationColumn');

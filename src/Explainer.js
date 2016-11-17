@@ -1,3 +1,5 @@
+'use strict';
+
 const JlTransformsChain = require('./stream/JlTransformsChain');
 
 class Explainer

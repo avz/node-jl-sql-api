@@ -1,3 +1,5 @@
+'use strict';
+
 const SqlNodes = require('./sql/Nodes');
 const BasicExpression = require('./BasicExpression');
 const AggregationFunction = require('./AggregationFunction');

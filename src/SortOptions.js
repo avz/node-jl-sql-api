@@ -1,3 +1,5 @@
+'use strict';
+
 const ProgramError = require('./error/ProgramError');
 
 class SortOptions

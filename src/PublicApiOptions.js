@@ -1,3 +1,5 @@
+'use strict';
+
 const SortOptions = require('./SortOptions');
 const JoinOptions = require('./JoinOptions');
 const ProgramError = require('./error/ProgramError');

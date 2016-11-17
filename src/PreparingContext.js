@@ -1,3 +1,5 @@
+'use strict';
+
 const PublicApiOptions = require('./PublicApiOptions');
 
 /**

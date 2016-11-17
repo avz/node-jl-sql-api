@@ -1,3 +1,5 @@
+'use strict';
+
 const BasicColumn = require('./BasicColumn');
 const AggregationColumn = require('./AggregationColumn');
 const AggregationExpression = require('./AggregationExpression');

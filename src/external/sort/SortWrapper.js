@@ -1,3 +1,5 @@
+'use strict';
+
 const ChildProcessError = require('../../error/ChildProcessError');
 
 class SortWrapper

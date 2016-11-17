@@ -1,3 +1,5 @@
+'use strict';
+
 const Node = require('../Node');
 const Limit = require('./Limit')
 

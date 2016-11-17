@@ -1,3 +1,5 @@
+'use strict';
+
 const AggregationExpression = require('./AggregationExpression');
 
 class AggregationColumn extends AggregationExpression
