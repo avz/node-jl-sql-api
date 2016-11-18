@@ -76,9 +76,9 @@ var Nodes = require('./Nodes.js');
 %left 'AND' 'OR'
 %left '>' '<' '>=' '<='
 
+%left '=' '==' '!=' '===' '!=='
 %left '+' '-'
 %left '*' '/' '%'
-%left '=' '==' '!=' '===' '!=='
 %left 'COUNT'
 %left 'FROM' 'AS' 'DISTINCT' 'IN' 'WHERE' 'HAVING' 'LIMIT' 'OFFSET'
 %left 'ORDER' 'GROUP' 'BY' 'ASC' 'DESC'
