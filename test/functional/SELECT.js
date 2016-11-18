@@ -419,7 +419,7 @@ describe('SELECT', () => {
 				}
 			];
 
-			const doTests = (maxKeysInMemory, dataSet, resultsField, sql) => {
+			const doTests = (maxKeysInMemory, dataSets, resultsField, sql) => {
 				const jlSqlModified = new JlSql(JSON.parse(JSON.stringify(jlSql.options)));
 
 				jlSqlModified.options.joinOptions.maxKeysInMemory = maxKeysInMemory;
