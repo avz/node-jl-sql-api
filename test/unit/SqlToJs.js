@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require('assert');
 const SqlToJs = require('../../src/SqlToJs');
 const RuntimeContext = require('../../src/RuntimeContext');
