@@ -212,10 +212,9 @@ class Select
 
 	joinerPipeline(join)
 	{
-		if (join.mainDataSourceSortingsColumns.length !== 1 || join.mainDataSourceSortingsColumns.length !== 1) {
+		if (join.mainDataSourceSortingsColumns.length < 1 || join.mainDataSourceSortingsColumns.length < 1) {
 			throw new NotSupported;
 		}
-
 
 		const joiningWrapper = new Mutator(row => {
 			const s = {};

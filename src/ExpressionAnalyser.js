@@ -70,6 +70,28 @@ class ExpressionAnalyser
 
 		return DataType.MIXED;
 	}
+
+	/**
+	 * Ищет имена использованных в выражении источников данных
+	 * @param {Node} expression
+	 * @returns {string[]}
+	 */
+	extractUsedSources(expression)
+	{
+		if (expression instanceof SqlNodes.ComplexIdent) {
+			return [expression.fragments[0]];
+		}
+
+		const used = {};
+
+		for (const child of expression.childNodes()) {
+			for (const name of this.extractUsedSources(child)) {
+				used[name] = true;
+			}
+		}
+
+		return Object.keys(used);
+	}
 }
 
 module.exports = ExpressionAnalyser;

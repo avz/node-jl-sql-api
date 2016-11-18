@@ -165,7 +165,14 @@ class SqlToJs
 
 	codeFrom_BinaryOperation(binary)
 	{
-		return this.nodeToCode(binary.left) + ' ' + binary.operator + ' ' + this.nodeToCode(binary.right);
+		const left = this.nodeToCode(binary.left);
+		const right = this.nodeToCode(binary.right);
+
+		if (binary.operator === '+') {
+			return `((${left}) - 0) ${binary.operator} ((${right}) - 0)`;
+		}
+
+		return `${left} ${binary.operator} ${right}`;
 	}
 
 	codeFrom_BinaryArithmeticOperation(binary)

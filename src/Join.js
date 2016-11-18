@@ -2,6 +2,7 @@
 
 const Nodes = require('./sql/Nodes');
 const SqlNotSupported = require('./error/SqlNotSupported');
+const ExpressionAnalyser = require('./ExpressionAnalyser');
 
 class Join
 {
@@ -35,27 +36,28 @@ class Join
 			throw new SqlNotSupported('Only operator = is supported yet in JOIN ON');
 		}
 
-		if (!(ast.left instanceof Nodes.ColumnIdent) || !(ast.right instanceof Nodes.ColumnIdent)) {
-			throw new SqlNotSupported('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
-		}
+		const expressionAnalyser = new ExpressionAnalyser(this.preparingContext);
+		const usedLeft = expressionAnalyser.extractUsedSources(ast.left);
+		const usedRight = expressionAnalyser.extractUsedSources(ast.right);
 
 		const sortingJoining = [];
 		const sortingMain = [];
 
-		if (ast.left.fragments[0] === this.joiningDataSourceName) {
+		if (usedLeft.includes(this.joiningDataSourceName)) {
+			if (usedRight.includes(this.joiningDataSourceName) || usedLeft.length > 1) {
+				throw new SqlNotSupported('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
+			}
+
 			sortingJoining.push(ast.left);
-		} else {
-			sortingMain.push(ast.left);
-		}
-
-		if (ast.right.fragments[0] === this.joiningDataSourceName) {
-			sortingJoining.push(ast.right);
-		} else {
 			sortingMain.push(ast.right);
-		}
 
-		if (sortingJoining.length !== 1 || sortingMain.length !== 1) {
-			throw new SqlNotSupported('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
+		} else if (usedRight.includes(this.joiningDataSourceName)) {
+			if (usedLeft.includes(this.joiningDataSourceName) || usedRight.length > 1) {
+				throw new SqlNotSupported('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
+			}
+
+			sortingJoining.push(ast.right);
+			sortingMain.push(ast.left);
 		}
 
 		this.joiningDataSourceSortingsColumns = sortingJoining;
