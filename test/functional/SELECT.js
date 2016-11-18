@@ -452,23 +452,28 @@ describe('SELECT', () => {
 
 			for (const maxKeysInMemory of [1, 3, 16000]) {
 				describe('Key buffer size = ' + maxKeysInMemory, () => {
-					describe('INNER JOIN', () => {
-						doTests(
-							maxKeysInMemory,
-							dataSets,
-							'innerResult',
-							'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp INNER JOIN `child` AS @child ON @child.keyProp = hostKeyProp'
-						);
-					});
+					const joins = [['INNER', 'innerResult'], ['LEFT', 'leftResult']];
 
-					describe('LEFT JOIN', () => {
-						doTests(
-							maxKeysInMemory,
-							dataSets,
-							'leftResult',
-							'SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp LEFT JOIN `child` AS @child ON @child.keyProp = hostKeyProp'
-						);
-					});
+					for (const [joinType, resultProp] of joins) {
+						const cases = [
+							'@child.keyProp = hostKeyProp',
+							'hostKeyProp = @child.keyProp',
+							'STRING(hostKeyProp) = STRING(@child.keyProp)',
+							'NUMBER(hostKeyProp) = NUMBER(@child.keyProp)',
+							'hostKeyProp + 0 = @child.keyProp + 0'
+						];
+
+						for (const onExpression of cases) {
+							describe(`${joinType} JOIN ON ${onExpression}`, () => {
+								doTests(
+									maxKeysInMemory,
+									dataSets,
+									resultProp,
+									`SELECT hostSomeProp, hostKeyProp, @child.keyProp, @child.someProp ${joinType} JOIN \`child\` AS @child ON ${onExpression}`
+								);
+							});
+						}
+					}
 				});
 			}
 		});

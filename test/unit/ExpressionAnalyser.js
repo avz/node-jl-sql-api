@@ -95,4 +95,26 @@ describe('ExpressionAnalyser', () => {
 			});
 		}
 	});
+
+	describe('extractUsedSources()', () => {
+		const cases = {
+			'hello': ['@'],
+			'@hello.world': ['@hello'],
+			'(hello)': ['@'],
+			'(@hello.world)': ['@hello'],
+			'a + @b.c + @b.d + @c.d + @c.e + @d.f': ['@', '@b', '@c', '@d'],
+			'FUNC(a, @a.b)': ['@', '@a']
+		};
+
+		for (const sql in cases) {
+			const result = cases[sql];
+
+			it('expression `' + sql + '` mus use ' + result.join(', '), () => {
+				const s = SqlParser.parse('SELECT ' + sql);
+				const node = s.columns[0].expression;
+
+				assert.deepEqual(expressionAnalyser.extractUsedSources(node).sort(), result);
+			});
+		}
+	});
 });
