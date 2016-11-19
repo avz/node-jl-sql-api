@@ -34,11 +34,14 @@ class JlTransformsChain extends Transform
 			this.push(null);
 		});
 
-		this.lastStream.on('data', (d) => {
-			if (!this.push(d)) {
-				this.lastStream.pause();
-			}
-		});
+		// workaround for process.stdin, which has special handle of on('data')
+		if (!this.lastStream.isTTY) {
+			this.lastStream.on('data', (d) => {
+				if (!this.push(d)) {
+					this.lastStream.pause();
+				}
+			});
+		}
 
 		for (let i = 0; i < streams.length - 1; i++) {
 			if (streams[i].isTerminator || streams[i + 1].isTerminator) {
@@ -51,6 +54,10 @@ class JlTransformsChain extends Transform
 
 			streams[i].pipe(streams[i + 1]);
 		}
+
+		this.lastStream.on('error', (e) => {
+			this.emit('error', e);
+		});
 	}
 
 	_transform(chunk, encoding, callback)

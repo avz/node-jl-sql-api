@@ -24,35 +24,37 @@ class SelectFrom
 		this.inputStream = inputStream;
 	}
 
-	toObjectsStream(stream)
+	toObjectsStream(stream = null)
 	{
-		const chain = new JlTransformsChain([
+		const chain = [
 			this.inputStream,
 			this.select.select.stream(this.select.dataSourceResolversPool),
 			new ChunkSplitter
-		]);
+		];
 
 		if (stream) {
-			return chain.pipe(stream);
+			stream.push(stream);
 		}
 
-		return chain;
+		return new JlTransformsChain(chain);
 	}
 
-	toJsonStream(outputStream)
+	toJsonStream(outputStream = null)
 	{
-		const chain = new JlTransformsChain([
+		const chain = [
 			this.inputStream,
 			this.select.select.stream(this.select.dataSourceResolversPool),
 			new JsonStringifier,
 			new LinesJoiner
-		]);
+		];
 
 		if (outputStream) {
-			return chain.pipe(outputStream);
+			chain.push(outputStream);
 		}
 
-		return chain;
+		const stream = new JlTransformsChain(chain);
+
+		return stream;
 	}
 
 	toArrayOfObjects(cb)
@@ -88,7 +90,7 @@ class SelectFrom
 
 	addJsonStream(location, stream)
 	{
-		const chain = stream.pipe(new LinesSplitter).pipe(new JsonParser);
+		const chain = new JlTransformsChain([stream, new LinesSplitter, new JsonParser]);
 
 		this.select.dataSourceApiResolver.addDataSource(
 			this._path(location),

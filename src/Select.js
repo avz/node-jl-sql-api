@@ -238,7 +238,7 @@ class Select
 			this.sqlToJs.nodeToFunction(join.mainDataSourceSortingsColumns[0]),
 			mainSorter,
 			this.sqlToJs.nodeToFunction(join.joiningDataSourceSortingsColumns[0]),
-			join.joiningDataSource.stream.pipe(joiningWrapper).pipe(joiningSorter)
+			new JlTransformsChain([join.joiningDataSource.stream, joiningWrapper, joiningSorter])
 		);
 
 		return [

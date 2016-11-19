@@ -43,6 +43,14 @@ class Joiner extends Readable
 
 		this.mainBuffer = new Joiner.InputBuffer(mainStreamSorted);
 		this.joiningBuffer = new Joiner.InputBuffer(joiningStreamSorted);
+
+		mainStreamSorted.on('error', (err) => {
+			this.emit('error', err);
+		});
+
+		joiningStreamSorted.on('error', (err) => {
+			this.emit('error', err);
+		});
 	}
 
 	mainKey(row)
