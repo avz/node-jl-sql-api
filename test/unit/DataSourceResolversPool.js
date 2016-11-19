@@ -21,7 +21,10 @@ describe('DataSourceResolversPool', () => {
 
 			const p = path.slice(1);
 
-			return this.prefix + '::path::' + p.join('/');
+			return {
+				outputType: true,
+				ident: this.prefix + '::path::' + p.join('/')
+			};
 		}
 
 		extractAlias(path)
@@ -48,9 +51,9 @@ describe('DataSourceResolversPool', () => {
 		pool.add(resolver3);
 
 		it('found', () => {
-			assert.strictEqual(pool.resolve(['first', 'hello']).stream, 'first::path::hello');
-			assert.strictEqual(pool.resolve(['second', 'hello']).stream, 'second::path::hello');
-			assert.strictEqual(pool.resolve(['third', 'hello']).stream, 'third::path::hello');
+			assert.strictEqual(pool.resolve(['first', 'hello']).stream.ident, 'first::path::hello');
+			assert.strictEqual(pool.resolve(['second', 'hello']).stream.ident, 'second::path::hello');
+			assert.strictEqual(pool.resolve(['third', 'hello']).stream.ident, 'third::path::hello');
 		});
 
 		it('not found', () => {

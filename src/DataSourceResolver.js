@@ -2,6 +2,9 @@
 
 const DataSource = require('./DataSource');
 const ImplementationRequired = require('./error/ImplementationRequired');
+const JlTransformsChain = require('./stream/JlTransformsChain');
+const LineSplitter = require('./stream/LinesSplitter');
+const JsonParser = require('./stream/JsonParser');
 
 class DataSourceResolver
 {
@@ -17,7 +20,17 @@ class DataSourceResolver
 			return stream;
 		}
 
-		return new DataSource(stream);
+		if (!stream.outputType) {
+			const objectsStream = new JlTransformsChain([
+				stream,
+				new LineSplitter,
+				new JsonParser
+			]);
+
+			return new DataSource(objectsStream);
+		} else {
+			return new DataSource(stream);
+		}
 	}
 
 	resolve(location)
