@@ -29,7 +29,7 @@ class PublicApi
 	 */
 	query(sql)
 	{
-		return new PublicSelect(this.engine.createSelect(sql, this.options));
+		return new PublicSelect(this.engine.createSelect(sql, this.options), this.options.dataSourceResolvers);
 	}
 
 	explain(select)
@@ -39,5 +39,7 @@ class PublicApi
 		return e.createExplain(select);
 	}
 }
+
+PublicApi.DataSourceResolver = require('./DataSourceResolver');
 
 module.exports = PublicApi;

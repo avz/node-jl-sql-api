@@ -15,7 +15,7 @@ class DataSourceResolversPool
 	resolve(pathFragments)
 	{
 		for (const resolver of this.resolvers) {
-			const source = resolver.resolve(pathFragments);
+			const source = resolver._resolve(pathFragments);
 
 			if (source) {
 				return source;

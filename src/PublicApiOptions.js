@@ -12,6 +12,7 @@ class PublicApiOptions
 		this.tmpDir = null;
 		this.sortOptions = null;
 		this.joinOptions = null;
+		this.dataSourceResolvers = [];
 
 		for (const k in options) {
 			if (!this.hasOwnProperty(k)) {
