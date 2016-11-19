@@ -4,12 +4,13 @@ const Node = require('../Node');
 
 class Column extends Node
 {
-	constructor(expression, alias = null)
+	constructor(expression, alias = null, expressionSqlString = null)
 	{
 		super();
 
 		this.alias = alias;
 		this.expression = expression;
+		this.expressionSqlString = expressionSqlString;
 	}
 
 	childNodes()

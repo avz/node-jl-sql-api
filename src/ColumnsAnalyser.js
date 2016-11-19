@@ -59,7 +59,7 @@ class ColumnsAnalyser
 		}
 
 		if (!alias) {
-			throw new SqlLogicError('All columns must have the alias');
+			alias = ['@', column.expressionSqlString];
 		}
 
 		return this.column(

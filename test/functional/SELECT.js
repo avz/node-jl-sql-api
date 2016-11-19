@@ -272,7 +272,8 @@ describe('SELECT', () => {
 							a + 10 AS b,
 							a + 20 AS deep.c,
 							a + 30 AS deep.d.e,
-							undef AS deepUndef.undef`
+							undef AS deepUndef.undef,
+							a + 40`
 					)
 					.fromArrayOfObjects(input)
 					.toArrayOfObjects((r) => {
@@ -305,6 +306,10 @@ describe('SELECT', () => {
 
 			it('alias to undefined does not make empty deep object', () => {
 				assert.strictEqual(output[0].deepUndef, undefined);
+			});
+
+			it('auto-generated alias', () => {
+				assert.strictEqual(output[0]['a + 40'], input[0].a + 40);
 			});
 		});
 

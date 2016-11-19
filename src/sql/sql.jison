@@ -1,12 +1,18 @@
 %{
-var Nodes = require('./Nodes.js');
-
+const Nodes = require('./Nodes.js');
+const JL_JISON_INPUT_SYMBOL = Symbol('JL_JISON_INPUT_SYMBOL');
 %}
 
 /* lexical grammar */
 %lex
 
-%options case-insensitive
+%{
+if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
+	yy.lexer[JL_JISON_INPUT_SYMBOL] = this.matches.input;
+}
+%}
+
+%options case-insensitive ranges backtrack_lexer
 
 %%
 \s+	{}
@@ -177,8 +183,8 @@ expressionsList
 
 column
 	: expression 'AS' complexIdent { $$ = new Nodes.Column($1, $3); }
-	| expression 'AS' 'COUNT' { var ci = new Nodes.ColumnIdent(['@', $3]); $$ = new Nodes.Column($1, ci); }
-	| expression            { $$ = new Nodes.Column($1); }
+	| expression 'AS' 'COUNT' { $$ = new Nodes.Column($1, new Nodes.ColumnIdent(['@', $3])); }
+	| expression            { var sql = yy.lexer[JL_JISON_INPUT_SYMBOL].slice(@$.range[0], @$.range[1]); $$ = new Nodes.Column($1, null, sql);}
 ;
 
 columns
