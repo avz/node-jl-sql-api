@@ -1,6 +1,8 @@
 'use strict';
 
-class NotSupported extends Error
+const JlException = require('./JlException');
+
+class NotSupported extends JlException
 {
 
 }

@@ -1,6 +1,8 @@
 'use strict';
 
-class ProgramError extends Error
+const JlException = require('./JlException');
+
+class ProgramError extends JlException
 {
 
 }

@@ -1,6 +1,8 @@
 'use strict';
 
-class SqlNotSupported extends Error
+const JlException = require('./JlException');
+
+class SqlNotSupported extends JlException
 {
 
 }

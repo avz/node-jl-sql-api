@@ -1,6 +1,8 @@
 'use strict';
 
-class ChildProcessError extends Error
+const JlException = require('./JlException');
+
+class ChildProcessError extends JlException
 {
 	constructor(cmd, args, statusCode, signal)
 	{

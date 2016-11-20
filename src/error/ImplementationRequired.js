@@ -1,6 +1,8 @@
 'use strict';
 
-class ImplementationRequired extends Error
+const JlException = require('./JlException');
+
+class ImplementationRequired extends JlException
 {
 
 }

@@ -1,6 +1,8 @@
 'use strict';
 
-class SqlLogicError extends Error
+const JlException = require('./JlException');
+
+class SqlLogicError extends JlException
 {
 
 }

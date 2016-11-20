@@ -1,6 +1,8 @@
 'use strict';
 
-class JsonParsingError extends Error
+const JlException = require('./JlException');
+
+class JsonParsingError extends JlException
 {
 	constructor(message, json)
 	{

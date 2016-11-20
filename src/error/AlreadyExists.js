@@ -1,6 +1,8 @@
 'use strict';
 
-class AlreadyExists extends Error
+const JlException = require('./JlException');
+
+class AlreadyExists extends JlException
 {
 
 }
