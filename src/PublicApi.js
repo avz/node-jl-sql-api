@@ -42,4 +42,13 @@ class PublicApi
 
 PublicApi.DataSourceResolver = require('./DataSourceResolver');
 
+PublicApi.exceptions = {
+	JlException: require('./error/JlException'),
+	SqlFunctionArgumentError: require('./error/SqlFunctionArgumentError'),
+	SqlLogicError: require('./error/SqlLogicError'),
+	SqlNotSupported: require('./error/SqlNotSupported'),
+	JsonParsingError: require('./error/JsonParsingError'),
+	DataSourceNotFound: require('./error/DataSourceNotFound')
+};
+
 module.exports = PublicApi;
