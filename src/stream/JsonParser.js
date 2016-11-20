@@ -1,6 +1,7 @@
 'use strict';
 
 const JlTransform = require('./JlTransform');
+const JsonParsingError = require('../error/JsonParsingError');
 
 class JsonParser extends JlTransform
 {
@@ -20,7 +21,11 @@ class JsonParser extends JlTransform
 				continue;
 			}
 
-			parsed.push(JSON.parse(' ' + json));
+			try {
+				parsed.push(JSON.parse(' ' + json));
+			} catch (e) {
+				this.emit('error', new JsonParsingError(e.message, chunk[i]));
+			}
 		}
 
 		if (parsed.length) {
