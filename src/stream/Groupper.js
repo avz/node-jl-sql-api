@@ -26,6 +26,9 @@ class Groupper extends JlTransform
 
 		switch (type) {
 			case 'string':
+				// protect from collision with valid JSON object key
+				return '"""' + key;
+			break;
 			case 'number':
 			case 'boolean':
 			case 'undefined':
