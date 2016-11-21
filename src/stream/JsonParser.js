@@ -17,13 +17,13 @@ class JsonParser extends JlTransform
 		for (var i = 0; i < chunk.length; i++) {
 			const json = chunk[i];
 
-			if (/^\s*$/.test(json)) {
-				continue;
-			}
-
 			try {
 				parsed.push(JSON.parse(' ' + json));
 			} catch (e) {
+				if (/^\s+$/.test(json)) {
+					continue;
+				}
+
 				this.emit('error', new JsonParsingError(e.message, chunk[i]));
 			}
 		}

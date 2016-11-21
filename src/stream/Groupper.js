@@ -53,8 +53,11 @@ class Groupper extends JlTransform
 			const row = chunk[i];
 
 			const key = this.groupKeyGenerator(row);
+			const keySerialized = this._serializeKey(key);
 
-			if (this._serializeKey(key) === this.currentKeySerialized) {
+			/* TODO можно предварительно сравнивать сами значения без сериализации */
+
+			if (keySerialized === this.currentKeySerialized) {
 				this.aggregation.update(row);
 				this.currentKey = key;
 
@@ -71,7 +74,7 @@ class Groupper extends JlTransform
 			}
 
 			this.currentKey = key;
-			this.currentKeySerialized = this._serializeKey(this.currentKey);
+			this.currentKeySerialized = keySerialized;
 
 			this.aggregation.init();
 			this.aggregation.update(row);

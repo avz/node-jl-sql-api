@@ -251,7 +251,7 @@ class Select
 	stream(dataSourceResolversPool)
 	{
 		const pipeline = [
-			new Mutator(row => new DataRow({'@': row})) // '@' - DataSource.DEFAULT_NAME
+			new Mutator(DataRow.wrap)
 		];
 
 		const joins = this.joins(dataSourceResolversPool);

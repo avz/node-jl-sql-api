@@ -19,6 +19,11 @@ class DataRow
 		this.sources = sources;
 		this.aggregationCache = {};
 	}
+
+	static wrap(row)
+	{
+		return new DataRow({'@': row});
+	}
 }
 
 DataRow.SOURCES_PROPERTY = 'sources';
