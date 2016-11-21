@@ -318,7 +318,7 @@ class Select
 			/*
 			 * For aggregation queries without GROUP BY, e.g. `SELECT SUM(c) AS sum`
 			 */
-			return new Groupper(() => [null], new Aggregation(this.runtimeContext, this.expressions));
+			return new Groupper(() => null, new Aggregation(this.runtimeContext, this.expressions));
 		}
 
 		if (!this.columns.size) {
@@ -327,9 +327,15 @@ class Select
 
 		const keyGenerators = this.ast.groups.map(g => this.sqlToJs.nodeToFunction(g.expression));
 
-		const keyGeneratorCb = row => {
-			return keyGenerators.map(g => g(row));
-		};
+		let keyGeneratorCb;
+
+		if (keyGenerators.length === 1) {
+			keyGeneratorCb = keyGenerators[0];
+		} else {
+			keyGeneratorCb = row => {
+				return keyGenerators.map(g => g(row));
+			};
+		}
 
 		return new Groupper(keyGeneratorCb, new Aggregation(this.runtimeContext, this.expressions));
 	}

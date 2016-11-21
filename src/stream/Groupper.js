@@ -11,8 +11,37 @@ class Groupper extends JlTransform
 		this.groupKeyGenerator = groupKeyGenerator;
 		this.aggregation = aggregation;
 
+		this.isFirstRow = true;
+
 		this.currentKey = null;
+		this.currentKeySerialized = null;
 		this.lastRow = null;
+	}
+
+	_serializeKey(key)
+	{
+		const type = typeof(key);
+
+		/* eslint-disable no-unreachable, indent */
+
+		switch (type) {
+			case 'string':
+			case 'number':
+			case 'boolean':
+			case 'undefined':
+				return key;
+			break;
+
+			default:
+				if (key === null) {
+					return null;
+				}
+
+				return JSON.stringify(key);
+			break;
+		}
+
+		/* eslint-enable no-unreachable, indent */
 	}
 
 	_transform(chunk, encoding, cb)
@@ -22,8 +51,7 @@ class Groupper extends JlTransform
 
 			const key = this.groupKeyGenerator(row);
 
-			/* TODO cache JSON or compile comparation function */
-			if (JSON.stringify(key) === JSON.stringify(this.currentKey)) {
+			if (this._serializeKey(key) === this.currentKeySerialized) {
 				this.aggregation.update(row);
 				this.currentKey = key;
 
@@ -32,12 +60,15 @@ class Groupper extends JlTransform
 
 			/* группа поменялась или же это первая группа */
 
-			if (this.currentKey) {
+			if (!this.isFirstRow) {
 				this.push([this.aggregation.result()]);
 				this.aggregation.deinit();
+			} else {
+				this.isFirstRow = false;
 			}
 
 			this.currentKey = key;
+			this.currentKeySerialized = this._serializeKey(this.currentKey);
 
 			this.aggregation.init();
 			this.aggregation.update(row);
@@ -48,7 +79,7 @@ class Groupper extends JlTransform
 
 	_flush(cb)
 	{
-		if (this.currentKey) {
+		if (!this.firstRow) {
 			this.push([this.aggregation.result()]);
 			this.aggregation.deinit();
 		}
