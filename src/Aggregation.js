@@ -33,16 +33,17 @@ class Aggregation
 			}
 		}
 
-		this.propertiesPicker = new PropertiesPicker;
-		this.resultSetsMap = new Map;
+		const resultSetsMap = new Map;
 
 		for (const expression of this.expressions) {
 			if (expression instanceof AggregationColumn) {
-				this.resultSetsMap.set(expression.alias, expression.result);
+				resultSetsMap.set(expression.alias, expression.result);
 			} else if (expression instanceof BasicColumn) {
-				this.resultSetsMap.set(expression.alias, expression.valueSource());
+				resultSetsMap.set(expression.alias, expression.valueSource());
 			}
 		}
+
+		this.propertiesPicker = new PropertiesPicker(resultSetsMap);
 	}
 
 	init()
@@ -65,7 +66,7 @@ class Aggregation
 	{
 		const row = new DataRow({});
 
-		this.propertiesPicker.copyPropertiesMap(this.resultSetsMap, this.lastRow, row.sources);
+		this.propertiesPicker.copyProperties(this.lastRow, row.sources);
 
 		for (const call of this.aggregationCalls) {
 			row[DataRow.AGGREGATION_CACHE_PROPERTY][call.call.node.id] = call.result();

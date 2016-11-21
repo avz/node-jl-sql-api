@@ -10,8 +10,7 @@ class PropertiesPickerTransformer extends JlTransform
 	{
 		super(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS);
 
-		this.paths = paths;
-		this.propertiesPicker = new PropertiesPicker;
+		this.propertiesPicker = new PropertiesPicker(paths);
 	}
 
 	_transform(chunk, encoding, cb)
@@ -21,7 +20,7 @@ class PropertiesPickerTransformer extends JlTransform
 		for (let i = 0; i < chunk.length; i++) {
 			var dest = new DataRow({});
 
-			this.propertiesPicker.copyProperties(this.paths, chunk[i], dest.sources);
+			this.propertiesPicker.copyProperties(chunk[i], dest.sources);
 
 			result.push(dest);
 		}

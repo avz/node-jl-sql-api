@@ -2,19 +2,24 @@
 
 class PropertiesPicker
 {
-	copyProperties(paths, from, to)
+	constructor(paths)
 	{
-		if (paths instanceof Map) {
-			return this.copyPropertiesMap(paths, from, to);
+		this.paths = paths;
+	}
+
+	copyProperties(from, to)
+	{
+		if (this.paths instanceof Map) {
+			return this.copyPropertiesMap(this.paths, from, to);
 		} else {
-			return this.copyPropertiesList(paths, from, to);
+			return this.copyPropertiesList(this.paths, from, to);
 		}
 	}
 
 	copyPropertiesList(paths, from, to)
 	{
 		for (let i = 0; i < paths.length; i++) {
-			this.copyProperty(paths[i], from, to);
+			PropertiesPicker.copyProperty(paths[i], from, to);
 		}
 	}
 
@@ -26,18 +31,18 @@ class PropertiesPicker
 			if (typeof(source) === 'function') {
 				value = source(from);
 			} else {
-				value = this.getProperty(source, from);
+				value = PropertiesPicker.getProperty(source, from);
 			}
 
 			if (value === undefined) {
 				continue;
 			}
 
-			this.setProperty(alias, to, value);
+			PropertiesPicker.setProperty(alias, to, value);
 		}
 	}
 
-	getProperty(path, obj)
+	static getProperty(path, obj)
 	{
 		function deepGet(path, pathOffset, obj)
 		{
@@ -65,7 +70,7 @@ class PropertiesPicker
 		return deepGet(path, 0, obj);
 	}
 
-	setProperty(path, obj, value)
+	static setProperty(path, obj, value)
 	{
 		function deepSet(path, pathOffset, obj, value)
 		{
@@ -101,15 +106,15 @@ class PropertiesPicker
 		return deepSet(path, 0, obj, value);
 	}
 
-	copyProperty(path, from, to)
+	static copyProperty(path, from, to)
 	{
-		var value = this.getProperty(path, from);
+		var value = PropertiesPicker.getProperty(path, from);
 
 		if (value === undefined) {
 			return false;
 		}
 
-		return this.setProperty(path, to, value);
+		return PropertiesPicker.setProperty(path, to, value);
 	}
 }
 
