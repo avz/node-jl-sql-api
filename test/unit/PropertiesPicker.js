@@ -133,32 +133,4 @@ describe('PropertiesPicker', () => {
 			assert.strictEqual(getterCallsCount, 3);
 		});
 	});
-
-	describe('copyPropertiesList', () => {
-		let o = {};
-
-		beforeEach(() => {
-			o = {};
-		});
-
-		it('just copy', () => {
-			const picker = new PropertiesPicker([['topScalar'], ['topObject', 'subScalar']]);
-
-			picker.copyProperties(object, o);
-
-			assert.strictEqual(o.topScalar, object.topScalar);
-			assert.strictEqual(o.topObject.subScalar, object.topObject.subScalar);
-
-			assert.strictEqual(Object.keys(o).length, 2);
-			assert.strictEqual(Object.keys(o.topObject).length, 1);
-		});
-
-		it('copy undefined', () => {
-			const picker = new PropertiesPicker([['undef'], ['newObject', 'undef']]);
-
-			picker.copyProperties(object, o);
-
-			assert.strictEqual(Object.keys(o).length, 0);
-		});
-	});
 });

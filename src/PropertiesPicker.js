@@ -9,23 +9,7 @@ class PropertiesPicker
 
 	copyProperties(from, to)
 	{
-		if (this.paths instanceof Map) {
-			return this.copyPropertiesMap(this.paths, from, to);
-		} else {
-			return this.copyPropertiesList(this.paths, from, to);
-		}
-	}
-
-	copyPropertiesList(paths, from, to)
-	{
-		for (let i = 0; i < paths.length; i++) {
-			PropertiesPicker.copyProperty(paths[i], from, to);
-		}
-	}
-
-	copyPropertiesMap(paths, from, to)
-	{
-		for (const [alias, source] of paths) {
+		for (const [alias, source] of this.paths) {
 			let value;
 
 			if (typeof(source) === 'function') {
