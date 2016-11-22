@@ -20,6 +20,8 @@ class SortOptions
 		this.threads = null;
 		this.keys = [];
 
+		this.inMemoryBufferSize = 16000;
+
 		for (const k in options) {
 			if (!this.hasOwnProperty(k)) {
 				throw new ProgramError('Unknown option: ' + k);

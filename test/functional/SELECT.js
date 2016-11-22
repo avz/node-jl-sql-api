@@ -485,10 +485,10 @@ describe('SELECT', () => {
 	};
 
 	describe('in-memory sort', () => {
-		run(new JlSql);
+		run(new JlSql, {sortOptions: {inMemoryBufferSize: 1000000}});
 	});
 
-	describe('external sort (unix `sort` cmd)', () => {
-		run(new JlSql({externalSort: true}));
+	describe('force external sort (unix `sort` cmd)', () => {
+		run(new JlSql({sortOptions: {inMemoryBufferSize: 1}}));
 	});
 });

@@ -1,8 +1,7 @@
 'use strict';
 
 const ColumnsAnalyser = require('./ColumnsAnalyser');
-const SorterInMemory = require('./stream/SorterInMemory');
-const SorterExternal = require('./stream/SorterExternal');
+const Sorter = require('./stream/Sorter');
 const Filter = require('./stream/Filter');
 const Joiner = require('./stream/Joiner');
 const PropertiesPickerTransformer = require('./stream/PropertiesPickerTransformer');
@@ -182,11 +181,7 @@ class Select
 
 	createSorterInstance(orders)
 	{
-		if (this.preparingContext.options.externalSort) {
-			return new SorterExternal(orders, this.preparingContext.options.sortOptions);
-		} else {
-			return new SorterInMemory(orders, this.preparingContext.options.sortOptions);
-		}
+		return new Sorter(orders, this.preparingContext.options.sortOptions);
 	}
 
 	groupper()

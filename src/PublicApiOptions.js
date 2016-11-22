@@ -8,7 +8,6 @@ class PublicApiOptions
 {
 	constructor(options = {})
 	{
-		this.externalSort = false;
 		this.tmpDir = null;
 		this.sortOptions = null;
 		this.joinOptions = null;

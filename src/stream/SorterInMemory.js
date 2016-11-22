@@ -24,6 +24,21 @@ class SorterInMemory extends JlTransform
 		this.objects = [];
 	}
 
+	bufferSize()
+	{
+		return this.objects.length;
+	}
+
+	buffer()
+	{
+		return this.objects;
+	}
+
+	clear()
+	{
+		this.objects = [];
+	}
+
 	_transform(chunk, encoding, cb)
 	{
 		for (var i = 0; i < chunk.length; i++) {
