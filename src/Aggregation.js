@@ -64,9 +64,9 @@ class Aggregation
 
 	result()
 	{
-		const row = new DataRow({});
+		const row = new DataRow(null);
 
-		this.propertiesPicker.copyProperties(this.lastRow, row.sources);
+		row.sources = this.propertiesPicker.sliceProperties(this.lastRow);
 
 		for (const call of this.aggregationCalls) {
 			row[DataRow.AGGREGATION_CACHE_PROPERTY][call.call.node.id] = call.result();

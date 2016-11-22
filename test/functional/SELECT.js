@@ -304,8 +304,8 @@ describe('SELECT', () => {
 				assert.strictEqual(output[0].deep.d.e, input[0].a + 30);
 			});
 
-			it('alias to undefined does not make empty deep object', () => {
-				assert.strictEqual(output[0].deepUndef, undefined);
+			it('alias to undefined make empty deep object', () => {
+				assert.deepEqual(output[0].deepUndef, {});
 			});
 
 			it('auto-generated alias', () => {

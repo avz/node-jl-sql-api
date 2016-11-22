@@ -18,9 +18,9 @@ class PropertiesPickerTransformer extends JlTransform
 		var result = [];
 
 		for (let i = 0; i < chunk.length; i++) {
-			var dest = new DataRow({});
+			var dest = new DataRow(null);
 
-			this.propertiesPicker.copyProperties(chunk[i], dest.sources);
+			dest.sources = this.propertiesPicker.sliceProperties(chunk[i]);
 
 			result.push(dest);
 		}
