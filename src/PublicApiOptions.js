@@ -34,12 +34,12 @@ class PublicApiOptions
 		}
 
 		if (this.tmpDir) {
-			if (!options.sortOptions.tmpDir) {
-				options.sortOptions.tmpDir = this.tmpDir;
+			if (!(options.sortOptions && options.sortOptions.tmpDir)) {
+				this.sortOptions.tmpDir = this.tmpDir;
 			}
 
-			if (!options.joinOptions.tmpDir) {
-				options.joinOptions.tmpDir = this.tmpDir;
+			if (!(options.joinOptions && options.joinOptions.tmpDir)) {
+				this.joinOptions.tmpDir = this.tmpDir;
 			}
 		}
 	}
