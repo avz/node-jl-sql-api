@@ -15,7 +15,7 @@ class SortOptions
 		this.ignoreCase = false;
 		this.sortByHash = false;
 		this.tmpDir = null;
-		this.bufferSize = null;
+		this.bufferSize = 64 * 1024 * 1024;
 		this.separator = '\t';
 		this.threads = null;
 		this.keys = [];
