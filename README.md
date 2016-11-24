@@ -1,4 +1,4 @@
-# `jl-sql-api` [![Build Status](https://travis-ci.org/avz/node-jl-sql-api.svg?branch=master)](https://travis-ci.org/avz/node-jl-sql-api) - SQL for JS objects streams
+# `jl-sql-api` [![Build Status](https://travis-ci.org/avz/node-jl-sql-api.svg?branch=master)](https://travis-ci.org/avz/node-jl-sql-api) - SQL for JS objects streams (WiP)
 
 Библиотека позволяет оперировать потоками объектов через SQL. Этот пакет включает только API, если вы ищете CLI-утилиту для работы с JSON-потоками, то переходите по этой ссылке: https://github.com/avz/jl-sql
 
