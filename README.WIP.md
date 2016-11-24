@@ -1,78 +1,10 @@
-# `jl-sql-api` [![Build Status](https://travis-ci.org/avz/node-jl-sql-api.svg?branch=master)](https://travis-ci.org/avz/node-jl-sql-api)
+# `jl-sql-api` [![Build Status](https://travis-ci.org/avz/node-jl-sql-api.svg?branch=master)](https://travis-ci.org/avz/node-jl-sql-api) - SQL for JS objects streams
 
-## SQL
+Библиотека позволяет оперировать потоками объектов через SQL. Этот пакет включает только API, если вы ищете CLI-утилиту для работы с JSON-потоками, то переходите по этой ссылке: https://github.com/avz/jl-sql
 
-### `JOIN`
+## Примеры
 
-В выражении `ON` поддерживается связывание только по точному соответствию значения одного поля значению другого поля:
-
-```
-SELECT ... JOIN table ON mainField = @table.childField
-```
-
-Сравнение полей происходит по строковому значению, т.е. если `mainField = "10"`, а
-`@table.childField = 10`, то присоединение сработает, оператор `===` пока не поддерживается
-в `JOIN`
-
-## API
-
-```javascript
-const Api = require('jl-sql-api');
-```
-
-### `Api()`
-
-
-### `Api.prototype.query(sql)`
-
-#### Arguments
-
- - `sql` - SQL SELECT query
-
-#### Return value
-
-Instance of `Select`
-
-
-### `Select.prototype.fromJsonStream([stream])`
-
-#### Arguments
-
- - `stream` source JSON stream. Default: nothing, in this case data expected from `.write()` or `.pipe()`
-
-#### Return value
-
-Instance of `SelectFrom`
-
-
-### `Select.prototype.fromObjectsStream([stream])`
-
-#### Arguments
-
- - `stream` source objects stream. Default: nothing, in this case data expected from `.write()` or `.pipe()`
-
-#### Return value
-
-Instance of `SelectFrom`
-
-
-### `Select.prototype.fromArrayOfObject(array)`
-
-#### Arguments
-
- - `array` array of data objects to aggregate
-
-#### Return value
-
-Instance of `SelectFrom`
-
-### `SelectFrom.prototype.toJsonStream([stream])`
-### `SelectFrom.prototype.toObjectsStream([stream])`
-### `SelectFrom.prototype.toArrayOfObjects(callback)`
-
-## Examples
-
-Common code
+### Общий для всех примеров код
 
 ```javascript
 const JlSqlApi = require('jl-sql-api');
@@ -80,14 +12,14 @@ const JlSqlApi = require('jl-sql-api');
 const api = new JlSqlApi;
 ```
 
-### From JSON stream (e.g, stdin) to JSON stream (e.g. stdout)
+### Получение потока JSON-объектов с STDIN, группировка и отдача результата в JSON в STDOUT
 
-With `pipe()`
+Вариант работы через `pipe()`
 
 ```javascript
 process.stdin
 	.pipe(
-		api.query(process.argv[2])
+		api.query('SELECT key, SUM(value) AS sum GROUP BY key')
 			.fromJsonStream()
 			.toJsonStream()
 	)
@@ -95,53 +27,72 @@ process.stdin
 ;
 ```
 
-Directly
+Аналог без `pipe()`
 
 ```javascript
-api.query('SELECT * WHERE a = 1')
+api.query('SELECT key, SUM(value) AS sum GROUP BY key')
 	.fromJsonStream(process.stdin)
 	.toJsonStream(process.stdout)
-;
+);
 ```
 
-### From array to JSON stream
+Вход
 
-With `pipe()`
-
-```javascript
-api.query('SELECT * WHERE a = 1')
-	.fromArrayOfObjects([
-		{"a": 1, "b": 12, "c": 13},
-		{"a": 2, "b": 13, "c": 14}
-	])
-	.toJsonStream()
-	.pipe(process.stdout)
-;
+```
+{"key": 2, "value": 2}
+{"key": 1, "value": 3}
+{"key": 3, "value": 6}
+{"key": 3, "value": 4}
+{"key": 1, "value": 5}
+{"value": 7}
+{"key": null, "value": 8}
 ```
 
-Directly
+Выход
 
-```javascript
-api.query('SELECT * WHERE a = 1')
-	.fromArrayOfObjects([
-		{"a": 1, "b": 12, "c": 13},
-		{"a": 2, "b": 13, "c": 14}
-	])
-	.toJsonStream(process.stdout)
-;
+```
+{"sum":7}
+{"key":1,"sum":8}
+{"key":2,"sum":2}
+{"key":3,"sum":10}
+{"key":null,"sum":8}
 ```
 
-
-### From array to array
+### Из STDIN в фиксированный массив
 
 ```javascript
-api.query('SELECT * WHERE a = 1')
-	.fromArrayOfObjects([
-		{"a": 1, "b": 12, "c": 13},
-		{"a": 2, "b": 13, "c": 14}
-	])
-	.toArrayOfObjects(array => {
-		console.log(array);
+api.query('SELECT key, SUM(value) AS sum GROUP BY key')
+	.fromJsonStream(process.stdin)
+	.toArrayOfObjects(function(objects) {
+		console.log(objects);
 	})
-;
+);
+```
+
+### JOIN
+
+Для работы JOIN'ов необходимо задать дополнительные входные потоки (можно назвать их виртуальными таблицами), которые будуть присоедиться к основному:
+
+```javascript
+api.query('SELECT id AS mid, @child.field INNER JOIN child ON @child.mainId = id')
+	.fromArrayOfObjects([
+		{"id": 1},
+		{"id": 2}
+	])
+	.addArrayOfObjectsStream('child', [
+		{"mainId": 1, "field": 11},
+		{"mainId": 1, "field": 12},
+		{"mainId": 2, "field": 21},
+		{"mainId": 3, "field": 31},
+	])
+	.toArrayOfObjects((r) => {
+		console.log(r);
+	})
+```
+
+На выходе
+```
+[ { mid: 1, field: 11 },
+  { mid: 1, field: 12 },
+  { mid: 2, field: 21 } ]
 ```
