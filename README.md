@@ -98,3 +98,29 @@ api.query('SELECT id AS mid, @child.field INNER JOIN child ON @child.mainId = id
 ```
 
 Специальный синтаксис `@child` введён для того, чтобы явно указать интерпретатору, что мы работаем именно с "таблицей" `child`, а не с полем с именем `child` у основной таблицы. Альясы можно задавать через `AS`: `... INNER JOIN child AS @childAlias ON @childAlias.mainId = id`. Для основной таблицы зарезервировано имя `@`, т.е. если надо явно указать, что мы обращаемся к основной таблице, то можно написать `... ON @childAlias.mainId = @.id`. Если в самом объекте содержится символ `@`, то можно заэкранировать имя через backquote: ``smth = `@child`.field``, тогда поле с именем `'@child'` будет искаться в основной таблице.
+
+## API
+
+### Overview
+
+* `const JlSqlApi = require('jl-sql-api')`
+	* `new JlSqlApi([options])` -> `JlSqlApi`
+	* `JlSqlApi.prototype.query(sql)` -> `Select`
+* `Select.prototype`
+	* `fromJsonStream([readableStream])` -> `SelectFrom`
+	* `fromObjectsStream([readableStream])` -> `SelectFrom`
+	* `fromArrayOfObjects([readableStream])` -> `SelectFrom`
+* `SelectFrom.prototype`
+	* `addJsonStream(location, readableStream)` -> `this`
+	* `addObjectsStream(location, readableStream)` -> `this`
+	* `addArrayOfObjects(location, array)` -> `this`
+	* `toJsonStream([writableStream])` -> `Transform`
+	* `toObjectsStream([writableStream])` -> `Transform`
+	* `toArrayOfObjects(callback(objects))` -> `WritableStream`
+
+Создание запроса происходит в несколько этапов:
+
+1. Создаём инстанс JlSqlApi с необходимыми опциями: `const jlSqlApi = new JlSqlApi({});`
+2. Создаём объект запроса из SQL: `const query = jlSqlApi.query('SELECT SUM(price)');`
+3. Создаём привязку запроса к источникам данных методами `from*()` и `add*()` (набор методов `add*()` опционален и требуется только для запросов с JOIN)
+4. Выбираем куда и в каком формате отдавать результат выполнения через методы `to*()`
