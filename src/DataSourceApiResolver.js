@@ -24,12 +24,14 @@ class DataSourceApiResolver extends DataSourceResolver
 
 	extractAlias(pathFragments)
 	{
-		if (pathFragments.length !== 1) {
+		if (!pathFragments.length) {
 			return null;
 		}
 
-		if (/^[a-z_][a-z0-9_]*$/i.test(pathFragments[0])) {
-			return pathFragments[0];
+		const last = pathFragments[pathFragments.length - 1];
+
+		if (/^[a-z_][a-z0-9_]*$/i.test(last)) {
+			return last;
 		}
 
 		return null;
