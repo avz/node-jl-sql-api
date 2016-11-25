@@ -170,9 +170,9 @@ jlSqlApi.query('SELECT SUM(price) INNER JOIN user.payments ON @payments.userId =
 
 В API предусмотрена возможность динамического ресолвинга имён источников, так что не обязательно явно прописывать каждый из них. Подробнее об этом можно прочитать в разделе "Динамический ресолвинг источников".
 
-### `Select.prototype.toJsonStream([stream])`
-### `Select.prototype.toObjectsStream([stream])`
-### `Select.prototype.toArrayOfObjects(callback(array))`
+### `SelectFrom.prototype.toJsonStream([stream])`
+### `SelectFrom.prototype.toObjectsStream([stream])`
+### `SelectFrom.prototype.toArrayOfObjects(callback(array))`
 
 Через этот набор методов указыаается формат и приёмник данных на выходе, всё аналогично набору `from*()`, за исключением того, что в метод `toArrayOfObjects()` нужно передать обработчик с одним аргументом - массивом выходных объектов.
 
