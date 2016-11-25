@@ -1,4 +1,5 @@
-# `jl-sql-api` [![Build Status](https://travis-ci.org/avz/node-jl-sql-api.svg?branch=master)](https://travis-ci.org/avz/node-jl-sql-api) - SQL for JS objects streams (WiP)
+# `jl-sql-api` - SQL for JS objects streams (WiP)
+[![Build Status](https://travis-ci.org/avz/node-jl-sql-api.svg?branch=master)](https://travis-ci.org/avz/node-jl-sql-api)
 
 Библиотека позволяет оперировать потоками объектов через SQL. Этот пакет включает только API, если вы ищете CLI-утилиту для работы с JSON-потоками, то переходите по этой ссылке: https://github.com/avz/jl-sql.
 
@@ -136,7 +137,7 @@ api.query('SELECT id AS mid, @child.field INNER JOIN child ON @child.mainId = id
 ### Объект `options`
 
 * `tmpDir` - значение по умолчанию для пути до каталога хранения временных файлов, используемых при сортировке и JOIN'е. Это значение может быть перезаписано специфичными значениями `tmpDir` в соответствующем объекте опций
-* `dataSourceResolvers` - массив ресолверов источников данных, описано в разделе "Динамический ресолвинг источников"
+* `dataSourceResolvers` - массив ресолверов источников данных, описано в разделе [Динамический ресолвинг источников данных](#Динамический-ресолвинг-источников-данных)
 * `sortOptions`
 	* `inMemoryBufferSize` - максимальное количество __объектов__, которое может сортироваться в памяти. При исчерпании этого лимита используется механизм внешней сортировки через утилиту `sort`. По умолчанию: 16000
 	* `bufferSize` - размер буфера внешней сортировки (утилита `sort`) __в байтах__. По умолчанию: 64Мб
@@ -152,7 +153,7 @@ const jlSqlApi = new JlSqlApi({
 	tmpDir: '/tmp',
 	sortOptions: {
 		tmpDir: '/tmp/sort'
-	},
+#	},
 	joinOptions: {
 		maxKeysInMemory: 100000
 	}
@@ -202,7 +203,7 @@ jlSqlApi.query('SELECT SUM(price) INNER JOIN user.payments ON @payments.userId =
 
 Если возникает коллизия имён, например, если мы подключили два источника с именами `user.payment` и `company.payment` то нужно явно указывать альяс для одного из источников: `INNER JOIN company.payment AS @companyPayment`.
 
-В API предусмотрена возможность динамического ресолвинга имён источников, так что не обязательно явно прописывать каждый из них. Подробнее об этом можно прочитать в разделе "Динамический ресолвинг источников".
+В API предусмотрена возможность динамического ресолвинга имён источников, так что не обязательно явно прописывать каждый из них. Подробнее об этом можно прочитать в разделе [Динамический ресолвинг источников данных](#Динамический-ресолвинг-источников-данных).
 
 ### `SelectFrom.prototype.toJsonStream([stream])`
 ### `SelectFrom.prototype.toObjectsStream([stream])`
@@ -211,3 +212,59 @@ jlSqlApi.query('SELECT SUM(price) INNER JOIN user.payments ON @payments.userId =
 Через этот набор методов указыаается формат и приёмник данных на выходе, всё аналогично набору `from*()`, за исключением того, что в метод `toArrayOfObjects()` нужно передать обработчик с одним аргументом - массивом выходных объектов.
 
 Если параметр `stream` не указан у потоковых функций, то данные можно получить через стандартный механизм `stream.Readable`: `.on('data', ...)`, `.on('readable', ...)`, `.pipe(destination)` и т.п.
+
+
+### Динамический ресолвинг источников данных
+
+Часто возникает ситуация, когда мы не можем заранее добавить дополнительные источники данных через методы `add*()`, например, когда SQL-запрос вводится пользователем, который хочет работать с файлов в ФС.
+
+Для решения этой проблемы в объекте `options` предусмотрено поле `dataSourceResolvers`, в котором можно передать массив объектов-ресолверов.
+
+Объект-ресолвер обязан быть наследником класса `require('jl-sql-api').DataSourceResolver` и реализовывать как минимум метод `resolve()`. Не обязательно, но желательно, реализовать также метод `extractAlias()`.
+
+#### `resolve(location)`
+
+Используется для создания `stream.Readable` по названию "таблицы" из SQL - если запрос содержит такой код `INNER JOIN user.payment ... INNER JOIN transaction`, то этот метод вызовется два раза: один раз для таблицы `user.payment` с агументом `["user", "payment"]` и второй раз для `transaction` с аргументом `["transaction"]`.
+
+Метод может вернуть либо `stream.Readable`, либо `null`, если источник определить не получилось. Все ресолверы в массиве будут перебираться по порядку пока какой-нибудь не вернёт не-`null`. Если все вернули `null`, то идёт проверка по источникам, добавленным явно через `add*()`.
+
+#### `extractAlias(location)`
+
+Используется для определения альяса таблицы, если он явно не задан пользователем через `AS`, например, `... INNER JOIN user.payment ON ...`.
+
+Метод должен вернуть строку или `null`, если альяс не определён.
+
+#### Реальный пример
+
+Такой код используется в утилите `jl-sql` для динамического создания источника данных на основе пути до файла ([DataSourceFileResolver.js](https://github.com/avz/jl-sql/blob/master/src/DataSourceFileResolver.js))
+
+```javascript
+const path = require('path');
+const fs = require('fs');
+const DataSourceResolver = require('jl-sql-api').DataSourceResolver;
+
+class DataSourceFileResolver extends DataSourceResolver
+{
+	resolve(location)
+	{
+		if (location.length !== 1) {
+			return null;
+		}
+
+		return fs.createReadStream(location[0]);
+	}
+
+	extractAlias(location)
+	{
+		if (location.length !== 1) {
+			return null;
+		}
+
+		return path.parse(location[0]).name;
+	}
+
+}
+
+module.exports = DataSourceFileResolver;
+```
+
