@@ -77,7 +77,7 @@ class SelectFrom
 		return output;
 	}
 
-	addArrayOfObjectsStream(location, array)
+	addArrayOfObjects(location, array)
 	{
 		const stream = new JlPassThrough(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS);
 

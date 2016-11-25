@@ -440,7 +440,7 @@ describe('SELECT', () => {
 									sql
 								)
 								.fromArrayOfObjects(ds.host)
-								.addArrayOfObjectsStream('child', ds.child)
+								.addArrayOfObjects('child', ds.child)
 								.toArrayOfObjects((r) => {
 									output = r;
 									done();
