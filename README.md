@@ -4,6 +4,12 @@
 
 Реализация позволяет работать с потенциально бесконечными потоками - для сортировки и группировки больших объёмов автоматически задействуется механизм внешней сортировки через стандартную unix-овую утилиту `sort`, который, в свою очередь, может использовать ФС для храннения данных, поэтому весь датасет не обязан помещаться в RAM. Для запросов, которые не требуют сортировки, используется потоковая обработка, т.е. датасет не загружается в память целиком, а обрабатывается частями.
 
+* [Примеры](#Примеры)
+* [API](#api)
+	* [Overview](#overview)
+	* [Объект `options`](#Объект-options)
+	* [Форматы данных](#Форматы-данных)
+
 ## Примеры
 
 ### Общий для всех примеров код
@@ -109,16 +115,16 @@ api.query('SELECT id AS mid, @child.field INNER JOIN child ON @child.mainId = id
 	* `new JlSqlApi([options])` -> `JlSqlApi`
 	* `JlSqlApi.prototype.query(sql)` -> `Select`
 * `Select.prototype`
-	* `fromJsonStream([readableStream])` -> `SelectFrom`
-	* `fromObjectsStream([readableStream])` -> `SelectFrom`
-	* `fromArrayOfObjects([readableStream])` -> `SelectFrom`
+	* [`fromJsonStream([readableStream])`](#selectprototypefromjsonstreamstream) -> `SelectFrom`
+	* [`fromObjectsStream([readableStream])`](#selectprototypefromobjectsstreamstream) -> `SelectFrom`
+	* [`fromArrayOfObjects([readableStream])`](#selectprototypefromarrayofobjectsarray) -> `SelectFrom`
 * `SelectFrom.prototype`
-	* `addJsonStream(location, readableStream)` -> `this`
-	* `addObjectsStream(location, readableStream)` -> `this`
-	* `addArrayOfObjects(location, array)` -> `this`
-	* `toJsonStream([writableStream])` -> `Transform`
-	* `toObjectsStream([writableStream])` -> `Transform`
-	* `toArrayOfObjects(callback(objects))` -> `WritableStream`
+	* [`addJsonStream(location, readableStream)`](#selectfromprototypeaddjsonstreamlocation-readablestream) -> `this`
+	* [`addObjectsStream(location, readableStream)`](#selectfromprototypeaddobjectsstreamlocation-readablestream) -> `this`
+	* [`addArrayOfObjects(location, array)`](#selectfromprototypeaddarrayofobjectslocation-array) -> `this`
+	* [`toJsonStream([writableStream])`](#selectfromprototypetojsonstreamstream) -> `Transform`
+	* [`toObjectsStream([writableStream])`](#selectfromprototypetoobjectsstreamstream) -> `Transform`
+	* [`toArrayOfObjects(callback(objects))`](#selectfromprototypetoarrayofobjectscallbackarray) -> `WritableStream`
 
 Создание запроса происходит в несколько этапов:
 
