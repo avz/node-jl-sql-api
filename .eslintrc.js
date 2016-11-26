@@ -210,7 +210,6 @@ module.exports = {
         "prefer-spread": "error",
         "prefer-template": "off",
         "quote-props": "off",
-        "quotes": ["error", "single"],
         "radix": [
             "error",
             "as-needed"
