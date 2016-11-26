@@ -1,6 +1,7 @@
 'use strict';
 
 const Node = require('../Node');
+const Quoter = require('../../Quoter');
 
 class String extends Node
 {
@@ -8,7 +9,7 @@ class String extends Node
 	{
 		super();
 
-		this.value = string.substr(1, string.length - 2);
+		this.value = Quoter.unquote(string);
 	}
 }
 
