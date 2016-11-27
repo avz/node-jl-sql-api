@@ -131,7 +131,7 @@ ident
 ;
 
 complexIdent
-	: complexIdent '.' ident { $1.fragments.push($3.name); $$ = $1; }
+	: complexIdent '.' ident { $1.addFragment($3.name); $$ = $1; }
 	| ident { $$ = new Nodes.ComplexIdent(['@', $1.name]); }
 	| dataSourceIdent { $$ = new Nodes.ComplexIdent([$1.name]); }
 ;
@@ -166,12 +166,12 @@ expression
 	| '-' expression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
 	| '!' expression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
 	| expression 'IN' '(' expressionsList ')' { $$ = new Nodes.In($1, $4); }
-	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), $3); }
-	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), []); }
-	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1])), [$3]); }
-	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1])), []); }
+	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($1), $3); }
+	| complexIdent '(' ')' { $$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($1), []); }
+	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent([$1]), [$3]); }
+	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent([$1]), []); }
 	| 'COUNT' { $$ = new Nodes.ColumnIdent(['@', $1]) }
-	| complexIdent { $$ = new Nodes.ColumnIdent($1.fragments) }
+	| complexIdent { $$ = Nodes.ColumnIdent.fromComplexIdent($1) }
 	| const { $$ = $1; }
 	| '(' expression ')' { $$ = new Nodes.Brackets($2); }
 ;

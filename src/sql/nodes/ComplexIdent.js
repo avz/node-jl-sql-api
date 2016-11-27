@@ -1,6 +1,7 @@
 'use strict';
 
 const Node = require('../Node');
+const Quoter = require('../../Quoter');
 
 class ComplexIdent extends Node
 {
@@ -8,7 +9,17 @@ class ComplexIdent extends Node
 	{
 		super();
 
-		this.fragments = fragments;
+		this.fragments = fragments.map(ComplexIdent._unquote);
+	}
+
+	static _unquote(string)
+	{
+		return Quoter.unquoteOptionalQuotes(string, '`');
+	}
+
+	addFragment(fragment)
+	{
+		this.fragments.push(ComplexIdent._unquote(fragment));
 	}
 }
 

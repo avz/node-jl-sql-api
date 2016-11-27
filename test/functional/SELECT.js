@@ -272,6 +272,7 @@ describe('SELECT', () => {
 							a + 10 AS b,
 							a + 20 AS deep.c,
 							a + 30 AS deep.d.e,
+							'hel\\'lo' AS \`wo\\\`rld\`,
 							undef AS deepUndef.undef,
 							a + 40`
 					)
@@ -285,6 +286,10 @@ describe('SELECT', () => {
 
 			it('original column', () => {
 				assert.strictEqual(output[0].a, input[0].a);
+			});
+
+			it('escaping', () => {
+				assert.strictEqual(output[0]["wo`rld"], "hel'lo");
 			});
 
 			it('alias to alias', () => {

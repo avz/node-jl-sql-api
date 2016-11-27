@@ -9,22 +9,44 @@ class Quoter
 
 	static unquote(string)
 	{
+		const stringWoQuotes = string.substr(1, string.length - 2);
+
+		return Quoter.unescape(stringWoQuotes);
+	}
+
+	static unquoteOptionalQuotes(string, quoteCharacter)
+	{
+		if (!string.length) {
+			return '';
+		}
+
+		let stringWoQuotes;
+
+		if (string[0] === quoteCharacter) {
+			stringWoQuotes = string.substr(1, string.length - 2);
+		} else {
+			stringWoQuotes = string;
+		}
+
+		return Quoter.unescape(stringWoQuotes);
+	}
+
+	static unescape(string)
+	{
 		const specialChars = {
 			n: '\n',
 			t: '\t'
 		};
 
-		const stringWoQuotes = string.substr(1, string.length - 2);
-
-		let unquotedString = '';
+		let unescapedString = '';
 		let charIsEscaped = false;
 
-		for (const char of stringWoQuotes) {
+		for (const char of string) {
 			if (charIsEscaped) {
 				if (char in specialChars) {
-					unquotedString += specialChars[char];
+					unescapedString += specialChars[char];
 				} else {
-					unquotedString += char;
+					unescapedString += char;
 				}
 
 				charIsEscaped = false;
@@ -36,14 +58,14 @@ class Quoter
 				continue;
 			}
 
-			unquotedString += char;
+			unescapedString += char;
 		}
 
 		if (charIsEscaped) {
 			throw new Error('Unexpected end of string after "\\": ' + string);
 		}
 
-		return unquotedString;
+		return unescapedString;
 	}
 }
 
