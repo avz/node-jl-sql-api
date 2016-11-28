@@ -10,6 +10,7 @@
 	* [Константы](#Константы)
 	* [Идентификаторы](#Идентификаторы)
 	* [Приведение типов](#Приведение-типов)
+	* [Биндинги](#Биндинги)
 * [API](#api)
 	* [Overview](#overview)
 	* [Объект `options`](#Объект-options)
@@ -193,6 +194,45 @@ SELECT value
 
 т.е. `null` - это обычное значение, не подразумевающее никакой особенной обработки, в то время как обращение к несуществующему полю (`undefined`) вообще не будет создавать соотвествующего поля в результирующей строке.
 
+### Биндинги
+
+Биндинги позволяют безопасно с точки зрения SQL-инъекций вставить в SQL какое-либо значение, например
+
+```sql
+SELECT * WHERE field = :field
+```
+где `:field` - это "слот", значение которого должно быть задано через метод [`Select.prototype.bind()`](#selectprototypebindident-value).
+
+Биндинги бывают двух типов:
+* биндинг одного значения, форма записи: `:bind` (один символ `:` перед именем)
+* биндинг списка значений, форма записи: `::bind` (2 символа `::` перед именем)
+
+#### Биндинг одного значения
+
+Биндинг одного значения в SQL можно использовать, например, для аргумента функции, для операнда в бинарных и унарных операторах и вообще во всех случаях, где в SQL подразумевается какое-то одно выражение
+
+```sql
+SELECT * WHERE id = :id
+// при :id = 1 запрос будет иметь вид SELECT * WHERE id = 1
+
+SELECT * WHERE value > FLOOR(:id)
+// при :id = 1 запрос будет иметь вид SELECT * WHERE value > FLOOR(1)
+
+SELECT id, amount * :price AS revenue WHERE value > amount * :price
+```
+
+#### Биндинг списка значений
+
+Этот вид биндинга более сложный и позволяет заменять не единичные операнды и выражения, а целые списки. Например, с помощью такого биндинга можно подставить сразу несколько аргументов функции
+
+```sql
+SELECT * WHERE id IN(::ids)
+// при ::ids = [1, 2, 3] запрос будет иметь вид: SELECT * WHERE id IN(1, 2, 3)
+
+SELECT IF(enabled, ::trueFalse)
+// при ::ids = ['true', 'false'] запрос будет иметь вид: SELECT IF(enabled, 'true', 'false')
+```
+
 ## API
 
 ### Overview
@@ -201,6 +241,7 @@ SELECT value
 	* `new JlSqlApi([options])` -> `JlSqlApi`
 	* `JlSqlApi.prototype.query(sql)` -> `Select`
 * `Select.prototype`
+	* [`bind(ident, value)`](#selectprototypebindident-value) -> `this`
 	* [`fromJsonStream([readableStream])`](#selectprototypefromjsonstreamstream) -> `SelectFrom`
 	* [`fromObjectsStream([readableStream])`](#selectprototypefromobjectsstreamstream) -> `SelectFrom`
 	* [`fromArrayOfObjects([readableStream])`](#selectprototypefromarrayofobjectsarray) -> `SelectFrom`
@@ -252,6 +293,15 @@ const jlSqlApi = new JlSqlApi({
 * `JsonStream` - обычный `stream.Readable` поток байтов/текста, данные в котором представлены в виде объектов, закодированных в JSON и отделённых друг от друга символом перевода строки (`\n` === `0x0A`). Символы перевода строк внутри одного объекта не допускаются: один объект должен занимать строго одну строку. Пример таких данных можно посмотреть в разделе "Примеры"
 * `ObjectsStream` - поток `stream.Readable` с опцией `{objectMode: true}`, который вместо текста оперирует потоком объектов
 * `ArrayOfObjects` - означает, что данные нужно передать или получить в виде обычного массива объектов, потоки тут не используются
+
+### `Select.prototype.bind(ident, value)`
+
+Биндит значение для запроса (смотри раздел [Биндинги](#Биндинги)).
+
+* `ident` - имя биндинга, включая `:` для биндлингов одного значения, и `::` для списочных биндингов
+* `value` - значение, в которое раскрывается биндинг. Должно быть массивом для списочных биндингов
+
+Метод возвращает `this`, так что можно использовать цепочечную нотацию.
 
 ### `Select.prototype.fromJsonStream([stream])`
 ### `Select.prototype.fromObjectsStream([stream])`
@@ -352,4 +402,3 @@ class DataSourceFileResolver extends DataSourceResolver
 
 module.exports = DataSourceFileResolver;
 ```
-
