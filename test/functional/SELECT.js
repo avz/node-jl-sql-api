@@ -16,6 +16,8 @@ describe('SELECT', () => {
 						+ ', IF(r, :true, :false) AS scalarBool'
 						+ ', IF(::ifTrue) AS ifTrue'
 						+ ', IF(::ifFalse) AS ifFalse'
+						+ ', IF(true, ::ifCombTrue) AS ifCombTrue'
+						+ ', IF(false, ::ifCombFalse) AS ifCombFalse'
 					)
 					.bind(':trueString', '-TRUE-')
 					.bind(':falseString', '-FALSE-')
@@ -23,6 +25,8 @@ describe('SELECT', () => {
 					.bind(':false', false)
 					.bind('::ifTrue', [true, '-TRUE-', false])
 					.bind('::ifFalse', [false, '-TRUE-', false])
+					.bind('::ifCombTrue', [true, false])
+					.bind('::ifCombFalse', [true, false])
 					.fromArrayOfObjects(input)
 					.toArrayOfObjects((r) => {
 						output = r;
@@ -41,6 +45,11 @@ describe('SELECT', () => {
 			it('list', () => {
 				assert.strictEqual(output[0].ifTrue, '-TRUE-');
 				assert.strictEqual(output[0].ifFalse, false);
+			});
+
+			it('combined list', () => {
+				assert.strictEqual(output[0].ifCombTrue, true);
+				assert.strictEqual(output[0].ifCombFalse, false);
 			});
 		});
 
