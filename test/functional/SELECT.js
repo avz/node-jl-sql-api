@@ -5,6 +5,45 @@ const assert = require('assert');
 
 describe('SELECT', () => {
 	const run = (jlSql) => {
+		describe('Bindings', () => {
+			const input = [{r: true}, {r: false}];
+
+			let output;
+
+			before(done => {
+				jlSql.query(
+						'SELECT IF(r, :trueString, :falseString) AS scalarString'
+						+ ', IF(r, :true, :false) AS scalarBool'
+						+ ', IF(::ifTrue) AS ifTrue'
+						+ ', IF(::ifFalse) AS ifFalse'
+					)
+					.bind(':trueString', '-TRUE-')
+					.bind(':falseString', '-FALSE-')
+					.bind(':true', true)
+					.bind(':false', false)
+					.bind('::ifTrue', [true, '-TRUE-', false])
+					.bind('::ifFalse', [false, '-TRUE-', false])
+					.fromArrayOfObjects(input)
+					.toArrayOfObjects((r) => {
+						output = r;
+						done();
+					})
+				;
+			});
+
+			it('scalar', () => {
+				assert.strictEqual(output[0].scalarString, '-TRUE-');
+				assert.strictEqual(output[1].scalarString, '-FALSE-');
+				assert.strictEqual(output[0].scalarBool, true);
+				assert.strictEqual(output[1].scalarBool, false);
+			});
+
+			it('list', () => {
+				assert.strictEqual(output[0].ifTrue, '-TRUE-');
+				assert.strictEqual(output[0].ifFalse, false);
+			});
+		});
+
 		describe('`SELECT * WHERE ...`', () => {
 			const input = [{hello: 'world'}, {hello: 'hello'}];
 
