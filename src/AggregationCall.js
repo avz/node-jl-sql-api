@@ -6,7 +6,7 @@ class AggregationCall
 	{
 		this.node = node;
 		this.func = func;
-		this.args = node.args.map(sqlToJs.nodeToFunction.bind(sqlToJs));
+		this.args = node.args.values.map(sqlToJs.nodeToFunction.bind(sqlToJs));
 	}
 }
 

@@ -38,6 +38,8 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 \"(\\.|[^\\"])*\"	{ return 'STRING'; }
 \'(\\.|[^\\'])*\'	{ return 'STRING'; }
 [+-]?[0-9][0-9.]*	{ return 'NUMBER'; }
+\:[a-z_][a-z0-9_]*	{ return 'BINDING_VALUE_SCALAR'; }
+\:\:[a-z_][a-z0-9_]*	{ return 'BINDING_VALUE_LIST'; }
 "AS"	{ return 'AS'; }
 "ASC"	{ return 'ASC'; }
 "DESC"	{ return 'DESC'; }
@@ -67,9 +69,9 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "!="	{ return '!='; }
 "!"	{ return '!'; }
 
-(\@([a-z_][a-z0-9_-]*|))	{ return 'DATA_SOURCE_IDENT'; }
+(\@([a-z_][a-z0-9_]*|))	{ return 'DATA_SOURCE_IDENT'; }
 \`(\\.|[^\\`])*\`		{ return 'IDENT'; }
-([a-z_][a-z0-9_-]*)		{ return 'IDENT'; }
+([a-z_][a-z0-9_]*)		{ return 'IDENT'; }
 
 <<EOF>>	{ return 'EOF'; }
 
@@ -167,18 +169,20 @@ expression
 	| '!' expression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
 	| expression 'IN' '(' expressionsList ')' { $$ = new Nodes.In($1, $4); }
 	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($1), $3); }
-	| complexIdent '(' ')' { $$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($1), []); }
-	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent([$1]), [$3]); }
-	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent([$1]), []); }
+	| complexIdent '(' ')' { $$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($1)); }
+	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent([$1]), new Nodes.ExpressionsList([$3])); }
+	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent([$1])); }
 	| 'COUNT' { $$ = new Nodes.ColumnIdent(['@', $1]) }
 	| complexIdent { $$ = Nodes.ColumnIdent.fromComplexIdent($1) }
 	| const { $$ = $1; }
+	| 'BINDING_VALUE_SCALAR' { $$ = new Nodes.BindingValueScalar($1); }
 	| '(' expression ')' { $$ = new Nodes.Brackets($2); }
 ;
 
 expressionsList
 	: expressionsList ',' expression { $1.push($3); $$ = $1; }
-	| expression { $$ = [$1]; }
+	| 'BINDING_VALUE_LIST' { $$ = new Nodes.BindingValueList($1); }
+	| expression { $$ = new Nodes.ExpressionsList([$1]); }
 ;
 
 column
@@ -195,7 +199,7 @@ columns
 selectClause: 'SELECT' { $$ = new Nodes.Select(); };
 
 selectColumns: selectClause columns { $1.columns = $2; $$ = $1; };
-selectColumns: selectClause '*' { $1.columns = null; $$ = $1; };
+selectColumns: selectClause '*' { $1.columns = []; $$ = $1; };
 
 table
 	: complexIdent AS dataSourceIdent { $$ = new Nodes.Table(new Nodes.TableLocation($1), new Nodes.TableAlias($3)); }

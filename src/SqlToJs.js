@@ -106,7 +106,7 @@ class SqlToJs
 					+ ' : ('
 						+ this.aggregationPropertyName + '[' + nodeKey + ']'
 						+ '('
-							+ call.args.map(this.nodeToCode.bind(this)).join(', ')
+							+ this.nodeToCode(call.args)
 						+ ')'
 					+ ')'
 				+ ')'
@@ -118,7 +118,7 @@ class SqlToJs
 		return (
 			this.codeFrom_FunctionIdent(call.function)
 			+ '(['
-			+ call.args.map(this.nodeToCode.bind(this)).join(', ')
+			+ this.nodeToCode(call.args)
 			+ '])'
 		);
 	}
@@ -197,6 +197,21 @@ class SqlToJs
 		const operator = operatorsMapping[comp.operator.toLowerCase()] || comp.operator;
 
 		return '!!(' + this.nodeToCode(comp.left) + ' ' + operator + ' ' + this.nodeToCode(comp.right) + ')';
+	}
+
+	codeFrom_ExpressionsList(expressionsList)
+	{
+		return expressionsList.values.map(this.nodeToCode.bind(this)).join(', ');
+	}
+
+	codeFrom_BindingValueScalar(binded)
+	{
+		return this.nodeToCode(binded.ast);
+	}
+
+	codeFrom_BindingValueList(binded)
+	{
+		return this.nodeToCode(binded.ast);
 	}
 }
 

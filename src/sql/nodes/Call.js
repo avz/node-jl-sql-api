@@ -1,10 +1,11 @@
 'use strict';
 
 const Node = require('../Node');
+const Nodes = require('../Nodes');
 
 class Call extends Node
 {
-	constructor(functionIdent, args)
+	constructor(functionIdent, args = new Nodes.ExpressionsList([]))
 	{
 		super();
 
@@ -14,7 +15,7 @@ class Call extends Node
 
 	childNodes()
 	{
-		return [this.function].concat(this.args);
+		return [this.function].concat([this.args]);
 	}
 }
 

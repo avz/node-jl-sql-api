@@ -13,11 +13,14 @@ const SelectFrom = require('./SelectFrom');
 const DataSourceApiResolver = require('../DataSourceApiResolver');
 const DataSourceResolversPool = require('../DataSourceResolversPool');
 
+const Binder = require('../Binder');
+
 class Select
 {
 	constructor(select, dataSourceResolvers = [])
 	{
 		this.select = select;
+		this.binder = new Binder;
 		this.dataSourceApiResolver = new DataSourceApiResolver;
 
 		this.dataSourceResolversPool = new DataSourceResolversPool;
@@ -27,6 +30,20 @@ class Select
 		}
 
 		this.dataSourceResolversPool.add(this.dataSourceApiResolver);
+	}
+
+	bind(ident, value)
+	{
+		this.binder.bind(ident, value);
+
+		return this;
+	}
+
+	_selectFrom(input)
+	{
+		this.binder.expandInplace(this.select.ast);
+
+		return new SelectFrom(this, this.select, input);
 	}
 
 	fromJsonStream(stream)
@@ -39,7 +56,7 @@ class Select
 
 		const input = new JlTransformsChain(chain);
 
-		return new SelectFrom(this, input);
+		return this._selectFrom(input);
 	}
 
 	fromObjectsStream(stream)
@@ -50,7 +67,7 @@ class Select
 			input = new JlTransformsChain([stream, input]);
 		}
 
-		return new SelectFrom(this, input);
+		return this._selectFrom(input);
 	}
 
 	fromArrayOfObjects(array)
@@ -59,7 +76,7 @@ class Select
 
 		stream.end(array);
 
-		return new SelectFrom(this, stream);
+		return this._selectFrom(stream);
 	}
 }
 

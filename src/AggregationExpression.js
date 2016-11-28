@@ -38,7 +38,7 @@ class AggregationExpression extends BasicExpression
 				continue;
 			}
 
-			for (const arg of node.args) {
+			for (const arg of node.args.values) {
 				if (this.expressionAnalyser.isAggregationExpression(arg)) {
 					throw new SqlLogicError('Nested aggregation function is not alowed');
 				}

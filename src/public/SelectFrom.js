@@ -18,8 +18,9 @@ const ProgramError = require('../error/ProgramError');
 
 class SelectFrom
 {
-	constructor(select, inputStream)
+	constructor(publicSelect, select, inputStream)
 	{
+		this.publicSelect = publicSelect;
 		this.select = select;
 		this.inputStream = inputStream;
 	}
@@ -28,7 +29,7 @@ class SelectFrom
 	{
 		const chain = [
 			this.inputStream,
-			this.select.select.stream(this.select.dataSourceResolversPool),
+			this.select.stream(this.publicSelect.dataSourceResolversPool),
 			new ChunkSplitter
 		];
 
@@ -43,7 +44,7 @@ class SelectFrom
 	{
 		const chain = [
 			this.inputStream,
-			this.select.select.stream(this.select.dataSourceResolversPool),
+			this.select.stream(this.publicSelect.dataSourceResolversPool),
 			new JsonStringifier,
 			new LinesJoiner
 		];
@@ -83,7 +84,7 @@ class SelectFrom
 
 		stream.end(array);
 
-		this.select.dataSourceApiResolver.addDataSource(this._path(location), new DataSource(stream));
+		this.publicSelect.dataSourceApiResolver.addDataSource(this._path(location), new DataSource(stream));
 
 		return this;
 	}
@@ -92,7 +93,7 @@ class SelectFrom
 	{
 		const chain = new JlTransformsChain([stream, new LinesSplitter, new JsonParser]);
 
-		this.select.dataSourceApiResolver.addDataSource(
+		this.publicSelect.dataSourceApiResolver.addDataSource(
 			this._path(location),
 			new DataSource(chain)
 		);
@@ -102,7 +103,7 @@ class SelectFrom
 
 	addObjectsStream(location, stream)
 	{
-		this.select.dataSourceApiResolver.addDataSource(
+		this.publicSelect.dataSourceApiResolver.addDataSource(
 			this._path(location),
 			new DataSource(stream.pipe(new ChunkJoiner))
 		);
