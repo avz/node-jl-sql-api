@@ -2,7 +2,7 @@
 
 const Node = require('../Node');
 
-class Boolean extends Node
+class In extends Node
 {
 	constructor(needle, haystack)
 	{
@@ -18,4 +18,4 @@ class Boolean extends Node
 	}
 }
 
-module.exports = Boolean;
+module.exports = In;

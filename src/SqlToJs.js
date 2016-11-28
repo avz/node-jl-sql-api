@@ -213,6 +213,11 @@ class SqlToJs
 	{
 		return this.nodeToCode(binded.ast);
 	}
+
+	codeFrom_In(exp)
+	{
+		return '[' + this.nodeToCode(exp.haystack) + '].includes(' + this.nodeToCode(exp.needle) + ')';
+	}
 }
 
 module.exports = SqlToJs;
