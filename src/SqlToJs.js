@@ -221,6 +221,11 @@ class SqlToJs
 	{
 		return '_helpers.unstrictIn([' + this.nodeToCode(exp.haystack) + '], ' + this.nodeToCode(exp.needle) + ')';
 	}
+
+	codeFrom_StrictIn(exp)
+	{
+		return '[' + this.nodeToCode(exp.haystack) + '].includes(' + this.nodeToCode(exp.needle) + ')';
+	}
 }
 
 module.exports = SqlToJs;

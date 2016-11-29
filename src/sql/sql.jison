@@ -43,6 +43,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "AS"	{ return 'AS'; }
 "ASC"	{ return 'ASC'; }
 "DESC"	{ return 'DESC'; }
+"STRICT" { return 'STRICT'; }
 "IN"	{ return 'IN'; }
 "ON"	{ return 'ON'; }
 "JOIN"	{ return 'JOIN'; }
@@ -88,7 +89,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %left '+' '-'
 %left '*' '/' '%'
 %left 'COUNT'
-%left 'FROM' 'AS' 'DISTINCT' 'IN' 'WHERE' 'HAVING' 'LIMIT' 'OFFSET'
+%left 'FROM' 'AS' 'DISTINCT' 'STRICT' 'IN' 'WHERE' 'HAVING' 'LIMIT' 'OFFSET'
 %left 'ORDER' 'GROUP' 'BY' 'ASC' 'DESC'
 %left 'JOIN' 'INNER' 'LEFT'
 %left '.' '!'
@@ -106,6 +107,7 @@ keywords
 	: SELECT { $$ = $1 }
 	| FROM { $$ = $1 }
 	| AS { $$ = $1 }
+	| STRICT { $$ = $1 }
 	| IN { $$ = $1 }
 	| AND { $$ = $1 }
 	| OR { $$ = $1 }
@@ -167,6 +169,7 @@ expression
 	| expression '<=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| '-' expression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
 	| '!' expression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
+	| expression 'STRICT' 'IN' '(' expressionsList ')' { $$ = new Nodes.StrictIn($1, $5); }
 	| expression 'IN' '(' expressionsList ')' { $$ = new Nodes.UnstrictIn($1, $4); }
 	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($1), $3); }
 	| complexIdent '(' ')' { $$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($1)); }

@@ -42,7 +42,7 @@ describe('SqlToJs', () => {
 	});
 
 	describe('IN()', () => {
-		const testIn = (testValue) => {
+		const testIn = (testValue, ctor = SqlNodes.UnstrictIn) => {
 			let node;
 
 			if (typeof(testValue) === 'number') {
@@ -55,7 +55,7 @@ describe('SqlToJs', () => {
 				node = testValue;
 			}
 
-			return sqlToJs.nodeToFunction(new SqlNodes.UnstrictIn(
+			return sqlToJs.nodeToFunction(new ctor(
 				node,
 				new SqlNodes.ExpressionsList([
 					new SqlNodes.String('"11"'),
@@ -65,7 +65,11 @@ describe('SqlToJs', () => {
 			))(testValue);
 		};
 
-		it('coercion', () => {
+		const strictTestIn = (testValue) => {
+			return testIn(testValue, SqlNodes.StrictIn);
+		};
+
+		it('unstrict', () => {
 			assert.strictEqual(testIn(11), true);
 			assert.strictEqual(testIn('11'), true);
 			assert.strictEqual(testIn(9), true);
@@ -75,5 +79,16 @@ describe('SqlToJs', () => {
 			assert.strictEqual(testIn(8), false);
 			assert.strictEqual(testIn('8'), false);
 		});
-	});
+
+		it('strict', () => {
+			assert.strictEqual(strictTestIn(11), false);
+			assert.strictEqual(strictTestIn('11'), true);
+			assert.strictEqual(strictTestIn(9), true);
+			assert.strictEqual(strictTestIn('9'), false);
+			assert.strictEqual(strictTestIn(10), true);
+			assert.strictEqual(strictTestIn('10'), false);
+			assert.strictEqual(strictTestIn(8), false);
+			assert.strictEqual(strictTestIn('8'), false);
+		});
+	});§
 });
