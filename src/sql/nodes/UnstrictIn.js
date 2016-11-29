@@ -2,7 +2,7 @@
 
 const Node = require('../Node');
 
-class In extends Node
+class UnstrictIn extends Node
 {
 	constructor(needle, haystack)
 	{
@@ -18,4 +18,4 @@ class In extends Node
 	}
 }
 
-module.exports = In;
+module.exports = UnstrictIn;

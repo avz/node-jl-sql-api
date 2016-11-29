@@ -55,7 +55,7 @@ describe('SqlToJs', () => {
 				node = testValue;
 			}
 
-			return sqlToJs.nodeToFunction(new SqlNodes.In(
+			return sqlToJs.nodeToFunction(new SqlNodes.UnstrictIn(
 				node,
 				new SqlNodes.ExpressionsList([
 					new SqlNodes.String('"11"'),

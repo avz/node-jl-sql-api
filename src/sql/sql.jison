@@ -167,7 +167,7 @@ expression
 	| expression '<=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| '-' expression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
 	| '!' expression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
-	| expression 'IN' '(' expressionsList ')' { $$ = new Nodes.In($1, $4); }
+	| expression 'IN' '(' expressionsList ')' { $$ = new Nodes.UnstrictIn($1, $4); }
 	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($1), $3); }
 	| complexIdent '(' ')' { $$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($1)); }
 	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent([$1]), new Nodes.ExpressionsList([$3])); }

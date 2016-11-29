@@ -217,7 +217,7 @@ class SqlToJs
 		return this.nodeToCode(binded.ast);
 	}
 
-	codeFrom_In(exp)
+	codeFrom_UnstrictIn(exp)
 	{
 		return '_helpers.unstrictIn([' + this.nodeToCode(exp.haystack) + '], ' + this.nodeToCode(exp.needle) + ')';
 	}

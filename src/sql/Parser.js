@@ -141,7 +141,7 @@ case 49:
  this.$ = new Nodes.UnaryLogicalOperation($$[$0-1], $$[$0]); 
 break;
 case 50:
- this.$ = new Nodes.In($$[$0-4], $$[$0-1]); 
+ this.$ = new Nodes.UnstrictIn($$[$0-4], $$[$0-1]); 
 break;
 case 51:
  this.$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($$[$0-3]), $$[$0-1]); 
