@@ -177,7 +177,7 @@ case 63:
  $$[$0-2].push(new Nodes.BindingValueList($$[$0])); this.$ = $$[$0-2]; 
 break;
 case 64:
- this.$ = new Nodes.BindingValueList($$[$0]); 
+ this.$ = new Nodes.ExpressionsList([new Nodes.BindingValueList($$[$0])]); 
 break;
 case 65:
  this.$ = new Nodes.ExpressionsList([$$[$0]]); 

@@ -18,6 +18,7 @@ describe('SELECT', () => {
 						+ ', IF(::ifFalse) AS ifFalse'
 						+ ', IF(true, ::ifCombTrue) AS ifCombTrue'
 						+ ', IF(false, ::ifCombFalse) AS ifCombFalse'
+						+ ', IF(::ifCombComb, true, false) AS ifCombComb'
 					)
 					.bind(':trueString', '-TRUE-')
 					.bind(':falseString', '-FALSE-')
@@ -27,6 +28,7 @@ describe('SELECT', () => {
 					.bind('::ifFalse', [false, '-TRUE-', false])
 					.bind('::ifCombTrue', [true, false])
 					.bind('::ifCombFalse', [true, false])
+					.bind('::ifCombComb', [true])
 					.fromArrayOfObjects(input)
 					.toArrayOfObjects((r) => {
 						output = r;
@@ -50,6 +52,7 @@ describe('SELECT', () => {
 			it('combined list', () => {
 				assert.strictEqual(output[0].ifCombTrue, true);
 				assert.strictEqual(output[0].ifCombFalse, false);
+				assert.strictEqual(output[0].ifCombComb, true);
 			});
 		});
 

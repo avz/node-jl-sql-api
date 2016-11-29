@@ -185,7 +185,7 @@ expression
 expressionsList
 	: expressionsList ',' expression { $1.push($3); $$ = $1; }
 	| expressionsList ',' 'BINDING_VALUE_LIST' { $1.push(new Nodes.BindingValueList($3)); $$ = $1; }
-	| 'BINDING_VALUE_LIST' { $$ = new Nodes.BindingValueList($1); }
+	| 'BINDING_VALUE_LIST' { $$ = new Nodes.ExpressionsList([new Nodes.BindingValueList($1)]); }
 	| expression { $$ = new Nodes.ExpressionsList([$1]); }
 ;
 
