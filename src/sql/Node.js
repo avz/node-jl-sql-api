@@ -1,6 +1,7 @@
 'use strict';
 
 const util = require('util');
+const ProgramError = require('../error/ProgramError');
 
 class Node
 {
@@ -63,6 +64,41 @@ class Node
 		}
 
 		return nodes;
+	}
+
+	clone()
+	{
+		const clone = (value) => {
+			const type = typeof(value);
+
+			if (type === 'object') {
+				if (value === null) {
+
+					return null;
+				} else if (value instanceof Node) {
+
+					return value.clone();
+				} else if (value instanceof Array) {
+
+					return value.slice().map(clone);
+				} else {
+					throw new ProgramError('Non-cloneable object');
+				}
+			} else {
+				return value;
+			}
+		};
+
+		const copy = Object.create(this.constructor.prototype);
+
+		for (const k in this) {
+			copy[k] = clone(this[k]);
+		}
+
+		Node.lastId++;
+		copy.id = Node.lastId;
+
+		return copy;
 	}
 }
 

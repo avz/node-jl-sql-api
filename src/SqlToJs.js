@@ -1,6 +1,7 @@
 'use strict';
 
 const AggregationFunction = require('./AggregationFunction');
+const SqlToJsHelpers = require('./SqlToJsHelpers');
 
 const ProgramError = require('./error/ProgramError');
 
@@ -19,6 +20,8 @@ class SqlToJs
 		/* TODO config */
 		this.rowVarName = 'row.sources';
 		this.aggregationCacheVarName = 'row.aggregationCache';
+
+		this.helpers = new SqlToJsHelpers;
 	}
 
 	nodeToCode(node)
@@ -37,9 +40,9 @@ class SqlToJs
 	nodeToFunction(node)
 	{
 		return (new Function(
-			[this.rowArgumentName],
+			['_helpers', this.rowArgumentName],
 			'return ' + this.nodeToCode(node)
-		)).bind(this.runtimeContext);
+		)).bind(this.runtimeContext, this.helpers);
 	}
 
 	basicTypeToCode(basic)
@@ -216,7 +219,7 @@ class SqlToJs
 
 	codeFrom_In(exp)
 	{
-		return '[' + this.nodeToCode(exp.haystack) + '].includes(' + this.nodeToCode(exp.needle) + ')';
+		return '_helpers.unstrictIn([' + this.nodeToCode(exp.haystack) + '], ' + this.nodeToCode(exp.needle) + ')';
 	}
 }
 

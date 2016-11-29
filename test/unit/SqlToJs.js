@@ -40,4 +40,40 @@ describe('SqlToJs', () => {
 			});
 		});
 	});
+
+	describe('IN()', () => {
+		const testIn = (testValue) => {
+			let node;
+
+			if (typeof(testValue) === 'number') {
+				node = new SqlNodes.Number(testValue);
+				node.value = testValue;
+			} else if (typeof(testValue) === 'string') {
+				node = new SqlNodes.String('""');
+				node.value = testValue;
+			} else {
+				node = testValue;
+			}
+
+			return sqlToJs.nodeToFunction(new SqlNodes.In(
+				node,
+				new SqlNodes.ExpressionsList([
+					new SqlNodes.String('"11"'),
+					new SqlNodes.Number(10),
+					new SqlNodes.Number(9)
+				])
+			))(testValue);
+		};
+
+		it('coercion', () => {
+			assert.strictEqual(testIn(11), true);
+			assert.strictEqual(testIn('11'), true);
+			assert.strictEqual(testIn(9), true);
+			assert.strictEqual(testIn('9'), true);
+			assert.strictEqual(testIn(10), true);
+			assert.strictEqual(testIn('10'), true);
+			assert.strictEqual(testIn(8), false);
+			assert.strictEqual(testIn('8'), false);
+		});
+	});
 });
