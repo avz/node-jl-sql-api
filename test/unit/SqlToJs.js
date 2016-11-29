@@ -90,5 +90,5 @@ describe('SqlToJs', () => {
 			assert.strictEqual(strictTestIn(8), false);
 			assert.strictEqual(strictTestIn('8'), false);
 		});
-	});§
+	});
 });
