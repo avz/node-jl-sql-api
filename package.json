@@ -12,11 +12,13 @@
   "devDependencies": {
     "eslint": "^3.10.2",
     "eslint-plugin-mocha": "^4.7.0",
+    "istanbul": "^0.4.5",
     "jison": "^0.4.17",
     "mocha": "^3.1.2"
   },
   "scripts": {
-    "test": "eslint . && mocha --recursive"
+    "test": "eslint . && mocha --recursive",
+	"coverage": "istanbul cover --report html _mocha -- --recursive"
   },
   "engines": {
     "node": ">=6"
