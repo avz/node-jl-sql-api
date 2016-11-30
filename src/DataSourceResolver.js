@@ -4,6 +4,7 @@ const DataSource = require('./DataSource');
 const ImplementationRequired = require('./error/ImplementationRequired');
 const JlTransformsChain = require('./stream/JlTransformsChain');
 const LineSplitter = require('./stream/LinesSplitter');
+const ChunkJoiner = require('./stream/ChunkJoiner');
 const JsonParser = require('./stream/JsonParser');
 
 class DataSourceResolver
@@ -21,13 +22,22 @@ class DataSourceResolver
 		}
 
 		if (!stream.outputType) {
-			const objectsStream = new JlTransformsChain([
-				stream,
-				new LineSplitter,
-				new JsonParser
-			]);
+			if (stream._readableState && stream._readableState.objectMode) {
+				const objectsStream = new JlTransformsChain([
+					stream,
+					new ChunkJoiner
+				]);
 
-			return new DataSource(objectsStream);
+				return new DataSource(objectsStream);
+			} else {
+				const objectsStream = new JlTransformsChain([
+					stream,
+					new LineSplitter,
+					new JsonParser
+				]);
+
+				return new DataSource(objectsStream);
+			}
 		} else {
 			return new DataSource(stream);
 		}
