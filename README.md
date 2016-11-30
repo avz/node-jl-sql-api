@@ -47,7 +47,7 @@ process.stdin
 api.query('SELECT key, SUM(value) AS sum GROUP BY key')
 	.fromJsonStream(process.stdin)
 	.toJsonStream(process.stdout)
-);
+;
 ```
 
 Вход
@@ -80,7 +80,7 @@ api.query('SELECT key, SUM(value) AS sum GROUP BY key')
 	.toArrayOfObjects(function(objects) {
 		console.log(objects);
 	})
-);
+;
 ```
 
 ### JOIN
