@@ -541,7 +541,7 @@ describe('SELECT', () => {
 	};
 
 	describe('in-memory sort', () => {
-		run(new JlSql, {sortOptions: {inMemoryBufferSize: 1000000}});
+		run(new JlSql, {sortOptions: {forceInMemory: true}});
 	});
 
 	describe('force external sort (unix `sort` cmd)', () => {

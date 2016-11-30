@@ -9,6 +9,7 @@ class PublicApiOptions
 	constructor(options = {})
 	{
 		this.tmpDir = null;
+		this.forceInMemory = undefined;
 		this.sortOptions = null;
 		this.joinOptions = null;
 		this.dataSourceResolvers = [];
@@ -40,6 +41,16 @@ class PublicApiOptions
 
 			if (!(options.joinOptions && options.joinOptions.tmpDir)) {
 				this.joinOptions.tmpDir = this.tmpDir;
+			}
+		}
+
+		if (this.forceInMemory !== undefined) {
+			if (this.sortOptions.forceInMemory === undefined) {
+				this.sortOptions.forceInMemory = this.forceInMemory;
+			}
+
+			if (this.joinOptions.forceInMemory === undefined) {
+				this.joinOptions.forceInMemory = this.forceInMemory;
 			}
 		}
 	}

@@ -21,6 +21,7 @@ class SortOptions
 		this.keys = [];
 
 		this.inMemoryBufferSize = 16000;
+		this.forceInMemory = undefined;
 
 		for (const k in options) {
 			if (!this.hasOwnProperty(k)) {

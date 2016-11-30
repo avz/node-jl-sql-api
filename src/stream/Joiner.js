@@ -291,6 +291,7 @@ Joiner.KeyBuffer = class Joiner_KeyBuffer
 		this.preparingContext = preparingContext;
 		this.items = [];
 		this.maxInMemorySize = preparingContext.options.joinOptions.maxKeysInMemory;
+		this.forceInMemory = preparingContext.options.joinOptions.forceInMemory;
 
 		this.fileStorage = null;
 	}
@@ -305,7 +306,7 @@ Joiner.KeyBuffer = class Joiner_KeyBuffer
 
 		this.items.push(item);
 
-		if (this.items.length > this.maxInMemorySize) {
+		if (!this.forceInMemory && this.items.length > this.maxInMemorySize) {
 			this._convertToFileStorage(cb);
 		} else {
 			cb();

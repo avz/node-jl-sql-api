@@ -66,7 +66,7 @@ class Sorter extends JlTransform
 		if (this.inMemory) {
 			this.inMemory.write(chunk);
 
-			if (this.inMemory.bufferSize() > this.options.inMemoryBufferSize) {
+			if (!this.options.forceInMemory && this.inMemory.bufferSize() > this.options.inMemoryBufferSize) {
 				this._convertToExternal(cb);
 			} else {
 				cb();

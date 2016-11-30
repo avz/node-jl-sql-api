@@ -7,6 +7,7 @@ class JoinOptions
 	constructor(options)
 	{
 		this.maxKeysInMemory = 16000;
+		this.forceInMemory = undefined;
 		this.tmpDir = null;
 
 		for (const k in options) {
