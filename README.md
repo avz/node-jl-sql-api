@@ -207,6 +207,12 @@ SELECT * WHERE field = :field
 ```
 где `:field` - это "слот", значение которого должно быть задано через метод [`Select.prototype.bind()`](#selectprototypebindident-value).
 
+Биндить можно не только данные, но и названия полей, для этого имя биндинга нужно взять в квадратные скобки
+
+```sql
+SELECT * WHERE [:field] = :value
+```
+
 Биндинги бывают двух типов:
 * биндинг одного значения, форма записи: `:bind` (один символ `:` перед именем)
 * биндинг списка значений, форма записи: `::bind` (2 символа `::` перед именем)
@@ -223,6 +229,9 @@ SELECT * WHERE value > FLOOR(:id)
 // при :id = 1 запрос будет иметь вид SELECT * WHERE value > FLOOR(1)
 
 SELECT id, amount * :price AS revenue WHERE value > amount * :price
+
+SELECT * WHERE [:field] = :value
+// отфильтровать поле с именем, взятым из значения биндинга :field
 ```
 
 #### Биндинг списка значений
@@ -235,6 +244,14 @@ SELECT * WHERE id IN(::ids)
 
 SELECT IF(enabled, ::trueFalse)
 // при ::ids = ['true', 'false'] запрос будет иметь вид: SELECT IF(enabled, 'true', 'false')
+
+SELECT * WHERE [::fieldPath] IN(::values)
+// путь до поля будет взят из значения биндинга ::fieldPath, например,
+// если ::fieldPath = ['key', 'subkey'], то запрос превратится в
+// SELECT * WHERE key.subkey IN(::values)
+
+SELECT * WHERE [:name1].[:name2].[::tail] IN(::values)
+// в этом случае имя сформируется из значений всех трёх биндингов
 ```
 
 ## API
