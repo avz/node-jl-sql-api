@@ -96,9 +96,18 @@ class Binder
 	{
 		for (const node of ast.eachChildNodeRecursive()) {
 			if (node instanceof Nodes.BindingValueScalar) {
+
 				node.expand(this._need(node.ident));
 			} else if (node instanceof Nodes.BindingValueList) {
+
 				node.expand(this._need(node.ident));
+			} else if (node instanceof Nodes.BindingIdent) {
+
+				node.expand(this._need(node.ident).value);
+			} else if (node instanceof Nodes.BindingIdentList) {
+				const fragments = this._need(node.ident).values.map(v => v.value);
+
+				node.expand(fragments);
 			}
 		}
 	}

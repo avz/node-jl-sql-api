@@ -25,6 +25,11 @@ class FunctionIdent extends Node
 
 		return ident;
 	}
+
+	getFragments()
+	{
+		return this.fragments;
+	}
 }
 
 module.exports = FunctionIdent;

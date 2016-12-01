@@ -25,7 +25,7 @@ class BasicExpression
 			 * оптимизированный вариант для случая, когда значение просто
 			 * берётся из свойства без всякой обработки
 			 */
-			const path = this.expression.fragments.slice();
+			const path = this.expression.getFragments().slice();
 
 			path.unshift(DataRow.SOURCES_PROPERTY);
 

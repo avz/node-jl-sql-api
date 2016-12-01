@@ -16,6 +16,11 @@ class TableLocation extends Node
 
 		this.fragments = complexIdent.fragments;
 	}
+
+	getFragments()
+	{
+		return this.fragments;
+	}
 }
 
 module.exports = TableLocation;

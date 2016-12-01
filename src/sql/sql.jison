@@ -40,6 +40,8 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 [+-]?[0-9][0-9.]*	{ return 'NUMBER'; }
 \:[a-z_][a-z0-9_]*	{ return 'BINDING_VALUE_SCALAR'; }
 \:\:[a-z_][a-z0-9_]*	{ return 'BINDING_VALUE_LIST'; }
+\[\:[a-z_][a-z0-9_]*\]	{ return 'BINDING_IDENT'; }
+\[\:\:[a-z_][a-z0-9_]*\]	{ return 'BINDING_IDENT_LIST'; }
 "AS"	{ return 'AS'; }
 "ASC"	{ return 'ASC'; }
 "DESC"	{ return 'DESC'; }
@@ -131,12 +133,15 @@ dataSourceIdent
 
 ident
 	: 'IDENT' { $$ = new Nodes.Ident($1); }
+	| 'BINDING_IDENT' { $$ = new Nodes.BindingIdent($1); }
 	| keywords { $$ = new Nodes.Ident($1); }
 ;
 
 complexIdent
-	: complexIdent '.' ident { $1.addFragment($3.name); $$ = $1; }
-	| ident { $$ = new Nodes.ComplexIdent(['@', $1.name]); }
+	: complexIdent '.' ident { $1.addFragment($3); $$ = $1; }
+	| complexIdent '.' 'BINDING_IDENT_LIST' { $1.addFragment(new Nodes.BindingIdentList($3)); $$ = $1; }
+	| 'BINDING_IDENT_LIST' { $$ = new Nodes.ComplexIdent(['@', new Nodes.BindingIdentList($1)]); }
+	| ident { $$ = new Nodes.ComplexIdent(['@', $1]); }
 	| dataSourceIdent { $$ = new Nodes.ComplexIdent([$1.name]); }
 ;
 

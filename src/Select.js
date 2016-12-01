@@ -119,7 +119,7 @@ class Select
 			}
 
 			let tableAlias = joinAst.table.alias && joinAst.table.alias.name;
-			const dataSourcePath = joinAst.table.location.fragments;
+			const dataSourcePath = joinAst.table.location.getFragments();
 
 			if (!tableAlias) {
 				tableAlias = dataSourceResolversPool.extractAlias(dataSourcePath);

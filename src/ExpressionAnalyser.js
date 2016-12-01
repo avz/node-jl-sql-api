@@ -14,7 +14,7 @@ class ExpressionAnalyser
 	isAggregationExpression(expression)
 	{
 		const callIsAggregation = call => {
-			const func = this.preparingContext.functionsMap.need(call.function.fragments);
+			const func = this.preparingContext.functionsMap.need(call.function.getFragments());
 
 			if (func.prototype instanceof AggregationFunction) {
 				return true;
@@ -63,7 +63,7 @@ class ExpressionAnalyser
 		}
 
 		if (expression instanceof SqlNodes.Call) {
-			const func = this.preparingContext.functionsMap.need(expression.function.fragments);
+			const func = this.preparingContext.functionsMap.need(expression.function.getFragments());
 
 			return func.dataType();
 		}
@@ -79,7 +79,7 @@ class ExpressionAnalyser
 	extractUsedSources(expression)
 	{
 		if (expression instanceof SqlNodes.ComplexIdent) {
-			return [expression.fragments[0]];
+			return [expression.getFragments()[0]];
 		}
 
 		const used = {};

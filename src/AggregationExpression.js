@@ -32,7 +32,7 @@ class AggregationExpression extends BasicExpression
 				continue;
 			}
 
-			const func = this.preparingContext.functionsMap.need(node.function.fragments);
+			const func = this.preparingContext.functionsMap.need(node.function.getFragments());
 
 			if (!(func.prototype instanceof AggregationFunction)) {
 				continue;

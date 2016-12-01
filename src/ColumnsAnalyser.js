@@ -48,14 +48,16 @@ class ColumnsAnalyser
 		var alias = null;
 
 		if (column.alias) {
-			alias = column.alias.fragments;
+			alias = column.alias.getFragments();
 			if (alias[0] !== '@') {
 				throw new SqlLogicError('You can\'t use aliases targeted on source');
 			}
 
 		} else if (column.expression instanceof SqlNodes.ColumnIdent) {
-			alias = column.expression.fragments.slice();
-			alias[0] = '@';
+			if (column.expression.fragments.every(s => typeof(s) === 'string')) {
+				alias = column.expression.getFragments().slice();
+				alias[0] = '@';
+			}
 		}
 
 		if (!alias) {

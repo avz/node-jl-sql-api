@@ -58,7 +58,7 @@ class SqlToJs
 		 */
 		var levels = [];
 		var rel = this.rowVarName;
-		const frags = columnIdent.fragments;
+		const frags = columnIdent.getFragments();
 
 		for (let i = 0; i < frags.length - 1; i++) {
 			const fragment = frags[i];
@@ -81,7 +81,7 @@ class SqlToJs
 	{
 		return (
 			this.basicFunctionsPropertyName + '['
-			+ functionIdent.fragments
+			+ functionIdent.getFragments()
 				.map(s => s.toUpperCase())
 				.map(JSON.stringify)
 				.join('][')
@@ -91,7 +91,7 @@ class SqlToJs
 
 	codeFrom_Call(call)
 	{
-		const func = this.functionsMap.get(call.function.fragments);
+		const func = this.functionsMap.get(call.function.getFragments());
 
 		if (func && func.prototype instanceof AggregationFunction) {
 			/*
