@@ -1,25 +1,21 @@
 'use strict';
 
-const Node = require('../Node');
+const ComplexIdent = require('./ComplexIdent');
 
-class TableLocation extends Node
+class TableLocation extends ComplexIdent
 {
 	constructor(complexIdent)
 	{
-		super();
+		super([]);
 
-		const source = complexIdent.fragments.shift();
+		const fragments = complexIdent.fragments.slice();
+		const source = fragments.shift();
 
 		if (source !== '@') {
 			throw new Error('Invalid table location');
 		}
 
-		this.fragments = complexIdent.fragments;
-	}
-
-	getFragments()
-	{
-		return this.fragments;
+		this.fragments = fragments;
 	}
 }
 
