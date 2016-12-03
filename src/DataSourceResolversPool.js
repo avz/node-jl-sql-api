@@ -1,5 +1,7 @@
 'use strict';
 
+const SqlNodes = require('./sql/Nodes');
+
 class DataSourceResolversPool
 {
 	constructor()
@@ -20,6 +22,17 @@ class DataSourceResolversPool
 			if (source) {
 				return source;
 			}
+		}
+
+		return null;
+	}
+
+	extractBindingAlias(complexIdent)
+	{
+		const lastFragment = complexIdent.fragments[complexIdent.fragments.length - 1];
+
+		if (lastFragment instanceof SqlNodes.BindingIdent || lastFragment instanceof SqlNodes.BindingIdentList) {
+			return lastFragment.basename();
 		}
 
 		return null;

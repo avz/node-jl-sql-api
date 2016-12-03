@@ -122,7 +122,16 @@ class Select
 			const dataSourcePath = joinAst.table.location.getFragments();
 
 			if (!tableAlias) {
+				tableAlias = dataSourceResolversPool.extractBindingAlias(joinAst.table.location);
+
+				if (tableAlias !== null) {
+					tableAlias = '@' + tableAlias;
+				}
+			}
+
+			if (!tableAlias) {
 				tableAlias = dataSourceResolversPool.extractAlias(dataSourcePath);
+
 				if (tableAlias !== null) {
 					tableAlias = '@' + tableAlias;
 				}

@@ -16,6 +16,11 @@ class BindingIdentList extends Node
 	{
 		this.binded = binded;
 	}
+
+	basename()
+	{
+		return this.ident.slice(2);
+	}
 }
 
 module.exports = BindingIdentList;
