@@ -188,7 +188,7 @@ describe('SELECT', () => {
 			});
 
 			it('ordered', () => {
-				assert.deepEqual(
+				assert.deepStrictEqual(
 					output,
 					[
 						{a: 1, b: 5},
@@ -225,15 +225,15 @@ describe('SELECT', () => {
 			});
 
 			it('ordered', () => {
-				assert.deepEqual(
+				assert.deepStrictEqual(
 					output,
 					[
-						{a: 1, b: 3},
-						{a: '1', b: 5},
+						{a: '1', b: 3},
+						{a: 1, b: 5},
 						{a: 2, b: 2},
 						{a: 3, b: 4},
 						{a: 3, b: 6},
-						{a: 10, b: 6},
+						{a: 10, b: 6}
 					]
 				);
 			});
@@ -263,7 +263,7 @@ describe('SELECT', () => {
 			});
 
 			it('aggregated and ordered', () => {
-				assert.deepEqual(
+				assert.deepStrictEqual(
 					output,
 					[
 						{count: 1},
@@ -298,7 +298,7 @@ describe('SELECT', () => {
 			});
 
 			it('make right result', () => {
-				assert.deepEqual(
+				assert.deepStrictEqual(
 					output,
 					[
 						{a: 1, count: 2},
@@ -326,7 +326,7 @@ describe('SELECT', () => {
 				jlSql.query('SELECT k GROUP BY k ORDER BY SUM(k)')
 					.fromArrayOfObjects(input)
 					.toArrayOfObjects((r) => {
-						assert.deepEqual(r, [{k: 3}, {k: 2}, {k: 1}]);
+						assert.deepStrictEqual(r, [{k: 3}, {k: 2}, {k: 1}]);
 						done();
 					})
 				;
@@ -336,7 +336,7 @@ describe('SELECT', () => {
 				jlSql.query('SELECT k GROUP BY k ORDER BY SUM(k) DESC')
 					.fromArrayOfObjects(input)
 					.toArrayOfObjects((r) => {
-						assert.deepEqual(r, [{k: 1}, {k: 2}, {k: 3}]);
+						assert.deepStrictEqual(r, [{k: 1}, {k: 2}, {k: 3}]);
 						done();
 					})
 				;

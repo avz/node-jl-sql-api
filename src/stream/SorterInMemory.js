@@ -2,7 +2,7 @@
 
 const JlTransform = require('./JlTransform');
 const Order = require('../Order');
-const DataType = require('../DataType');
+const Collator = require('../Collator');
 
 const ProgramError = require('../error/ProgramError');
 
@@ -63,21 +63,15 @@ class SorterInMemory extends JlTransform
 		const compare = (row1, row2) => {
 			for (let i = 0; i < this.orders.length; i++) {
 				const order = this.orders[i];
-
-				let v1 = order.valueFunction(row1);
-				let v2 = order.valueFunction(row2);
-
-				if (order.valueFunction.dataType === DataType.MIXED) {
-					v1 = v1 === undefined ? '' : JSON.stringify(v1 + '');
-					v2 = v2 === undefined ? '' : JSON.stringify(v2 + '');
-				}
-
 				const direction = order.direction === Order.DIRECTION_DESC ? -1 : 1;
 
-				if (v1 > v2) {
-					return direction;
-				} else if (v1 < v2) {
-					return -direction;
+				const key1 = order.valueFunction(row1);
+				const key2 = order.valueFunction(row2);
+
+				const diff = Collator.compare(order.valueFunction.dataType, key1, key2);
+
+				if (diff) {
+					return direction * diff;
 				}
 			}
 

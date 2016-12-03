@@ -1,7 +1,7 @@
 'use strict';
 
 const Transform = require('stream').Transform;
-const DataType = require('../../DataType');
+const Collator = require('../../Collator');
 
 class SortInputTransform extends Transform
 {
@@ -24,13 +24,9 @@ class SortInputTransform extends Transform
 			const columnValues = [];
 
 			for (const order of this.orders) {
-				let v = order.valueFunction(row);
+				const key = Collator.generateKey(order.valueFunction.dataType, order.valueFunction(row));
 
-				if (order.valueFunction.dataType === DataType.MIXED) {
-					v = v === undefined ? '' : JSON.stringify(v + '');
-				}
-
-				columnValues.push(v);
+				columnValues.push(key);
 			}
 
 			output += columnValues.join(this.columnSeparator) + this.columnSeparator + JSON.stringify(row) + '\n';

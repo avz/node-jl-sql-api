@@ -12,6 +12,9 @@ const LinesSplitter = require('./LinesSplitter');
 const ProgramError = require('../error/ProgramError');
 const NotSupported = require('../error/NotSupported');
 
+const Collator = require('../Collator');
+const DataType = require('../DataType');
+
 class Joiner extends Readable
 {
 	/**
@@ -55,16 +58,12 @@ class Joiner extends Readable
 
 	mainKey(row)
 	{
-		const v = this.mainValueCb(row);
-
-		return v === undefined ? '' : JSON.stringify(v + '');
+		return this.mainValueCb(row);
 	}
 
 	joiningKey(row)
 	{
-		const v = this.joiningValueCb(row);
-
-		return v === undefined ? '' : JSON.stringify(v + '');
+		return this.joiningValueCb(row);
 	}
 
 	popOutput(cb)
@@ -93,7 +92,7 @@ class Joiner extends Readable
 			if (this.currentKeyMainRow !== mainRow) {
 				this.currentKeyMainRow = mainRow;
 
-				if (this.currentKey === mainKey) {
+				if (Collator.compare(DataType.STRING, this.currentKey, mainKey) === 0) {
 					nextMainRow(cb);
 
 					return;
@@ -113,13 +112,15 @@ class Joiner extends Readable
 
 					const joiningKey = this.joiningKey(joiningRow);
 
-					if (mainKey === joiningKey) {
+					const diff = Collator.compare(DataType.STRING, mainKey, joiningKey);
+
+					if (!diff) {
 						this.currentKeyBuffer.push(joiningRow, () => {
 							this.joiningBuffer.next();
 							setImmediate(() => continueJoining(cb));
 						});
 
-					} else if (joiningKey > mainKey) {
+					} else if (diff < 0) {
 
 						nextMainRow(cb);
 					} else { // mainKey > joiningKey
