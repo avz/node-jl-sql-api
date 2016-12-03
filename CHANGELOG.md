@@ -1,8 +1,8 @@
 ## `v1.2.0` (2016-12-03)
 
 * Binding can now be used for data sources (`JOIN [:name] ON @name.field = field`)
-* Сортировка строк теперь всегда делается побайтово по представлению строки в UTF-8.
-	Сделано для совместимости с сортировкой в `sort`
+* Sorting strings are now always done in byte-by-byte representation of the string in UTF-8.
+  Made to be compatible with the sorting of `sort`
 
 ## `v1.1.0` (2016-12-01)
 
