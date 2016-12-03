@@ -78,7 +78,7 @@ class ExpressionAnalyser
 	 */
 	extractUsedSources(expression)
 	{
-		if (expression instanceof SqlNodes.ComplexIdent) {
+		if (expression instanceof SqlNodes.ColumnIdent) {
 			return [expression.getFragments()[0]];
 		}
 

@@ -176,10 +176,10 @@ expression
 	| '!' expression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
 	| expression 'STRICT' 'IN' '(' expressionsList ')' { $$ = new Nodes.StrictIn($1, $5); }
 	| expression 'IN' '(' expressionsList ')' { $$ = new Nodes.UnstrictIn($1, $4); }
-	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($1), $3); }
-	| complexIdent '(' ')' { $$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($1)); }
-	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent([$1]), new Nodes.ExpressionsList([$3])); }
-	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent([$1])); }
+	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), $3); }
+	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1)); }
+	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent['@', $1]), new Nodes.ExpressionsList([$3])); }
+	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1]))); }
 	| 'COUNT' { $$ = new Nodes.ColumnIdent(['@', $1]) }
 	| complexIdent { $$ = Nodes.ColumnIdent.fromComplexIdent($1) }
 	| const { $$ = $1; }

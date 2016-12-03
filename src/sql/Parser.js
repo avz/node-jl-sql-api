@@ -156,16 +156,16 @@ case 55:
  this.$ = new Nodes.UnstrictIn($$[$0-4], $$[$0-1]); 
 break;
 case 56:
- this.$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($$[$0-3]), $$[$0-1]); 
+ this.$ = new Nodes.Call(new Nodes.FunctionIdent($$[$0-3]), $$[$0-1]); 
 break;
 case 57:
- this.$ = new Nodes.Call(Nodes.FunctionIdent.fromComplexIdent($$[$0-2])); 
+ this.$ = new Nodes.Call(new Nodes.FunctionIdent($$[$0-2])); 
 break;
 case 58:
- this.$ = new Nodes.Call(new Nodes.FunctionIdent([$$[$0-3]]), new Nodes.ExpressionsList([$$[$0-1]])); 
+ this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent['@', $$[$0-3]]), new Nodes.ExpressionsList([$$[$0-1]])); 
 break;
 case 59:
- this.$ = new Nodes.Call(new Nodes.FunctionIdent([$$[$0-3]])); 
+ this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $$[$0-3]]))); 
 break;
 case 60:
  this.$ = new Nodes.ColumnIdent(['@', $$[$0]]) 
