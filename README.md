@@ -201,7 +201,14 @@ SELECT value
 
 ### Работа с датами
 
-Все функции и операторы работы с датами, кроме `FROM_UNIXTIME()` могут оперировать только с объектами класса [Date](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Date) и строками в формате, понимаемом конструктором [Date](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Date). Для работы с unix timestamp нужно явным образом скорвертировать unix timestamp в дату функцией `FROM_UNIXTIME(unixTimestamp)`
+Все функции и операторы работы с датами, кроме `FROM_UNIXTIME()` могут оперировать только с объектами класса [Date](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Date) и строками в формате, понимаемом конструктором [Date](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Date). Для работы с unix timestamp нужно явным образом скорвертировать unix timestamp в дату функцией `FROM_UNIXTIME(unixTimestamp)`.
+
+#### Временная зона
+
+Манипуляции с датами происходят по локальной таймзоне, на настоящий момент единственная возможность поменять это поведение - это поменять переменную окружения `TZ` при запуске процесса NodeJS. Например
+```
+% TZ=UTC node main.js ...
+```
 
 #### Функции
 
