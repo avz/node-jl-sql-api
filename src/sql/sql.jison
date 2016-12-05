@@ -35,6 +35,15 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "OFFSET"	{ return 'OFFSET'; }
 "LEFT"	{ return 'LEFT'; }
 "INNER"	{ return 'INNER'; }
+
+"INTERVAL"	{ return 'INTERVAL'; }
+"YEAR" { return 'YEAR'; }
+"MONTH" { return 'MONTH'; }
+"DAY" { return 'DAY'; }
+"HOUR" { return 'HOUR'; }
+"MINUTE" { return 'MINUTE'; }
+"SECOND" { return 'SECOND'; }
+
 \"(\\.|[^\\"])*\"	{ return 'STRING'; }
 \'(\\.|[^\\'])*\'	{ return 'STRING'; }
 [+-]?[0-9][0-9.]*	{ return 'NUMBER'; }
@@ -147,6 +156,20 @@ complexIdent
 
 number: 'NUMBER' { $$ = new Nodes.Number($1); };
 
+intervalUnit
+	: 'YEAR' { $$ = Nodes.Interval.UNIT_YEAR; }
+	| 'MONTH' { $$ = Nodes.Interval.UNIT_MONTH; }
+	| 'DAY' { $$ = Nodes.Interval.UNIT_DAY; }
+	| 'HOUR' { $$ = Nodes.Interval.UNIT_HOUR; }
+	| 'MINUTE' { $$ = Nodes.Interval.UNIT_MINUTE; }
+	| 'SECOND' { $$ = Nodes.Interval.UNIT_SECOND; }
+;
+
+interval
+	: 'INTERVAL' expression intervalUnit { $$ = new Nodes.Interval(); $$.add($2, $3); }
+	| interval expression intervalUnit { $$.add($2, $3); }
+;
+
 const
 	: 'STRING' { $$ = new Nodes.String($1); }
 	| number   { $$ = $1; }
@@ -162,6 +185,8 @@ expression
 	| expression '/' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| expression '+' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| expression '-' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| expression '+' interval { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| expression '-' interval { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| expression '=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| expression '!==' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
 	| expression '===' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }

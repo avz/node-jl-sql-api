@@ -168,6 +168,10 @@ class SqlToJs
 
 	codeFrom_BinaryOperation(binary)
 	{
+		if (binary.right.type() === 'Interval') {
+			return this.codeFrom_BinaryOperator_interval(binary);
+		}
+
 		const left = this.nodeToCode(binary.left);
 		const right = this.nodeToCode(binary.right);
 
@@ -176,6 +180,29 @@ class SqlToJs
 		}
 
 		return `${left} ${binary.operator} ${right}`;
+	}
+
+	codeFrom_BinaryOperator_interval(binary)
+	{
+		const intervalBase = binary.left;
+		const interval = binary.right;
+		let line = this.nodeToCode(intervalBase);
+
+		for (const delta of interval.deltas) {
+			let deltaSize = this.nodeToCode(delta.expression);
+
+			if (binary.operator === '-') {
+				deltaSize = '-(' + deltaSize + ')';
+			}
+
+			line = '_helpers.date.moveOnInterval('
+				+ line
+				+ ', ' + JSON.stringify(delta.unit)
+				+ ', ' + deltaSize
+			+ ')';
+		}
+
+		return line;
 	}
 
 	codeFrom_BinaryArithmeticOperation(binary)

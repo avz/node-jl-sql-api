@@ -91,4 +91,61 @@ describe('SqlToJs', () => {
 			assert.strictEqual(strictTestIn('8'), false);
 		});
 	});
+
+	describe('intervals', () => {
+		const cases = [
+			[
+				new Date('2016-12-05 12:34:50'),
+				[
+					[2, SqlNodes.Interval.UNIT_YEAR],
+					[3, SqlNodes.Interval.UNIT_MONTH],
+					[4, SqlNodes.Interval.UNIT_DAY],
+					[5, SqlNodes.Interval.UNIT_HOUR],
+					[6, SqlNodes.Interval.UNIT_MINUTE],
+					[7, SqlNodes.Interval.UNIT_SECOND]
+				],
+				{
+					'+': new Date('2019-03-09 17:40:57'),
+					'-': new Date('2014-09-01 07:28:43')
+				}
+			]
+		];
+
+		for (const c of cases) {
+			const base = c[0];
+			const deltas = c[1];
+
+			const inputs = {
+				string: base.toISOString(),
+				int: base.getTime() / 1000,
+				date: base
+			};
+
+			const intervalNode = new SqlNodes.Interval;
+
+			for (const delta of deltas) {
+				intervalNode.add(new SqlNodes.Number(delta[0]), delta[1]);
+			}
+
+			for (const oper in c[2]) {
+				const result = c[2][oper];
+
+				for (const type in inputs) {
+					const input = inputs[type];
+
+					it('operator ' + oper + ' for ' + type, () => {
+						const f = sqlToJs.nodeToFunction(
+							new SqlNodes.BinaryArithmeticOperation(
+								oper,
+								SqlNodes.ColumnIdent.fromComplexIdent(new SqlNodes.ComplexIdent(['@', 'input'])),
+								intervalNode
+							)
+						);
+
+						assert.equal(f({sources: {'@': {input: input}}}).toISOString(), result.toISOString());
+					});
+				}
+			}
+		}
+	});
 });

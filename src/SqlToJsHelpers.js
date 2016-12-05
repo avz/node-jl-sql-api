@@ -1,7 +1,14 @@
 'use strict';
 
+const SqlToJsDateHelper = require('./SqlToJsDateHelper');
+
 class SqlToJsHelpers
 {
+	constructor(sqlToJs)
+	{
+		this.date = new SqlToJsDateHelper(sqlToJs);
+	}
+
 	unstrictIn(haystack, needle)
 	{
 		/* eslint-disable eqeqeq */
