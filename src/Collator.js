@@ -23,10 +23,22 @@ class Collator
 
 	static _compareAsJson(dataType, a, b)
 	{
-		const keyA = Buffer.from(Collator.generateKey(dataType, a));
-		const keyB = Buffer.from(Collator.generateKey(dataType, b));
+		const keyA = Collator.generateKey(dataType, a);
+		const keyB = Collator.generateKey(dataType, b);
 
-		return Buffer.compare(keyA, keyB);
+		/*
+		 * JS uses simple string comparsion algo, which is identical to byte-by-byte
+		 * comparsion of UTF-8 encoded strings used in `LANG=C sort`
+		 * http://www.ecma-international.org/ecma-262/6.0/#sec-abstract-relational-comparison Note 2
+		 */
+
+		if (keyA > keyB) {
+			return 1;
+		} else if (keyA < keyB) {
+			return -1;
+		}
+
+		return 0;
 	}
 
 	static compare(dataType, a, b)
@@ -44,7 +56,7 @@ class Collator
 			return value + '';
 		}
 
-		return Buffer.from(value === undefined ? '' : JSON.stringify(value + ''));
+		return value === undefined ? '' : JSON.stringify(value + '');
 	}
 }
 

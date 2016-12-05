@@ -58,12 +58,12 @@ class Joiner extends Readable
 
 	mainKey(row)
 	{
-		return this.mainValueCb(row);
+		return Collator.generateKey(DataType.STRING, this.mainValueCb(row));
 	}
 
 	joiningKey(row)
 	{
-		return this.joiningValueCb(row);
+		return Collator.generateKey(DataType.STRING, this.joiningValueCb(row));
 	}
 
 	popOutput(cb)
@@ -92,7 +92,7 @@ class Joiner extends Readable
 			if (this.currentKeyMainRow !== mainRow) {
 				this.currentKeyMainRow = mainRow;
 
-				if (Collator.compare(DataType.STRING, this.currentKey, mainKey) === 0) {
+				if (this.currentKey === mainKey) {
 					nextMainRow(cb);
 
 					return;
@@ -112,15 +112,13 @@ class Joiner extends Readable
 
 					const joiningKey = this.joiningKey(joiningRow);
 
-					const diff = Collator.compare(DataType.STRING, mainKey, joiningKey);
-
-					if (!diff) {
+					if (mainKey === joiningKey) {
 						this.currentKeyBuffer.push(joiningRow, () => {
 							this.joiningBuffer.next();
 							setImmediate(() => continueJoining(cb));
 						});
 
-					} else if (diff < 0) {
+					} else if (mainKey < joiningKey) {
 
 						nextMainRow(cb);
 					} else { // mainKey > joiningKey
