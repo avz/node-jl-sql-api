@@ -38,9 +38,6 @@ for (const sorterCtor of [SorterInMemory, SorterExternal]) {
 					let sorted = [];
 
 					sorter.on('end', () => {
-//						for (const r of sorted) {
-//							process.stdout.write(JSON.stringify(r) + ',\n');
-//						}
 						assert.deepStrictEqual(sorted, testcase.expected);
 						done();
 					});
