@@ -1,3 +1,8 @@
+## `v1.3.0` (2016-12-05)
+
+* Added the ability to manipulate dates using the INTERVAL operators
+* `DATE()` now return dates in local timezone instead of UTC
+
 ## `v1.2.0` (2016-12-03)
 
 * Binding can now be used for data sources (`JOIN [:name] ON @name.field = field`)
