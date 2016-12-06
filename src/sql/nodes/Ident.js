@@ -1,6 +1,7 @@
 'use strict';
 
 const Node = require('../Node');
+const Quoter = require('../../Quoter');
 
 class Ident extends Node
 {
@@ -8,15 +9,12 @@ class Ident extends Node
 	{
 		super();
 
-		let refinedName;
+		this.name = Ident._unquote(name);
+	}
 
-		if (name[0] === '`') {
-			refinedName = name.substr(1, name.length - 2);
-		} else {
-			refinedName = name;
-		}
-
-		this.name = refinedName;
+	static _unquote(string)
+	{
+		return Quoter.unquoteOptionalQuotes(string, '`');
 	}
 }
 

@@ -1,7 +1,6 @@
 'use strict';
 
 const Node = require('../Node');
-const Quoter = require('../../Quoter');
 const BindingIdent = require('./BindingIdent');
 const Ident = require('./Ident');
 const BindingIdentList = require('./BindingIdentList');
@@ -20,19 +19,14 @@ class ComplexIdent extends Node
 		}
 	}
 
-	static _unquote(string)
-	{
-		return Quoter.unquoteOptionalQuotes(string, '`');
-	}
-
 	addFragment(fragment)
 	{
 		if (fragment instanceof BindingIdent || fragment instanceof BindingIdentList) {
 			this.fragments.push(fragment);
 		} else if (fragment instanceof Ident) {
-			this.fragments.push(ComplexIdent._unquote(fragment.name));
+			this.fragments.push(fragment.name);
 		} else { // string
-			this.fragments.push(ComplexIdent._unquote(fragment));
+			this.fragments.push(Ident._unquote(fragment));
 		}
 	}
 
