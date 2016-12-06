@@ -17,7 +17,6 @@ class MIN extends AggregationFunction
 		return DataType.MIXED;
 	}
 
-
 	init()
 	{
 	}
