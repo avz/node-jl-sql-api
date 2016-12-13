@@ -2,7 +2,7 @@
 
 * Added support for constant JSON-values
 * Support for `DELETE WHERE` queries
-* Support for `INSERT {object}[,{object}] queries. Rows just was aded to end of the input stream
+* Support for `INSERT {object}[,{object}]` queries. Rows just was aded to end of the input stream
 * Added support for E-notation for floating numbers
 
 ## `v1.3.0` (2016-12-05)
