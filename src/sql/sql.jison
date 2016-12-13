@@ -82,6 +82,12 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "!="	{ return '!='; }
 "!"	{ return '!'; }
 
+"{" { return '{'; }
+"}" { return '}'; }
+":" { return ':'; }
+"[" { return '['; }
+"]" { return ']'; }
+
 (\@([a-z_][a-z0-9_]*|))	{ return 'DATA_SOURCE_IDENT'; }
 \`(\\.|[^\\`])*\`		{ return 'IDENT'; }
 ([a-z_][a-z0-9_]*)		{ return 'IDENT'; }
@@ -172,12 +178,42 @@ interval
 	| interval expression intervalUnit { $$.add($2, $3); }
 ;
 
-const
+jsonObjectItem
+	: 'STRING' ':' const { $$ = {key: (new Nodes.String($1)).value, value: $3.value}; }
+;
+
+jsonObjectItems
+	: jsonObjectItem { $$ = {}; $$[$1.key] = $1.value; }
+	| jsonObjectItems ',' jsonObjectItem { $$ = $1; $$[$3.key] = $3.value; }
+;
+
+jsonArrayItem
+	: const { $$ = $1.value; }
+;
+
+jsonArrayItems
+	: jsonArrayItem { $$ = [$1]; }
+	| jsonArrayItems ',' jsonArrayItem { $$ = $1; $$.push($3); }
+;
+
+jsonValue
+	: '{' '}' { $$ = new Nodes.JsonValue({}); }
+	| '{' jsonObjectItems '}' { $$ = new Nodes.JsonValue($2); }
+	| '[' ']' { $$ = new Nodes.JsonValue([]); }
+	| '[' jsonArrayItems ']' { $$ = new Nodes.JsonValue($2); }
+;
+
+scalarConst
 	: 'STRING' { $$ = new Nodes.String($1); }
 	| number   { $$ = $1; }
 	| 'NULL'   { $$ = new Nodes.Null(); }
 	| 'TRUE'   { $$ = new Nodes.Boolean(true); }
 	| 'FALSE'   { $$ = new Nodes.Boolean(false); }
+;
+
+const
+	: scalarConst { $$ = $1; }
+	| jsonValue { $$ = $1; }
 ;
 
 expression

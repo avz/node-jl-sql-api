@@ -1,3 +1,9 @@
+## `v1.4.0` (XXXX-XX-XX)
+
+* Support for `DELETE WHERE` queries
+* Added support for E-notation for floating numbers
+* Added support for constant JSON-values
+
 ## `v1.3.0` (2016-12-05)
 
 * Added the ability to manipulate dates using the INTERVAL operators

@@ -253,6 +253,11 @@ class SqlToJs
 	{
 		return '[' + this.nodeToCode(exp.haystack) + '].includes(' + this.nodeToCode(exp.needle) + ')';
 	}
+
+	codeFrom_JsonValue(exp)
+	{
+		return JSON.stringify(exp.value);
+	}
 }
 
 module.exports = SqlToJs;
