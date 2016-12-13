@@ -153,7 +153,7 @@ class SqlToJs
 
 	codeFrom_UnaryOperation(unary)
 	{
-		return unary.operator + this.nodeToCode(unary.right);
+		return unary.operator + '(' + this.nodeToCode(unary.right) + ')';
 	}
 
 	codeFrom_UnaryLogicalOperation(unary)
