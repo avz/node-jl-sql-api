@@ -17,12 +17,15 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %%
 \s+	{}
 
+"SELECT"	{ return 'SELECT'; }
+"DELETE"	{ return 'DELETE'; }
+"INSERT"	{ return 'INSERT'; }
+
 ","	{ return ','; }
 "NULL"	{ return 'NULL'; }
 "TRUE"	{ return 'TRUE'; }
 "FALSE"	{ return 'FALSE'; }
-"SELECT"	{ return 'SELECT'; }
-"DELETE"	{ return 'DELETE'; }
+
 "FROM"	{ return 'FROM'; }
 "DISTINCT"	{ return 'DISTINCT'; }
 "NUMERIC"	{ return 'NUMERIC'; }
@@ -120,6 +123,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 expressions
 	: select EOF { return $1; }
 	| delete EOF { return $1; }
+	| insert EOF { return $1; }
 ;
 
 keywords
@@ -270,6 +274,7 @@ columns
 
 selectClause: 'SELECT' { $$ = new Nodes.Select(); };
 deleteClause: 'DELETE' { $$ = new Nodes.Delete(); };
+insertClause: 'INSERT' { $$ = new Nodes.Insert(); };
 
 selectColumns: selectClause columns { $1.columns = $2; $$ = $1; };
 selectColumns: selectClause '*' { $1.columns = []; $$ = $1; };
@@ -305,6 +310,11 @@ selectWhere
 deleteWhere
 	: deleteClause where { $$ = $1; $$.where = $2; }
 	| deleteClause { $$ = $1; }
+;
+
+insertValues
+	: insertClause const { $$ = new Nodes.Insert([$2.value]); }
+	| insertValues ',' const { $$ = $1; $$.push($3.value); }
 ;
 
 groupping
@@ -358,4 +368,8 @@ select
 
 delete
 	: deleteWhere { $$ = $1; }
+;
+
+insert
+	: insertValues {$$ = $1; }
 ;

@@ -29,7 +29,7 @@ class PublicApi
 	 */
 	query(sql)
 	{
-		return new PublicSelect(this.engine.createSelect(sql, this.options), this.options.dataSourceResolvers);
+		return new PublicSelect(this.engine.createQuery(sql, this.options), this.options.dataSourceResolvers);
 	}
 
 	explain(select)

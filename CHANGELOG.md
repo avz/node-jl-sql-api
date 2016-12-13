@@ -1,8 +1,9 @@
 ## `v1.4.0` (XXXX-XX-XX)
 
-* Support for `DELETE WHERE` queries
-* Added support for E-notation for floating numbers
 * Added support for constant JSON-values
+* Support for `DELETE WHERE` queries
+* Support for `INSERT {object}[,{object}] queries. Rows just was aded to end of the input stream
+* Added support for E-notation for floating numbers
 
 ## `v1.3.0` (2016-12-05)
 

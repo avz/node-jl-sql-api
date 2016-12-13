@@ -7,6 +7,7 @@ const PreparingContext = require('./PreparingContext');
 const RuntimeContext = require('./RuntimeContext');
 const FunctionsMap = require('./FunctionsMap');
 const Select = require('./Select');
+const Insert = require('./Insert');
 const fs = require('fs');
 const path = require('path');
 
@@ -16,9 +17,9 @@ class Engine
 	 *
 	 * @param {string} sql
 	 * @param {PublicApiOptions} options
-	 * @returns {Select}
+	 * @returns {Select|Insert}
 	 */
-	createSelect(sql, options = {})
+	createQuery(sql, options = {})
 	{
 		const functionsMap = this.createFunctionsMap();
 		const runtimeContext = new RuntimeContext(functionsMap);
@@ -50,6 +51,9 @@ class Engine
 			}
 
 			return new Select(preparingContext, runtimeContext, selectAst);
+		} else if (ast instanceof SqlNodes.Insert) {
+
+			return new Insert(preparingContext, runtimeContext, ast);
 		} else {
 			throw new Error('Unknown query: ' + ast.constructor.name);
 		}
