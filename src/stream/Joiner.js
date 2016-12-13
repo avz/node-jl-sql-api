@@ -5,6 +5,7 @@ const Readable = require('stream').Readable;
 const Join = require('../Join');
 const EventEmitter = require('events');
 const ReadWriteTmpFileStream = require('./ReadWriteTmpFileStream');
+const DeepCloner = require('../DeepCloner');
 
 const JsonParser = require('./JsonParser');
 const LinesSplitter = require('./LinesSplitter');
@@ -473,7 +474,7 @@ Joiner.KeyBufferFlusher_InMemory = class Joiner_KeyBufferFlusher_InMemory
 
 	mergeRows(mainRow, joiningRow)
 	{
-		const merged = JSON.parse(JSON.stringify(mainRow));
+		const merged = DeepCloner.clone(mainRow);
 
 		merged.sources[this.joiningSourceName] = joiningRow.sources[this.joiningSourceName];
 
@@ -530,7 +531,7 @@ Joiner.KeyBufferFlusher_External = class Joiner_KeyBufferFlusher
 
 	mergeRows(mainRow, joiningRow)
 	{
-		const merged = JSON.parse(JSON.stringify(mainRow));
+		const merged = DeepCloner.clone(mainRow);
 
 		merged.sources[this.joiningSourceName] = joiningRow.sources[this.joiningSourceName];
 
