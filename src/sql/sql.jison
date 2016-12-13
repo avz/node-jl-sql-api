@@ -22,6 +22,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "TRUE"	{ return 'TRUE'; }
 "FALSE"	{ return 'FALSE'; }
 "SELECT"	{ return 'SELECT'; }
+"DELETE"	{ return 'DELETE'; }
 "FROM"	{ return 'FROM'; }
 "DISTINCT"	{ return 'DISTINCT'; }
 "NUMERIC"	{ return 'NUMERIC'; }
@@ -94,6 +95,8 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %left ','
 %left 'AS'
 %left 'AND' 'OR'
+
+%left '.' '!'
 %left '>' '<' '>=' '<='
 
 %left '=' '==' '!=' '===' '!=='
@@ -103,16 +106,15 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %left 'FROM' 'AS' 'DISTINCT' 'STRICT' 'IN' 'WHERE' 'HAVING' 'LIMIT' 'OFFSET'
 %left 'ORDER' 'GROUP' 'BY' 'ASC' 'DESC'
 %left 'JOIN' 'INNER' 'LEFT'
-%left '.' '!'
 
 %start expressions
 
 %% /* language grammar */
 
 expressions
-	: select EOF
-		{ return $1; }
-	;
+	: select EOF { return $1; }
+	| delete EOF { return $1; }
+;
 
 keywords
 	: SELECT { $$ = $1 }
@@ -231,6 +233,7 @@ columns
 ;
 
 selectClause: 'SELECT' { $$ = new Nodes.Select(); };
+deleteClause: 'DELETE' { $$ = new Nodes.Delete(); };
 
 selectColumns: selectClause columns { $1.columns = $2; $$ = $1; };
 selectColumns: selectClause '*' { $1.columns = []; $$ = $1; };
@@ -245,16 +248,27 @@ selectFrom
 	| selectColumns { $1.table = null; $$ = $1; }
 ;
 
-selectJoin
-	: selectFrom JOIN table 'ON' expression       { $1.join(new Nodes.InnerJoin($3, $5)); $$ = $1; }
-	| selectFrom INNER JOIN table 'ON' expression { $1.join(new Nodes.InnerJoin($4, $6)); $$ = $1; }
-	| selectFrom LEFT JOIN table 'ON' expression  { $1.join(new Nodes.LeftJoin($4, $6)); $$ = $1; }
-	| selectFrom { $$ = $1; }
+join
+	: JOIN table 'ON' expression       { $$ = new Nodes.InnerJoin($2, $4); }
+	| INNER JOIN table 'ON' expression { $$ = new Nodes.InnerJoin($3, $5); }
+	| LEFT JOIN table 'ON' expression  { $$ = new Nodes.LeftJoin($3, $5); }
 ;
 
+selectJoin
+	: selectFrom join       { $$ = $1; $$.join($2); }
+	| selectFrom            { $$ = $1; }
+;
+
+where: WHERE expression { $$ = $2; };
+
 selectWhere
-	: selectJoin WHERE expression { $1.where = $3; $$ = $1; }
+	: selectJoin where { $$ = $1; $$.where = $2; }
 	| selectJoin { $$ = $1; }
+;
+
+deleteWhere
+	: deleteClause where { $$ = $1; $$.where = $2; }
+	| deleteClause { $$ = $1; }
 ;
 
 groupping
@@ -304,4 +318,8 @@ selectLimit
 
 select
 	: selectLimit { $$ = $1; }
+;
+
+delete
+	: deleteWhere { $$ = $1; }
 ;

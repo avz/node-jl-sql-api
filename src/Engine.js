@@ -1,6 +1,7 @@
 'use strict';
 
 const SqlParser = require('./sql/Parser');
+const SqlNodes = require('./sql/Nodes');
 const SqlToJs = require('./SqlToJs');
 const PreparingContext = require('./PreparingContext');
 const RuntimeContext = require('./RuntimeContext');
@@ -34,7 +35,24 @@ class Engine
 
 		preparingContext.options = options;
 
-		return new Select(preparingContext, runtimeContext, SqlParser.parse(sql));
+		const ast = SqlParser.parse(sql);
+
+		if (ast instanceof SqlNodes.Select) {
+
+			return new Select(preparingContext, runtimeContext, ast);
+		} else if (ast instanceof SqlNodes.Delete) {
+			const selectAst = new SqlNodes.Select;
+
+			if (ast.where) {
+				selectAst.where = new SqlNodes.UnaryLogicalOperation('!', ast.where);
+			} else {
+				selectAst.where = new SqlNodes.Boolean(false);
+			}
+
+			return new Select(preparingContext, runtimeContext, selectAst);
+		} else {
+			throw new Error('Unknown query: ' + ast.constructor.name);
+		}
 	}
 
 	createFunctionsMap()
