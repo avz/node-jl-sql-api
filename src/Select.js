@@ -59,6 +59,10 @@ class Select
 
 		this.columns = columnsAnalyser.analyseColumns(ast.columns);
 
+		if (this.ast.where && columnsAnalyser.expressionAnalyser.isAggregationExpression(this.ast.where)) {
+			throw new SqlLogicError('aggregation function in WHERE');
+		}
+
 		this.expressions = [];
 
 		for (const [, column] of this.columns) {
