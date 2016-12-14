@@ -1,4 +1,4 @@
-## `v1.4.0` (XXXX-XX-XX)
+## `v1.4.0` (2016-12-14)
 
 * Added support for constant JSON-values
 * Support for `DELETE WHERE` queries
