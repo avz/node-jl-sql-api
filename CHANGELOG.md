@@ -3,6 +3,7 @@
 * Added support for constant JSON-values
 * Support for `DELETE WHERE` queries
 * Support for `INSERT {object}[,{object}]` queries. Rows just was aded to end of the input stream
+* Support for `UPDATE` queries
 * Added support for E-notation for floating numbers
 * Support for `SELECT *, [fields...]`
 

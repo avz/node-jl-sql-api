@@ -20,6 +20,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "SELECT"	{ return 'SELECT'; }
 "DELETE"	{ return 'DELETE'; }
 "INSERT"	{ return 'INSERT'; }
+"UPDATE"	{ return 'UPDATE'; }
 
 ","	{ return ','; }
 "NULL"	{ return 'NULL'; }
@@ -39,6 +40,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "OFFSET"	{ return 'OFFSET'; }
 "LEFT"	{ return 'LEFT'; }
 "INNER"	{ return 'INNER'; }
+"SET"	{ return 'SET'; }
 
 "INTERVAL"	{ return 'INTERVAL'; }
 "YEAR" { return 'YEAR'; }
@@ -124,10 +126,15 @@ expressions
 	: select EOF { return $1; }
 	| delete EOF { return $1; }
 	| insert EOF { return $1; }
+	| update EOF { return $1; }
 ;
 
 keywords
 	: SELECT { $$ = $1 }
+	| DELETE { $$ = $1 }
+	| INSERT { $$ = $1 }
+	| UPDATE { $$ = $1 }
+	| SET { $$ = $1 }
 	| FROM { $$ = $1 }
 	| AS { $$ = $1 }
 	| STRICT { $$ = $1 }
@@ -275,6 +282,7 @@ columns
 selectClause: 'SELECT' { $$ = new Nodes.Select(); };
 deleteClause: 'DELETE' { $$ = new Nodes.Delete(); };
 insertClause: 'INSERT' { $$ = new Nodes.Insert(); };
+updateClause: 'UPDATE' { $$ = new Nodes.Update(); };
 
 selectColumns
 	: selectClause columns { $1.columns = $2; $$ = $1; }
@@ -318,6 +326,16 @@ deleteWhere
 insertValues
 	: insertClause const { $$ = new Nodes.Insert([$2.value]); }
 	| insertValues ',' const { $$ = $1; $$.push($3.value); }
+;
+
+updateSets
+	: updateClause 'SET' complexIdent '=' expression { $$ = new Nodes.Update(); $$.sets.push(new Nodes.UpdateSet($3, $5)); }
+	| updateSets ',' complexIdent '=' expression { $$ = $1; $$.sets.push(new Nodes.UpdateSet($3, $5)); }
+;
+
+updateWhere
+	: updateSets where { $$ = $1; $$.where = $2; }
+	| updateSets { $$ = $1; }
 ;
 
 groupping
@@ -374,5 +392,9 @@ delete
 ;
 
 insert
-	: insertValues {$$ = $1; }
+	: insertValues { $$ = $1; }
+;
+
+update
+	: updateWhere { $$ = $1; }
 ;

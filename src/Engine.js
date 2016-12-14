@@ -8,6 +8,7 @@ const RuntimeContext = require('./RuntimeContext');
 const FunctionsMap = require('./FunctionsMap');
 const Select = require('./Select');
 const Insert = require('./Insert');
+const Update = require('./Update');
 const fs = require('fs');
 const path = require('path');
 
@@ -54,6 +55,9 @@ class Engine
 		} else if (ast instanceof SqlNodes.Insert) {
 
 			return new Insert(preparingContext, runtimeContext, ast);
+		} else if (ast instanceof SqlNodes.Update) {
+
+			return new Update(preparingContext, runtimeContext, ast);
 		} else {
 			throw new Error('Unknown query: ' + ast.constructor.name);
 		}
