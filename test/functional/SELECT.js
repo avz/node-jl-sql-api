@@ -133,6 +133,32 @@ describe('SELECT', () => {
 			});
 		});
 
+		describe('`SELECT *, ...`', () => {
+			const input = [{hello: 'world'}, {hello: 'hello'}];
+
+			let output;
+
+			before(done => {
+				jlSql.query('SELECT *, hello AS helloAlias')
+					.fromArrayOfObjects(input)
+					.toArrayOfObjects((r) => {
+						output = r;
+						done();
+					})
+				;
+			});
+
+			it('return new objects', () => {
+				assert.notStrictEqual(output[0], input[0]);
+				assert.notStrictEqual(output[1], input[1]);
+			});
+
+			it('merged row', () => {
+				assert.deepStrictEqual(output[0], {hello: 'world', helloAlias: 'world'});
+				assert.deepStrictEqual(output[1], {hello: 'hello', helloAlias: 'hello'});
+			});
+		});
+
 		describe('`SELECT [field[, ...]]`', () => {
 			const input = [{f1: '11', f2: '12', f3: '13'}];
 

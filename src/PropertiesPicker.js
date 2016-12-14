@@ -5,7 +5,8 @@ class PropertiesPicker
 	constructor(paths)
 	{
 		this.paths = paths;
-		this.slicer = PropertiesPicker._compileProceduralSlicer(paths);
+		this.slicer = PropertiesPicker._compileSlicerProcedural(paths);
+		this.merger = PropertiesPicker._compileMergerProcedural(paths);
 	}
 
 	sliceProperties(from)
@@ -13,51 +14,61 @@ class PropertiesPicker
 		return this.slicer(from);
 	}
 
-	static _compileLiteralSlicer(paths)
+	mergeProperties(from, to)
+	{
+		return this.merger(from, to);
+	}
+
+	static _compileMergerProcedural(paths)
 	{
 		const env = {
 			functions: []
 		};
 
-		const resultObject = {};
+		let code = '';
 
 		for (const [path, source] of paths) {
+			let getter;
+
 			if (typeof(source) === 'function') {
 				env.functions.push(source);
-				PropertiesPicker._objectSetProperty(
-					path,
-					resultObject,
-					'env.functions[' + (env.functions.length - 1) + '](row)'
-				);
+				getter = 'env.functions[' + (env.functions.length - 1) + '](row)';
 			} else {
-				PropertiesPicker._objectSetProperty(path, resultObject, PropertiesPicker._compileGetterCode(source));
+				getter = PropertiesPicker._compileGetterCode(source);
 			}
+
+			code += 'do {\n';
+			let v = 'to';
+
+			for (const i in path) {
+				const p = path[i];
+
+				code += '\tif (typeof(' + v + ') !== "object" || ' + v + ' === null) {\n';
+				code += '\t\tcontinue;\n';
+				code += '\t}';
+
+				if (i < path.length - 1) {
+					code += 'else if (!(' + JSON.stringify(p) + ' in ' + v + ')) {\n';
+					code += '\t\t' + v + '[' + JSON.stringify(p) + '] = {};\n';
+					code += '\t}';
+				}
+
+				code += '\n\n';
+
+				v += '[' + JSON.stringify(p) + ']';
+			}
+
+			code += '\t' + v + ' = ' + getter + ';\n';
+
+			code += '} while(false);\n\n';
 		}
 
-		const deepGen = (val) => {
-			if (typeof(val) === 'string') {
-				return val;
-			}
+		code += 'return to;\n';
 
-			const lines = [];
-
-			for (const k in val) {
-				const v = val[k];
-				const code = deepGen(v);
-				const indentedCode = code.replace(/\n(.+)/g, '\n\t$1');
-
-				lines.push('\t' + JSON.stringify(k) + ': ' + indentedCode);
-			}
-
-			return '{\n' + lines.join(',\n') + '\n}';
-		};
-
-		const code = 'return ' + deepGen(resultObject);
-
-		return (new Function('env', 'row', code)).bind(undefined, env);
+		return (new Function('env', 'row', 'to', code)).bind(undefined, env);
 	}
 
-	static _compileProceduralSlicer(paths)
+	static _compileSlicerProcedural(paths)
 	{
 		const env = {
 			functions: []

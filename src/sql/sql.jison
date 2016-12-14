@@ -276,8 +276,11 @@ selectClause: 'SELECT' { $$ = new Nodes.Select(); };
 deleteClause: 'DELETE' { $$ = new Nodes.Delete(); };
 insertClause: 'INSERT' { $$ = new Nodes.Insert(); };
 
-selectColumns: selectClause columns { $1.columns = $2; $$ = $1; };
-selectColumns: selectClause '*' { $1.columns = []; $$ = $1; };
+selectColumns
+	: selectClause columns { $1.columns = $2; $$ = $1; }
+	| selectClause '*' ',' columns { $1.allColumns = true; $1.columns = $4; $$ = $1; }
+	| selectClause '*' { $1.columns = []; $1.allColumns = true; $$ = $1; }
+;
 
 table
 	: complexIdent AS dataSourceIdent { $$ = new Nodes.Table(new Nodes.TableLocation($1), new Nodes.TableAlias($3)); }

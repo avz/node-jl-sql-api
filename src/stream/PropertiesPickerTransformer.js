@@ -3,14 +3,16 @@
 const JlTransform = require('./JlTransform');
 const PropertiesPicker = require('../PropertiesPicker');
 const DataRow = require('../DataRow');
+const DeepCloner = require('../DeepCloner');
 
 class PropertiesPickerTransformer extends JlTransform
 {
-	constructor(paths)
+	constructor(paths, makeClone = false)
 	{
 		super(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS);
 
 		this.propertiesPicker = new PropertiesPicker(paths);
+		this.makeClone = !!makeClone;
 	}
 
 	_transform(chunk, encoding, cb)
@@ -18,11 +20,19 @@ class PropertiesPickerTransformer extends JlTransform
 		var result = [];
 
 		for (let i = 0; i < chunk.length; i++) {
-			var dest = new DataRow(null);
+			if (this.makeClone) {
+				const dest = DeepCloner.clone(chunk[i]);
 
-			dest.sources = this.propertiesPicker.sliceProperties(chunk[i]);
+				this.propertiesPicker.mergeProperties(chunk[i], dest.sources);
 
-			result.push(dest);
+				result.push(dest);
+			} else {
+				const dest = new DataRow(null);
+
+				dest.sources = this.propertiesPicker.sliceProperties(chunk[i]);
+
+				result.push(dest);
+			}
 		}
 
 		this.push(result);

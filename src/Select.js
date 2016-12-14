@@ -285,7 +285,7 @@ class Select
 				m.set(path, column.valueSource());
 			}
 
-			pipeline.push(new PropertiesPickerTransformer(m));
+			pipeline.push(new PropertiesPickerTransformer(m, this.ast.allColumns));
 		}
 
 		const having = this.having();
@@ -325,7 +325,7 @@ class Select
 			return new Groupper(() => null, new Aggregation(this.runtimeContext, this.expressions));
 		}
 
-		if (!this.columns.size) {
+		if (!this.columns.size || this.ast.allColumns) {
 			throw new SqlLogicError('`SELECT * ... GROUP BY ...` does not make sense');
 		}
 

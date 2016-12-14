@@ -9,6 +9,7 @@ class Select extends Node
 	{
 		super();
 
+		this.allColumns = false;
 		this.columns = [];
 		this.table = null;
 		this.joins = [];
