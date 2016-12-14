@@ -116,6 +116,13 @@ api.query('SELECT id AS mid, @child.field INNER JOIN child ON @child.mainId = id
 
 ## SQL
 
+Поддерживаются следующие виды запросов:
+
+* `SELECT field[AS alias][...] [[{LEFT|INNER}] JOIN ... ON expression...] [WHERE ...] [GROUP BY ...] [HAVING ...]`
+* `INSERT {row1}[, ...]` - добавляет указанные объекты в конец потока
+* `UPDATE SET field = 'value'[, ...] [WHERE expression]` - изменяет строки, подпадающие под условия в WHERE, по указанным в `SET` правилам
+* `DELETE [WHERE expression]` - удаляет строки по условию
+
 В целом, диалект похож на диалект MySQL и имеет такие особенности:
 
 * не поддерживается `FROM` т.к. входной поток передаётся через API явным образом
