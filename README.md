@@ -1,25 +1,25 @@
 # `jl-sql-api` - SQL for JS objects streams
 [![Build Status](https://travis-ci.org/avz/node-jl-sql-api.svg?branch=master)](https://travis-ci.org/avz/node-jl-sql-api)
 
-Библиотека позволяет оперировать потоками объектов через SQL. Этот пакет включает только API, если вы ищете CLI-утилиту для работы с JSON-потоками, то переходите по этой ссылке: https://github.com/avz/jl-sql.
+The library allows to operate on streams of objects by SQL queries such as `SELECT`, `UPDATE`, `DELETE`, `INSERT`. This package contains only API, if you are looking for a CLI-utility for working with JSON streams, go to https://github.com/avz/jl-sql.
 
-Реализация позволяет работать с потенциально бесконечными потоками - для сортировки и группировки больших объёмов автоматически задействуется механизм внешней сортировки через стандартную unix-овую утилиту `sort`, который, в свою очередь, может использовать ФС для храннения данных, поэтому весь датасет не обязан помещаться в RAM. Для запросов, которые не требуют сортировки, используется потоковая обработка, т.е. датасет не загружается в память целиком, а обрабатывается частями.
+The implementation allows you to work with potentially infinite streams. To sort and group large volumes of automatically activated external sorting using the unix utility `sort`, which can use a filesystem to store temporary data. For queries that do not require sorting stream processing is used, so dataset not loaded into memory entirely.
 
-* [Примеры](#Примеры)
+* [Examples](#examples)
 * [SQL](#sql)
-	* [Константы](#Константы)
-	* [Идентификаторы](#Идентификаторы)
-	* [Приведение типов](#Приведение-типов)
-	* [Работа с датами](#Работа-с-датами)
-	* [Биндинги](#Биндинги)
+	* [Constants](#constants)
+	* [Identifiers](#identifiers)
+	* [Type casting](#type-casting)
+	* [Dates](#dates)
+	* [Bindings](#bindings)
 * [API](#api)
 	* [Overview](#overview)
-	* [Объект `options`](#Объект-options)
-	* [Форматы данных](#Форматы-данных)
+	* [`options` object](#options-object)
+	* [Data formats](#data-formats)
 
-## Примеры
+## Examples
 
-### Общий для всех примеров код
+### Common code
 
 ```javascript
 const JlSqlApi = require('jl-sql-api');
@@ -27,9 +27,9 @@ const JlSqlApi = require('jl-sql-api');
 const api = new JlSqlApi;
 ```
 
-### Получение потока JSON-объектов с STDIN, группировка и отдача результата в JSON в STDOUT
+### Make objects from JSON from STDIN, group and write it in JSON to STDOUT
 
-Вариант работы через `pipe()`
+Working with `pipe()`
 
 ```javascript
 process.stdin
@@ -42,7 +42,7 @@ process.stdin
 ;
 ```
 
-Аналог без `pipe()`
+Wirking with specified stream directly
 
 ```javascript
 api.query('SELECT key, SUM(value) AS sum GROUP BY key')
@@ -51,7 +51,7 @@ api.query('SELECT key, SUM(value) AS sum GROUP BY key')
 ;
 ```
 
-Вход
+Input
 
 ```
 {"key": 2, "value": 2}
@@ -63,7 +63,7 @@ api.query('SELECT key, SUM(value) AS sum GROUP BY key')
 {"key": null, "value": 8}
 ```
 
-Выход
+Output
 
 ```
 {"sum":7}
@@ -73,7 +73,7 @@ api.query('SELECT key, SUM(value) AS sum GROUP BY key')
 {"key":null,"sum":8}
 ```
 
-### Из STDIN в фиксированный массив
+### From JSON from STDIN to static array
 
 ```javascript
 api.query('SELECT key, SUM(value) AS sum GROUP BY key')
@@ -86,7 +86,7 @@ api.query('SELECT key, SUM(value) AS sum GROUP BY key')
 
 ### JOIN
 
-Для работы JOIN'ов необходимо задать дополнительные входные потоки (можно назвать их виртуальными таблицами), которые будуть присоедиться к основному:
+To work JOINS s need to specify additional input streams (you can call them virtual tables), which will join to the main stream:
 
 ```javascript
 api.query('SELECT id AS mid, @child.field INNER JOIN child ON @child.mainId = id')
@@ -105,48 +105,48 @@ api.query('SELECT id AS mid, @child.field INNER JOIN child ON @child.mainId = id
 	})
 ```
 
-На выходе
+Output
 ```
 [ { mid: 1, field: 11 },
   { mid: 1, field: 12 },
   { mid: 2, field: 21 } ]
 ```
 
-Специальный синтаксис `@child` введён для того, чтобы явно указать интерпретатору, что мы работаем именно с "таблицей" `child`, а не с полем с именем `child` у основной таблицы. Альясы можно задавать через `AS`: `... INNER JOIN child AS @childAlias ON @childAlias.mainId = id`. Для основной таблицы зарезервировано имя `@`, т.е. если надо явно указать, что мы обращаемся к основной таблице, то можно написать `... ON @childAlias.mainId = @.id`. Если в самом объекте содержится символ `@`, то можно заэкранировать имя через backquote: ``smth = `@child`.field``, тогда поле с именем `'@child'` будет искаться в основной таблице.
+The special syntax `@child` is introduced in order to explicitly indicate to the interpreter that we work with "table" `child`, and not with a field named `child` of the main table. Aliases can be set via `AS`: `... INNER JOIN child AS @childAlias ON @childAlias.mainId = id`. For the main table reserved name,`@`, i.e. if it is necessary to specify explicitly that we refer to the main table, you can write `... ON @childAlias.mainId = @.id`. If the object contains the ` @ ` symbol, it is possible to quote the name using backquote: `smth = `@child`.field`, then a field named `@child` will be searched in the main table.
 
 ## SQL
 
-Поддерживаются следующие виды запросов:
+SUpported queries:
 
 * `SELECT field[AS alias][...] [[{LEFT|INNER}] JOIN ... ON expression...] [WHERE ...] [GROUP BY ...] [HAVING ...]`
-* `INSERT {row1}[, ...]` - добавляет указанные объекты в конец потока
-* `UPDATE SET field = 'value'[, ...] [WHERE expression]` - изменяет строки, подпадающие под условия в WHERE, по указанным в `SET` правилам
-* `DELETE [WHERE expression]` - удаляет строки по условию
+* `INSERT {row1}[, ...]` - add object(s) to end of the stream
+* `UPDATE SET field = 'value'[, ...] [WHERE expression]` - update rows
+* `DELETE [WHERE expression]` - delete rows
 
-В целом, диалект похож на диалект MySQL и имеет такие особенности:
+In general, a dialect similar to the dialect of MySQL and has the following features:
 
-* не поддерживается `FROM` т.к. входной поток передаётся через API явным образом
-* поддерживается только `INNER JOIN` и `LEFT JOIN`
-* выражение в `JOIN ON` может быть только точным соответствием (оператор `=`), например:
+* `FROM` is not supported because the input stream is passed via API to explicitly
+* only `INNER JOIN` and `LEFT JOIN` is supported
+* `ON` need to be equal-expression:
 	* `@user.id = userId`
 	* `@post.sn = sn + 1`
-* не поддерживается `LIMIT`
-* для `ORDER BY` ключевое выражение должно быть известного типа (строка или число), при использовании арифметических операций в выражении, тип можно не указывать явно - он будет определён автоматически. Смотри подробности в разделе [Приведение типов](#Приведение-типов)
-	* `ORDER BY NUMBER(value)` - сортировка по числовому значению
-	* `ORDER BY STRING(value)` - сортировка по строковому значению
-	* `ORDER BY value + 1` - сортировка по числовому значению
-	* `ORDER BY value` - ошибка, нужно указать тип явно через функцию `NUMBER()` или `STRING()`
+* `LIMIT` is not supported
+* for `ORDER BY` key-expression must be of a known type (string or number). When using arithmetic expression, the type will be determined automatically. See details in section [Type Casting](#type-casting)
+	* `ORDER BY NUMBER(value)` - sort by numeric value
+	* `ORDER BY STRING(value)` - sort by string value
+	* `ORDER BY value + 1` - sort by numeric value
+	* `ORDER BY value` - warning: nee to specify type
 
 
-### Константы
+### Constants
 
-Строковые константы нужно оборачивать в одинарные (`'`) или в двойные (`"`) кавычки. Ксли в строке должны содержаться кавычки, то они экранируются символом `\`. Специальные последовательности `\n` и `\t` конвертируются, соответственно, в символ новый строки и символ табуляции.
+String constants need to wrap in single (`'`) or double (`"`) quotes. If the string contains quotes they are escaped by a ` \` character. The special sequence `\n` and `\t` is converted to the newline character and the tab character.
 
-### Идентификаторы
+### Identifiers
 
-Идентификаторы - это пути до нужного поля в строке данных. Идентификатор может быть как простым, т.е. обращающимся к ключу верхнего уровня объекта, так и более сложным, уходящим в глубину. Идентификаторы пути разделяются между собой символом `.`
+Identifier is the path to the desired field in the data row. Identifier can point to multiple levels of nested complex object. The levels are separated by `.`character
 
-Например, так можно обратиться к каждому из полей данных
+For example
 ```javascript
 {
   top: {          // `top`
@@ -158,37 +158,37 @@ api.query('SELECT id AS mid, @child.field INNER JOIN child ON @child.mainId = id
 }
 ```
 
-Здесь для наглядности все идентификаторы обёрнуты в символы обрытной кавычки (back quote), но делать это обязательно только если в идентификаторе используются спецсимволы.
+For clarity, all the identifiers are wrapped in the characters in back quotes, but be sure to do it only if the identifier is used special characters.
 
-### Приведение типов
+### Type casting
 
-Отсутствие чёткой схемы данных создаёт некоторые трудности в обработке, связанные, с определение и приведением типов полей, например, можно попытаться отсортировать строки по полю, значения в котором могут быть разных типов в разных строках. Именно поэтому, как было указано выше, `ORDER BY` требует явного указания типа выражения, если невозможно определить тип автоматически.
+The lack of a clear schema of the data creates some difficulties in the processing associated with the definition and conversion of field types, for example, you can try to sort the rows by field values which can be of different types in different rows. That is why, as mentioned above, `ORDER BY` requires you to explicitly specify the type of the expression if type cannot be determined automatically.
 
-Автоматическое определение типов работает в следующих случаях:
+Automatic type detection works in the following cases:
 
-* выражение трактуется как число если
-	* результат выражения - это результат выполнения арифметическиой операцияи
-	* результат выражения - это значение, возвращаемое из одной из стандартных функций, для которых явно задан числовой тип возвращаемого значение, например: `FLOOR()`, `ROUND()`, `CEIL()`
-* выражение трактуется как строка если
-	* результат выражения - это значение, возвращаемое из одной из стандартных функций, для которых явно задан строковый тип возвращаемого значение, например: `CONCAT()`
+* the expression is interpreted as a number if
+	* the result of the expression is the result of the arithmetic operation
+	* the result of the expression is the value returned from one of the standard functions, which explicitly specified the numeric type of the return value, e.g.: `FLOOR()`, `ROUND()`, `CEIL()`
+* the expression is interpreted as a string if
+	* the result of the expression is the value returned from one of the standard functions, which explicitly specified the string type return value, for example: `CONCAT()`
 
-#### Строгое сравнение
+#### Strict equal
 
-Оператор сравнения `=` работает по тем же правилам, что и оператор `==` языка JavaScript, если нужно сравнить значение на строгое соответствие и типу и значению, то следует использовать оператор строгого сравнения - `===`.
+The comparison operator `=` works on the same rules as the `==` operator in JavaScript, if you want to compare the value on strict compliance with the type and value, then you should use the strict comparison operator - `===`.
 
-#### Операторы `IN` и `STRICT IN`
+#### Operator `IN` and `STRICT IN`
 
-Оператор `IN` использует для сравнения значений оператор `=`, поэтому выражение `"10" IN (10)` будет истинным, в то время как оператор `STRICT IN` использует внутри оператор `===`, поэтому `"10" STRICT IN (10)` будет ложным.
+The operator `IN` uses the operator `=`, so the expression `"10" IN (10)` will be true while the operator is `STRICT IN` uses within the operator `===` so `"10" STRICT IN (10)` is false.
 
-#### Значения `null` и `undefined`
+#### `null` and `undefined`
 
-При обработке делаются некоторые различия между полями, со значением `null` и отсутствующими полями, например, при выполнении запроса
+When processing are some differences between fields with a value of `null` and missing fields, for example when the query is executed
 
 ```sql
 SELECT value
 ```
 
-на строках
+of specified rows
 
 ```
 {"id": 1, "value": 1}
@@ -196,7 +196,7 @@ SELECT value
 {"id": 3}
 ```
 
-на выходе мы получим
+output will be
 
 ```
 {"value": 1}
@@ -204,39 +204,40 @@ SELECT value
 {}
 ```
 
-т.е. `null` - это обычное значение, не подразумевающее никакой особенной обработки, в то время как обращение к несуществующему полю (`undefined`) вообще не будет создавать соотвествующего поля в результирующей строке.
+`null` does not imply any special treatment, while the appeal to non-existent field (`undefined`) will not create the appropriate field in the result row.
 
-### Работа с датами
+### Dates
 
-Все функции и операторы работы с датами, кроме `FROM_UNIXTIME()` могут оперировать только с объектами класса [Date](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Date) и строками в формате, понимаемом конструктором [Date](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Date). Для работы с unix timestamp нужно явным образом скорвертировать unix timestamp в дату функцией `FROM_UNIXTIME(unixTimestamp)`.
+All functions and operators work with dates, in addition to `FROM_UNIXTIME()` can only operate on objects of class [Date](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Date) and rows in the format understood by the constructor of [Date](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Date). To work with the unix timestamp, you need to explicitly convert the unix timestamp into the date function `FROM_UNIXTIME(unixTimestamp)`.
 
-#### Временная зона
+#### Time Zone
 
-Манипуляции с датами происходят по локальной таймзоне, на настоящий момент единственная возможность поменять это поведение - это поменять переменную окружения `TZ` при запуске процесса NodeJS. Например
+Manipulation of dates are produced for the local time zone. At the moment the only possibility to change this behavior is to change the environment variable `TZ` before running NodeJS. For example
 ```
 % TZ=UTC node main.js ...
 ```
 
-#### Функции
+#### Functions
 
-* `FROM_UNIXTIME(unixTimestamp)` - сконвертировать unix timestamp в дату
-* `UNIX_TIMESTAMP([dateString])` - сконвертировать текущее время или переданный `dateString` в unix timestamp
-* `DATE([dateString])` - получить текущую дату в формате `YYYY-MM-DD`. Если передан опциональный аргумент `dateString`, то дата высчитывает от переданной строки, а не от текущего времени
-* `NOW()` - получить текущую дату и время
+* `FROM_UNIXTIME(unixTimestamp)` - convert unix timestamp to Date
+* `UNIX_TIMESTAMP([dateString])` - to convert the current time or the time passed in `dateString` into a unix timestamp
+* `DATE([dateString])` - get the current date in the format `YYYY-MM-DD`. If passed an optional argument `dateString` the date is calculated from the given string, not from the current time
+* `NOW()` - get current Date
 
-#### Операторы и ключевые слова
+#### Operators and keywords
 
-Операторы можно использовать для арифметики с датами. Например, таким образом можно добавить 1 день и 2 часа к текущему времени:
+For working with dates you can use operators. For example, you can add 1 day and 2 hours to the current time:
+
 ```sql
 SELECT NOW() + INTERVAL 1 DAY 2 HOUR
 ```
 
-А так, отнять от даты:
+substract 1 day and 2 hours:
 ```sql
 SELECT NOW() - INTERVAL 1 DAY 2 HOUR
 ```
 
-Полный список поддерживаемых единиц измерения
+Full list of supported units
 
 * `YEAR`
 * `MONTH`
@@ -245,66 +246,65 @@ SELECT NOW() - INTERVAL 1 DAY 2 HOUR
 * `MINUTE`
 * `SECOND`
 
-Операции можно комбинировать
+Operations can be combined
 
 ```sql
 SELECT NOW() + INTERVAL 1 YEAR 1 MONTH - INTERVAL 1 DAY
 ```
 
-### Биндинги
+### Bindings
 
-Биндинги позволяют безопасно с точки зрения SQL-инъекций вставить в SQL какое-либо значение, например
+Binding allow you to safely insert any constant in SQL query, for example
 
 ```sql
 SELECT * WHERE field = :field
 ```
-где `:field` - это "слот", значение которого должно быть задано через метод [`Select.prototype.bind()`](#selectprototypebindident-value).
+where `field` is a "slot" whose value must be set using the [`Select.prototype.bind()`](#selectprototypebindident-value).
 
-Биндить можно не только данные, но и названия полей, для этого имя биндинга нужно взять в квадратные скобки
+You can bind not only data but also the field names. In this case the name of binding need to be wrapped into square brackets
 
 ```sql
 SELECT * WHERE [:field] = :value
 ```
 
-Биндинги бывают двух типов:
-* биндинг одного значения, форма записи: `:bind` (один символ `:` перед именем)
-* биндинг списка значений, форма записи: `::bind` (2 символа `::` перед именем)
+Binding are of two types:
+* binding a single value, form: `:bind` (single `:` character before name)
+* binding list of values form: `::bind` (`::` before name)
 
-#### Биндинг одного значения
-
-Биндинг одного значения в SQL можно использовать, например, для аргумента функции, для операнда в бинарных и унарных операторах и вообще во всех случаях, где в SQL подразумевается какое-то одно выражение
+#### Single-value binding
+You can use a binding one value in the SQL for the argument of the function for the operand in the binary and unary operators, and generally in all cases where SQL is meant for a single expression
 
 ```sql
 SELECT * WHERE id = :id
-// при :id = 1 запрос будет иметь вид SELECT * WHERE id = 1
+// for :id = 1 - SELECT * WHERE id = 1
 
 SELECT * WHERE value > FLOOR(:id)
-// при :id = 1 запрос будет иметь вид SELECT * WHERE value > FLOOR(1)
+// for :id = 1 - SELECT * WHERE value > FLOOR(1)
 
 SELECT id, amount * :price AS revenue WHERE value > amount * :price
 
 SELECT * WHERE [:field] = :value
-// отфильтровать поле с именем, взятым из значения биндинга :field
+// to filter a field with the name taken from the value of binding :field
 ```
 
-#### Биндинг списка значений
+#### Multi-value binding
 
-Этот вид биндинга более сложный и позволяет заменять не единичные операнды и выражения, а целые списки. Например, с помощью такого биндинга можно подставить сразу несколько аргументов функции
+This kind of binding more complex and allows you to replace not single operands and expressions, but lists. For example, using such binding you can substitute several of the function arguments
 
 ```sql
 SELECT * WHERE id IN(::ids)
-// при ::ids = [1, 2, 3] запрос будет иметь вид: SELECT * WHERE id IN(1, 2, 3)
+// for ::ids = [1, 2, 3] - SELECT * WHERE id IN(1, 2, 3)
 
 SELECT IF(enabled, ::trueFalse)
-// при ::ids = ['true', 'false'] запрос будет иметь вид: SELECT IF(enabled, 'true', 'false')
+// for ::ids = ['true', 'false'] - SELECT IF(enabled, 'true', 'false')
 
 SELECT * WHERE [::fieldPath] IN(::values)
-// путь до поля будет взят из значения биндинга ::fieldPath, например,
-// если ::fieldPath = ['key', 'subkey'], то запрос превратится в
+// field path will be in ::fieldPath, for example
+// if ::fieldPath = ['key', 'subkey'], then query be
 // SELECT * WHERE key.subkey IN(::values)
 
 SELECT * WHERE [:name1].[:name2].[::tail] IN(::values)
-// в этом случае имя сформируется из значений всех трёх биндингов
+// path will be concatenation of :name1, :name2 and elements of ::tail
 ```
 
 ## API
@@ -327,29 +327,29 @@ SELECT * WHERE [:name1].[:name2].[::tail] IN(::values)
 	* [`toObjectsStream([writableStream])`](#selectfromprototypetoobjectsstreamstream) -> `Transform`
 	* [`toArrayOfObjects(callback(objects))`](#selectfromprototypetoarrayofobjectscallbackarray) -> `WritableStream`
 
-Создание запроса происходит в несколько этапов:
+In order to execute the query, you need
 
-1. Создаём инстанс JlSqlApi с необходимыми опциями: `const jlSqlApi = new JlSqlApi({});`
-2. Создаём объект запроса из SQL: `const query = jlSqlApi.query('SELECT SUM(price)');`
-3. Создаём привязку запроса к источникам данных методами `from*()` и `add*()` (набор методов `add*()` опционален и требуется только для запросов с JOIN)
-4. Выбираем куда и в каком формате отдавать результат выполнения через методы `to*()`
+1. create an instance JlSqlApi with the necessary options: `const jlSqlApi = new JlSqlApi({});`
+2. create a request object from SQL: `const query = jlSqlApi.query('SELECT SUM(price)');`
+3. to set the data sources by methods `from*()` and `add*()` (a set of methods `add*()` is optional and is only required for queries with JOIN)
+4. set a destination and format of the result by calling one of the methods `to*()`
 
-### Объект `options`
+### `options` object
 
-* `tmpDir` - значение по умолчанию для пути до каталога хранения временных файлов, используемых при сортировке и JOIN'е. Это значение может быть перезаписано специфичными значениями `tmpDir` в соответствующем объекте опций
-* `forceInMemory` - включает режим, при котором все манипуляции с данными происходят только в памяти процесса, ФС и сторонние программы (такие как `sort`) не используются. По умолчанию `false`
-* `dataSourceResolvers` - массив ресолверов источников данных, описано в разделе [Динамический ресолвинг источников данных](#Динамический-ресолвинг-источников-данных)
+* `tmpDir` - the default path to the directory to store temporary files used for sorting and JOIN's. This value can be overwritten by specific values of `tmpDir` in the appropriate options object
+* `forceInMemory` - enable a mode in which all data manipulations occur only in the process memory, the FS and third-party programs (such as `sort`) are not used. Default is `false`
+* `dataSourceResolvers` - array by the data sources resolvers described in section [Dynamic data source binding](#dynamic-data-source-binding)
 * `sortOptions`
-	* `inMemoryBufferSize` - максимальное количество __объектов__, которое может сортироваться в памяти. При исчерпании этого лимита используется механизм внешней сортировки через утилиту `sort`. По умолчанию: 16000
-	* `bufferSize` - размер буфера внешней сортировки (утилита `sort`) __в байтах__. По умолчанию: 64Мб
-	* `tmpDir` - каталог, куда будут сохраняться временные файлы для внешней сортировки (утилита `sort`). Если опция не указана, то используется значение `tmpDir` из корневого объекта опций, если не указано и оно, то значение по умолчанию можно посмотреть в `man sort` в описании опции `-T`
-	* `forceInMemory` - не использоваться утилиту `sort` для сортировки. Все манипуляции будут производиться в памяти процесса. Переопределяет значение `forceInMemory` из корня опций. При включении этой опции игнорируются опции `tmpDir`, `bufferSize`, `inMemoryBufferSize`
+	* `inMemoryBufferSize` - maximum number of __objects__, which can be sorted in memory. Upon exhaustion of this limit the external utility sorting using `sort` will be used. Default: 16000
+	* `bufferSize` - the buffer size of external sort (utility `sort` option `-S`) in __bytes__. Default: 64MB
+	* `tmpDir` - path to the directory to store temporary files used for sorting (utility `sort`). If not specified, this defaults to `tmpDir` from root object options, if not specified it you can look default at `man sort` in the description of option `-T`
+	* `forceInMemory` - do not use unix `sort` for sorting. All manipulations will be made in the memory of the process. Overrides the value `forceInMemory` from root options. When this option is enabled then option `tmpDir`, `bufferSize`, `inMemoryBufferSize` will be ignored
 * `joinOptions`
-	* `maxKeysInMemory` - максимальное __кол-во__ ключей в буфере JOIN в памяти, при превышении этого значения задействуются временные файлы в каталоге `tmpDir`
-	* `tmpDir` - каталог, в котором размещаются временные файлы. Если не указано, то берётся значение из корневого объекта `options`, если не указано и оно, то `os.tmpdir()`
-	* `forceInMemory` - не ФС для хранения временных данных. Все манипуляции будут производиться в памяти процесса. Переопределяет значение `forceInMemory` из корня опций. При включении этой опции игнорируются опции `maxKeysInMemory`, `tmpDir`
+	* `maxKeysInMemory` - maximum __number__ of keys in the JOIN buffer in memory, exceeding this value are used temporary files in the directory `tmpDir`
+	* `tmpDir` - the directory in which temporary files are placed. If not specified, defaults to the root object `options`, if not specified then `os.tmpdir()`
+	* `forceInMemory` - do not use FS to store temporary data. All manipulations will be made in the memory of the process. Overrides the value of `forceInMemory` from root options. When this option is enabled then `maxKeysInMemory`, `tmpDir` will be ignored
 
-#### Пример
+#### Example
 
 ```javascript
 const jlSqlApi = new JlSqlApi({
@@ -363,42 +363,42 @@ const jlSqlApi = new JlSqlApi({
 });
 ```
 
-### Форматы данных
+### Data Formats
 
-Как вы могли заметить, методы для выбора источников и приёмника данных имеют похожие имена, формирующиеся по правилу `{from|add|to}{JsonStream|ObjectsStream|ArrayOfObjects}`, например, `fromJsonStream()`. Первая часть означает, соответственно источник, дополнительный источник и приёмник, а вторая - формат данных на входе или выходе.
+As you can see, methods for choice of source and receiver data have similar names, formed according to the rule `{from|add to the}{JsonStream|ObjectsStream|ArrayOfObjects}`. The first part means, respectively, the source, additional source and receiver and the second data format on the input or output, e.g. `fromJsonStream()`.
 
-* `JsonStream` - обычный `stream.Readable` поток байтов/текста, данные в котором представлены в виде объектов, закодированных в JSON и отделённых друг от друга символом перевода строки (`\n` === `0x0A`). Символы перевода строк внутри одного объекта не допускаются: один объект должен занимать строго одну строку. Пример таких данных можно посмотреть в разделе "Примеры"
-* `ObjectsStream` - поток `stream.Readable` с опцией `{objectMode: true}`, который вместо текста оперирует потоком объектов
-* `ArrayOfObjects` - означает, что данные нужно передать или получить в виде обычного массива объектов, потоки тут не используются
+* `JsonStream` - `stream.Readable` of bytes/text that is presented in the form of objects, encoded in JSON and separated from each other by newline (`\n` === `0x0A`). The `'\n'` characters within object JSON is not allowed: one object must take strictly one line. An example of such data can be viewed in the "Examples" section
+* `ObjectsStream` - `stream.Readable` with the option `{objectMode: true}`, which operates on stream of objects
+* `ArrayOfObjects` - means that the data need to transmit or receive in the form of a regular array of objects, streams are not used here
 
 ### `Select.prototype.bind(ident, value)`
 
-Биндит значение для запроса (смотри раздел [Биндинги](#Биндинги)).
+Bind values (see [Bindings](#bindings)).
 
-* `ident` - имя биндинга, включая `:` для биндлингов одного значения, и `::` для списочных биндингов
-* `value` - значение, в которое раскрывается биндинг. Должно быть массивом для списочных биндингов
+* `ident` - binding name including `:` (single-value binding) or `::` (multi-value binding)
+* `value` - value. Must be scalar for single-value bindings or array for multi-value bindings
 
-Метод возвращает `this`, так что можно использовать цепочечную нотацию.
+This method returns `this`, so you can use the chain notation.
 
 ### `Select.prototype.fromJsonStream([stream])`
 ### `Select.prototype.fromObjectsStream([stream])`
 ### `Select.prototype.fromArrayOfObjects(array)`
 
-Создать привязку запроса к основному источнику данных, этот источник используется в качестве `FROM` для SQL-запроса. Источником может быть как поток (методы `fromJsonStream()`, `fromObjectStream()`), так и массив объектов (метод `fromArrayOfObjects()`).
+Bind primary data source to the query, this source is used as the `FROM` for the SQL query. The source can be a stream (methods `fromJsonStream()`, `fromObjectStream ()`) and an array of objects (method `fromArrayOfObjects()`).
 
-Если в потоковый метод не передать необязательный аргумент `stream`, то будет подразумеваться, что данные будут передаваться в поток, который вернёт один из методов из набора `to*()` через станарный механизм потоков NodeJS: `write()` и `pipe()`.
+If the streaming method does not supply the optional argument `stream`, it will be assumed that data will be written in a stream that will return one of the methods `to*()` by NodeJS streams methods: `write()` and `pipe()`.
 
-Все этим методы возвращают инстанс класса `SelectFrom`.
+All these methods return an instance of class `SelectFrom`.
 
 ### `SelectFrom.prototype.addJsonStream(location, readableStream)`
 ### `SelectFrom.prototype.addObjectsStream(location, readableStream)`
 ### `SelectFrom.prototype.addArrayOfObjects(location, array)`
 
-Добавить к запросу дополнительный поток данных, который может быть использован для `JOIN` в запросе.
+Bind additional data source to that can be used to `JOIN` in the query.
 
-`location` - массив строк или строка, представляющая собой имя таблицы, по которому этот источник будет привязываться к запросу `SELECT ... JOIN <name>`. Имя может быть многоуровневым, например `user`.`payments`, в этом случае в `location` нужно указать массив `['user', 'payment']`, для одноуровневых имён допускается передавать как массив из одного элемента, так и просто строку
+`location` - an array of strings or a string representing the name of the table for which the source can be referenced from a query `SELECT ... JOIN <name>`. The name may be layered, for example a `user`.`payments`: `location` you need to specify the array['user', 'payment']`. For one-level names are allowed to be passed as an array with one element or just a string
 
-Пример
+Example
 
 ```javascript
 jlSqlApi.query('SELECT SUM(price) INNER JOIN user.payments ON @payments.userId = id')
@@ -411,44 +411,44 @@ jlSqlApi.query('SELECT SUM(price) INNER JOIN user.payments ON @payments.userId =
 	.toJsonStream(process.stdout)
 ```
 
-Тут стоит также остановиться на записи `@payments.userId`: каждый источник данных обязан иметь своё уникальное имя в запросе, имена источников всегда начинаются с символа `@` и не должны быть обёрнуты в back quotes (`` ` ``). Источники, добавленные через `add*()` по умолчанию получают имена по последнему элементу `location`, поэтому в данном случае мы обращаемся к таблице как `@payment`.
+You should pay attention to the line `@payments.userId`: each data source must have unique names, the source names always begin with the `@` symbol and must not be wrapped in back quotes (`` ` ``). The sources added via the `add*()` by default, given the names on the last element `location`, so in this case we refer to a table as `@payment`.
 
-Если возникает коллизия имён, например, если мы подключили два источника с именами `user.payment` и `company.payment` то нужно явно указывать альяс для одного из источников: `INNER JOIN company.payment AS @companyPayment`.
+If we connected the sources with names in the `user.payment` and `company.payment` we get a collision of names. In this case, you need to explicitly specify the alias for one of the sources: `INNER JOIN company.payment AS @companyPayment`.
 
-В API предусмотрена возможность динамического ресолвинга имён источников, так что не обязательно явно прописывать каждый из них. Подробнее об этом можно прочитать в разделе [Динамический ресолвинг источников данных](#Динамический-ресолвинг-источников-данных).
+The API provides the possibility of resolving dynamic source names, so it is not necessary to explicitly write each of them. More information can be found in the section [Dynamic data source binding](#dynamic-data-source-binding).
 
 ### `SelectFrom.prototype.toJsonStream([stream])`
 ### `SelectFrom.prototype.toObjectsStream([stream])`
 ### `SelectFrom.prototype.toArrayOfObjects(callback(array))`
 
-Через этот набор методов указыаается формат и приёмник данных на выходе, всё аналогично набору `from*()`, за исключением того, что в метод `toArrayOfObjects()` нужно передать обработчик с одним аргументом - массивом выходных объектов.
+Using this set of methods, you can specify the format and the data receiver, it is identical to set `from*()`, except that in method `toArrayOfObjects()` need to pass a handler with one argument - an array of output objects.
 
-Если параметр `stream` не указан у потоковых функций, то данные можно получить через стандартный механизм `stream.Readable`: `.on('data', ...)`, `.on('readable', ...)`, `.pipe(destination)` и т.п.
+If the parameter `stream` is not specified, then the data can be accessed through standard mechanism `stream.Readable`: `.on('data', ...)`, `.on('readable', ...)`, `.pipe(destination)`, etc.
 
 
-### Динамический ресолвинг источников данных
+### Dynamic data source binding
 
-Часто возникает ситуация, когда мы не можем заранее добавить дополнительные источники данных через методы `add*()`, например, когда SQL-запрос вводится пользователем, который хочет работать с файлов в ФС.
+Often a situation arises where we cannot add additional data sources through the methods `add*()`. For example, when a SQL query is entered by the user who wants to work with files in filesystem.
 
-Для решения этой проблемы в объекте `options` предусмотрено поле `dataSourceResolvers`, в котором можно передать массив объектов-ресолверов.
+To solve this problem in an object `options` has the `dataSourceResolvers`, in which you can pass an array of resolvers.
 
-Объект-ресолвер обязан быть наследником класса `require('jl-sql-api').DataSourceResolver` и реализовывать как минимум метод `resolve()`. Не обязательно, но желательно, реализовать также метод `extractAlias()`.
+Resolver must extends class `require('jl-sql-api').DataSourceResolver` and implement at least the method `resolve()`. Not necessarily, but preferably, also implement method `extractAlias()`.
 
 #### `resolve(location)`
 
-Используется для создания `stream.Readable` по названию "таблицы" из SQL - если запрос содержит такой код `INNER JOIN user.payment ... INNER JOIN transaction`, то этот метод вызовется два раза: один раз для таблицы `user.payment` с агументом `["user", "payment"]` и второй раз для `transaction` с аргументом `["transaction"]`.
+Is used to create a `stream.Readable` by the name "tables" of SQL. If the request contains this code `INNER JOIN user.payment ... INNER JOIN transaction`, then this method will be called twice: once for the table `user.payment` with argument `["user", "payment"]` and once for `transaction` with argument `["transaction"]`.
 
-Метод может вернуть либо `stream.Readable`, либо `null`, если источник определить не получилось. Все ресолверы в массиве будут перебираться по порядку пока какой-нибудь не вернёт не-`null`. Если все вернули `null`, то идёт проверка по источникам, добавленным явно через `add*()`.
+Method can return either `stream.Readable` or `null` if the source to determine it did not. All resolvers in the array will be called in the order while some do not return non-`null`. If all returned `null`, then there is a check on sources that have been explicitly added using `add*()`.
 
 #### `extractAlias(location)`
 
-Используется для определения альяса таблицы, если он явно не задан пользователем через `AS`, например, `... INNER JOIN user.payment ON ...`.
+Used to determine the table alias, if not specified by user via `AS`, e.g., `... INNER JOIN user.payment ON ...`.
 
-Метод должен вернуть строку или `null`, если альяс не определён.
+The method must return a string or `null` if the alias is not defined.
 
-#### Реальный пример
+#### Example
 
-Такой код используется в утилите `jl-sql` для динамического создания источника данных на основе пути до файла ([DataSourceFileResolver.js](https://github.com/avz/jl-sql/blob/master/src/DataSourceFileResolver.js))
+This code is used in the utility `jl-sql` to dynamically create a data source based on file path ([DataSourceFileResolver.js](https://github.com/avz/jl-sql/blob/master/src/DataSourceFileResolver.js))
 
 ```javascript
 const path = require('path');
