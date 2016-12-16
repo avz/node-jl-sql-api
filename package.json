@@ -6,6 +6,11 @@
     "sql",
     "stream"
   ],
+  "license": "MIT",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/avz/node-jl-sql-api.git"
+  },
   "main": "main.js",
   "author": "avz@nologin.ru",
   "contributors": [],
