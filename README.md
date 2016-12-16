@@ -3,6 +3,8 @@
 
 The library allows to operate on streams of objects by SQL queries such as `SELECT`, `UPDATE`, `DELETE`, `INSERT`. This package contains only API, if you are looking for a CLI-utility for working with JSON streams, go to https://github.com/avz/jl-sql.
 
+### [Try it now on runkit.com!](https://runkit.com/npm/jl-sql-api)
+
 The implementation allows you to work with potentially infinite streams. To sort and group large volumes of automatically activated external sorting using the unix utility `sort`, which can use a filesystem to store temporary data. For queries that do not require sorting stream processing is used, so dataset not loaded into memory entirely.
 
 * [Examples](#examples)
