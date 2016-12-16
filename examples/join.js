@@ -1,6 +1,6 @@
 const JlSqlApi = require('jl-sql-api');
 
-const api = new JlSqlApi();
+const api = new JlSqlApi({forceInMemory: true});
 
 api.query('SELECT id AS mid, @child.field INNER JOIN child ON @child.mainId = id')
     .fromArrayOfObjects([
@@ -17,3 +17,6 @@ api.query('SELECT id AS mid, @child.field INNER JOIN child ON @child.mainId = id
         console.log(r);
     })
 ;
+
+// make runkit.com silent
+'Waiting for result...';
