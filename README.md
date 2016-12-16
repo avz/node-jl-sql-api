@@ -94,7 +94,7 @@ api.query('SELECT id AS mid, @child.field INNER JOIN child ON @child.mainId = id
 		{"id": 1},
 		{"id": 2}
 	])
-	.addArrayOfObjectsStream('child', [
+	.addArrayOfObjects('child', [
 		{"mainId": 1, "field": 11},
 		{"mainId": 1, "field": 12},
 		{"mainId": 2, "field": 21},
