@@ -23,5 +23,6 @@
   },
   "engines": {
     "node": ">=6"
-  }
+  },
+  "tonicExampleFilename": "./examples/join.js"
 }
