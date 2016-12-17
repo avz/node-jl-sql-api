@@ -18,6 +18,7 @@ class Select extends Node
 		this.having = null;
 		this.orders = [];
 		this.limit = null;
+		this.distinct = false;
 	}
 
 	join(join)

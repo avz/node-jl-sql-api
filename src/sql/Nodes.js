@@ -18,7 +18,6 @@ exports['ComparsionOperation'] = require('./nodes/ComparsionOperation.js');
 exports['ComplexIdent'] = require('./nodes/ComplexIdent.js');
 exports['DataSourceIdent'] = require('./nodes/DataSourceIdent.js');
 exports['Delete'] = require('./nodes/Delete.js');
-exports['Distinct'] = require('./nodes/Distinct.js');
 exports['ExpressionsList'] = require('./nodes/ExpressionsList.js');
 exports['FunctionIdent'] = require('./nodes/FunctionIdent.js');
 exports['GroupBy'] = require('./nodes/GroupBy.js');

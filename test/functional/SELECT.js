@@ -133,6 +133,26 @@ describe('SELECT', () => {
 			});
 		});
 
+		describe('`SELECT DISTINCT ...`', () => {
+			const input = [{a: 1, b: 2}, {a: 1, b: 2}, {a: 2, b: 2}, {a: 1, b: 3}];
+
+			let output;
+
+			before(done => {
+				jlSql.query('SELECT DISTINCT a, b')
+					.fromArrayOfObjects(input)
+					.toArrayOfObjects((r) => {
+						output = r;
+						done();
+					})
+				;
+			});
+
+			it('unique', () => {
+				assert.deepStrictEqual(output, [{a: 1, b: 2}, {a: 2, b: 2}, {a: 1, b: 3}]);
+			});
+		});
+
 		describe('`SELECT *, ...`', () => {
 			const input = [{hello: 'world'}, {hello: 'hello'}];
 

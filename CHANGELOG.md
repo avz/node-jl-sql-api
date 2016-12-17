@@ -1,3 +1,7 @@
+## `v1.5.0` (upcoming release)
+
+* `SELECT DISTINCT ...` support
+
 ## `v1.4.0` (2016-12-14)
 
 * Added support for constant JSON-values

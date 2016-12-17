@@ -228,8 +228,7 @@ const
 ;
 
 expression
-	: DISTINCT expression       { $$ = new Nodes.Distinct($2); }
-	| expression '*' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	: expression '*' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| expression '%' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| expression '/' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| expression '+' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
@@ -279,7 +278,11 @@ columns
 	| column                 { $$ = [$1]; }
 ;
 
-selectClause: 'SELECT' { $$ = new Nodes.Select(); };
+selectClause
+	: 'SELECT' 'DISTINCT' { $$ = new Nodes.Select(); $$.distinct = true; }
+	| 'SELECT' { $$ = new Nodes.Select(); }
+;
+
 deleteClause: 'DELETE' { $$ = new Nodes.Delete(); };
 insertClause: 'INSERT' { $$ = new Nodes.Insert(); };
 updateClause: 'UPDATE' { $$ = new Nodes.Update(); };

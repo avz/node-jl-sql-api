@@ -41,6 +41,10 @@ class Select
 			throw new SqlNotSupported('LIMIT is not supported yet');
 		}
 
+		if (ast.distinct && ast.groups.length) {
+			throw new SqlNotSupported('SELECT DISTINCT and GROUP BY');
+		}
+
 		/**
 		 * @type {PreparingContext}
 		 */
@@ -75,6 +79,10 @@ class Select
 
 		if (this.ast.having) {
 			this.expressions.push(columnsAnalyser.analyseExpression(this.ast.having));
+		}
+
+		if (this.ast.distinct && this.hasAggregationColumns()) {
+			throw new SqlNotSupported('SELECT DISTINCT and aggregation functions');
 		}
 	}
 
@@ -318,22 +326,28 @@ class Select
 	 */
 	createGroupper()
 	{
-		if (!this.ast.groups.length) {
-			if (!this.hasAggregationColumns()) {
-				return null;
+		let keyGenerators;
+
+		if (this.ast.distinct) {
+			keyGenerators = this.ast.columns.map(c => this.sqlToJs.nodeToFunction(c.expression));
+		} else {
+			if (!this.ast.groups.length) {
+				if (!this.hasAggregationColumns()) {
+					return null;
+				}
+
+				/*
+				 * For aggregation queries without GROUP BY, e.g. `SELECT SUM(c) AS sum`
+				 */
+				return new Groupper(() => null, new Aggregation(this.runtimeContext, this.expressions));
 			}
 
-			/*
-			 * For aggregation queries without GROUP BY, e.g. `SELECT SUM(c) AS sum`
-			 */
-			return new Groupper(() => null, new Aggregation(this.runtimeContext, this.expressions));
-		}
+			if (!this.columns.size || this.ast.allColumns) {
+				throw new SqlLogicError('`SELECT * ... GROUP BY ...` does not make sense');
+			}
 
-		if (!this.columns.size || this.ast.allColumns) {
-			throw new SqlLogicError('`SELECT * ... GROUP BY ...` does not make sense');
+			keyGenerators = this.ast.groups.map(g => this.sqlToJs.nodeToFunction(g.expression));
 		}
-
-		const keyGenerators = this.ast.groups.map(g => this.sqlToJs.nodeToFunction(g.expression));
 
 		let keyGeneratorCb;
 
