@@ -1,9 +1,9 @@
 'use strict';
 
-const AggregationFunction = require('../../AggregationFunction');
+const AggregationFunctionSync = require('../../AggregationFunctionSync');
 const DataType = require('../../DataType');
 
-class MIN extends AggregationFunction
+class MIN extends AggregationFunctionSync
 {
 	constructor()
 	{

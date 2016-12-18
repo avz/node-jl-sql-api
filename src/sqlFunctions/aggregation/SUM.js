@@ -1,9 +1,9 @@
 'use strict';
 
-const AggregationFunction = require('../../AggregationFunction');
+const AggregationFunctionSync = require('../../AggregationFunctionSync');
 const DataType = require('../../DataType');
 
-class SUM extends AggregationFunction
+class SUM extends AggregationFunctionSync
 {
 	constructor()
 	{
