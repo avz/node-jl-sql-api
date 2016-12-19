@@ -5,33 +5,33 @@ const Min = require('../../../../src/sqlFunctions/aggregation/MIN');
 const DataType = require('../../../../src/DataType');
 
 describe('SQL function MIN()', () => {
-	it('update() with undefined and null', () => {
+	it('.updateSync() with undefined and null', () => {
 		const min = new Min;
 
 		min.init();
 
 		assert.strictEqual(min.result(), null);
 
-		min.update([10]);
+		min.updateSync([10]);
 		assert.strictEqual(min.result(), 10);
 
-		min.update([undefined]);
+		min.updateSync([undefined]);
 		assert.strictEqual(min.result(), 10);
 
-		min.update([null]);
+		min.updateSync([null]);
 		assert.strictEqual(min.result(), 10);
 	});
 
-	it('update() with scalars', () => {
+	it('.updateSync() with scalars', () => {
 		const min = new Min;
 
 		min.init();
 
-		min.update([5]);
-		min.update([10]);
+		min.updateSync([5]);
+		min.updateSync([10]);
 		assert.strictEqual(min.result(), 5);
 
-		min.update([2]);
+		min.updateSync([2]);
 		assert.strictEqual(min.result(), 2);
 	});
 
@@ -41,7 +41,7 @@ describe('SQL function MIN()', () => {
 		min.init();
 		assert.strictEqual(min.result(), null);
 
-		min.update([10]);
+		min.updateSync([10]);
 		assert.strictEqual(min.result(), 10);
 
 		min.deinit();
@@ -49,7 +49,7 @@ describe('SQL function MIN()', () => {
 
 		assert.strictEqual(min.result(), null);
 
-		min.update([5]);
+		min.updateSync([5]);
 		assert.strictEqual(min.result(), 5);
 	});
 

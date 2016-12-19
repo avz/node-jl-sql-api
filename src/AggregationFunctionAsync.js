@@ -3,17 +3,17 @@
 const AggregationFunction = require('./AggregationFunction');
 const ImplementationRequired = require('./error/ImplementationRequired');
 
-class AggregationFunctionSync extends AggregationFunction
+class AggregationFunctionAsync extends AggregationFunction
 {
 	/**
 	 * Run once per each row
 	 * @param {Array} args
 	 * @returns {undefined}
 	 */
-	updateSync(args)
+	updateAsync(args)
 	{
 		throw new ImplementationRequired;
 	}
 }
 
-module.exports = AggregationFunctionSync;
+module.exports = AggregationFunctionAsync;

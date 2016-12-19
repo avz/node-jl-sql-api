@@ -6,6 +6,7 @@ const AggregationExpression = require('./AggregationExpression');
 const PropertiesPicker = require('./PropertiesPicker');
 const AggregationCallRuntime = require('./AggregationCallRuntime');
 const DataRow = require('./DataRow');
+const AsyncUtils = require('./AsyncUtils');
 
 class Aggregation
 {
@@ -53,11 +54,15 @@ class Aggregation
 		}
 	}
 
-	update(row)
+	update(row, cb)
 	{
-		for (const call of this.aggregationCallRuntimes) {
-			call.update(row);
-		}
+		AsyncUtils.eachSeriesHalfSync(
+			this.aggregationCallRuntimes,
+			(call, done) => {
+				call.update(row, done);
+			},
+			cb
+		);
 
 		this.lastRow = row;
 	}

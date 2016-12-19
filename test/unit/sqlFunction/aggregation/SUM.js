@@ -5,55 +5,55 @@ const Sum = require('../../../../src/sqlFunctions/aggregation/SUM');
 const DataType = require('../../../../src/DataType');
 
 describe('SQL function SUM()', () => {
-	it('update() with undefined and null', () => {
+	it('.updateSync() with undefined and null', () => {
 		const sum = new Sum;
 
 		sum.init();
 
 		assert.strictEqual(sum.result(), 0);
 
-		sum.update([10]);
+		sum.updateSync([10]);
 		assert.strictEqual(sum.result(), 10);
 
-		sum.update([undefined]);
+		sum.updateSync([undefined]);
 		assert.strictEqual(sum.result(), 10);
 
-		sum.update([null]);
+		sum.updateSync([null]);
 		assert.strictEqual(sum.result(), 10);
 	});
 
-	it('update() with scalars', () => {
+	it('.updateSync() with scalars', () => {
 		const min = new Sum;
 
 		min.init();
 
-		min.update([5]);
-		min.update([10]);
+		min.updateSync([5]);
+		min.updateSync([10]);
 		assert.strictEqual(min.result(), 15);
 
-		min.update([2]);
+		min.updateSync([2]);
 		assert.strictEqual(min.result(), 17);
 	});
 
-	it('update() with non-numbers', () => {
+	it('.updateSync() with non-numbers', () => {
 		const min = new Sum;
 
 		min.init();
 
-		min.update([5]);
-		min.update(['10']);
+		min.updateSync([5]);
+		min.updateSync(['10']);
 		assert.strictEqual(min.result(), 15);
 
-		min.update(['2']);
+		min.updateSync(['2']);
 		assert.strictEqual(min.result(), 17);
 
-		min.update([['array']]);
+		min.updateSync([['array']]);
 		assert.strictEqual(min.result(), 17);
 
-		min.update([{object: 1}]);
+		min.updateSync([{object: 1}]);
 		assert.strictEqual(min.result(), 17);
 
-		min.update(['wrong number string']);
+		min.updateSync(['wrong number string']);
 		assert.strictEqual(min.result(), 17);
 	});
 
@@ -63,7 +63,7 @@ describe('SQL function SUM()', () => {
 		min.init();
 		assert.strictEqual(min.result(), 0);
 
-		min.update([10]);
+		min.updateSync([10]);
 		assert.strictEqual(min.result(), 10);
 
 		min.deinit();
@@ -71,7 +71,7 @@ describe('SQL function SUM()', () => {
 
 		assert.strictEqual(min.result(), 0);
 
-		min.update([5]);
+		min.updateSync([5]);
 		assert.strictEqual(min.result(), 5);
 	});
 

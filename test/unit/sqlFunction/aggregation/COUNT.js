@@ -5,43 +5,43 @@ const Count = require('../../../../src/sqlFunctions/aggregation/COUNT');
 const DataType = require('../../../../src/DataType');
 
 describe('SQL function COUNT()', () => {
-	it('update(field) with undefined and null', () => {
+	it('.updateSync(field) with undefined and null', () => {
 		const count = new Count;
 
 		count.init();
 
 		assert.strictEqual(count.result(), 0);
 
-		count.update(['hi']);
+		count.updateSync(['hi']);
 		assert.strictEqual(count.result(), 1);
 
-		count.update([undefined]);
+		count.updateSync([undefined]);
 		assert.strictEqual(count.result(), 1);
 
-		count.update([null]);
+		count.updateSync([null]);
 		assert.strictEqual(count.result(), 1);
 	});
 
-	it('update(*)', () => {
+	it('.updateSync(*)', () => {
 		const count = new Count;
 
 		count.init();
 
 		assert.strictEqual(count.result(), 0);
 
-		count.update([]);
+		count.updateSync([]);
 		assert.strictEqual(count.result(), 1);
 	});
 
-	it('update(field) with scalars', () => {
+	it('.updateSync(field) with scalars', () => {
 		const max = new Count;
 
 		max.init();
 
-		max.update(['hi']);
+		max.updateSync(['hi']);
 		assert.strictEqual(max.result(), 1);
 
-		max.update(['ho']);
+		max.updateSync(['ho']);
 		assert.strictEqual(max.result(), 2);
 	});
 
@@ -51,7 +51,7 @@ describe('SQL function COUNT()', () => {
 		max.init();
 		assert.strictEqual(max.result(), 0);
 
-		max.update(['hi']);
+		max.updateSync(['hi']);
 		assert.strictEqual(max.result(), 1);
 
 		max.deinit();
@@ -59,7 +59,7 @@ describe('SQL function COUNT()', () => {
 
 		assert.strictEqual(max.result(), 0);
 
-		max.update(['ho']);
+		max.updateSync(['ho']);
 		assert.strictEqual(max.result(), 1);
 	});
 

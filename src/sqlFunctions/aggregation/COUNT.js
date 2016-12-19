@@ -3,7 +3,7 @@
 const AggregationFunctionSync = require('../../AggregationFunctionSync');
 const DataType = require('../../DataType');
 
-class SUM extends AggregationFunctionSync
+class COUNT extends AggregationFunctionSync
 {
 	constructor()
 	{
@@ -21,7 +21,7 @@ class SUM extends AggregationFunctionSync
 	{
 	}
 
-	update(args)
+	updateSync(args)
 	{
 		if (!args.length) {
 			this.count++;
@@ -47,4 +47,4 @@ class SUM extends AggregationFunctionSync
 	}
 }
 
-module.exports = SUM;
+module.exports = COUNT;

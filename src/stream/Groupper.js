@@ -1,6 +1,7 @@
 'use strict';
 
 const JlTransform = require('./JlTransform');
+const AsyncUtils = require('../AsyncUtils');
 
 class Groupper extends JlTransform
 {
@@ -49,38 +50,37 @@ class Groupper extends JlTransform
 
 	_transform(chunk, encoding, cb)
 	{
-		for (let i = 0; i < chunk.length; i++) {
-			const row = chunk[i];
+		AsyncUtils.eachSeriesHalfSync(
+			chunk,
+			(row, done) => {
+				const key = this.groupKeyGenerator(row);
+				const keySerialized = this._serializeKey(key);
 
-			const key = this.groupKeyGenerator(row);
-			const keySerialized = this._serializeKey(key);
+				/* TODO можно предварительно сравнивать сами значения без сериализации */
 
-			/* TODO можно предварительно сравнивать сами значения без сериализации */
+				if (keySerialized === this.currentKeySerialized) {
+					this.aggregation.update(row, done);
 
-			if (keySerialized === this.currentKeySerialized) {
-				this.aggregation.update(row);
+					return;
+				}
+
 				this.currentKey = key;
+				this.currentKeySerialized = keySerialized;
 
-				continue;
-			}
+				/* группа поменялась или же это первая группа */
 
-			/* группа поменялась или же это первая группа */
+				if (!this.isFirstRow) {
+					this.push([this.aggregation.result()]);
+					this.aggregation.deinit();
+				} else {
+					this.isFirstRow = false;
+				}
 
-			if (!this.isFirstRow) {
-				this.push([this.aggregation.result()]);
-				this.aggregation.deinit();
-			} else {
-				this.isFirstRow = false;
-			}
-
-			this.currentKey = key;
-			this.currentKeySerialized = keySerialized;
-
-			this.aggregation.init();
-			this.aggregation.update(row);
-		}
-
-		cb();
+				this.aggregation.init();
+				this.aggregation.update(row, done);
+			},
+			cb
+		);
 	}
 
 	_flush(cb)

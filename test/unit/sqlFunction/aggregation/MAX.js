@@ -5,33 +5,33 @@ const Max = require('../../../../src/sqlFunctions/aggregation/MAX');
 const DataType = require('../../../../src/DataType');
 
 describe('SQL function MAX()', () => {
-	it('update() with undefined and null', () => {
+	it('.updateSync() with undefined and null', () => {
 		const max = new Max;
 
 		max.init();
 
 		assert.strictEqual(max.result(), null);
 
-		max.update([10]);
+		max.updateSync([10]);
 		assert.strictEqual(max.result(), 10);
 
-		max.update([undefined]);
+		max.updateSync([undefined]);
 		assert.strictEqual(max.result(), 10);
 
-		max.update([null]);
+		max.updateSync([null]);
 		assert.strictEqual(max.result(), 10);
 	});
 
-	it('update() with scalars', () => {
+	it('.updateSync() with scalars', () => {
 		const max = new Max;
 
 		max.init();
 
-		max.update([10]);
-		max.update([5]);
+		max.updateSync([10]);
+		max.updateSync([5]);
 		assert.strictEqual(max.result(), 10);
 
-		max.update([15]);
+		max.updateSync([15]);
 		assert.strictEqual(max.result(), 15);
 	});
 
@@ -41,7 +41,7 @@ describe('SQL function MAX()', () => {
 		max.init();
 		assert.strictEqual(max.result(), null);
 
-		max.update([10]);
+		max.updateSync([10]);
 		assert.strictEqual(max.result(), 10);
 
 		max.deinit();
@@ -49,7 +49,7 @@ describe('SQL function MAX()', () => {
 
 		assert.strictEqual(max.result(), null);
 
-		max.update([5]);
+		max.updateSync([5]);
 		assert.strictEqual(max.result(), 5);
 	});
 

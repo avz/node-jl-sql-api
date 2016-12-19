@@ -21,7 +21,7 @@ class SUM extends AggregationFunctionSync
 	{
 	}
 
-	update(args)
+	updateSync(args)
 	{
 		const v = parseFloat(args[0]);
 

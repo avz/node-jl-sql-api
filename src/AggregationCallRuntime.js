@@ -8,9 +8,14 @@ class AggregationCallRuntime
 		this.instance = new aggregationCall.func;
 	}
 
-	update(row)
+	update(row, done)
 	{
-		this.instance.update(this.call.args.map(cb => cb(row)));
+		if (this.instance.updateAsync) {
+			this.instance.updateAsync(this.call.args.map(cb => cb(row)), done);
+		} else {
+			this.instance.updateSync(this.call.args.map(cb => cb(row)));
+			done();
+		}
 	}
 
 	result()

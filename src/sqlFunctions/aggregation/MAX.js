@@ -21,7 +21,7 @@ class MIN extends AggregationFunctionSync
 	{
 	}
 
-	update(args)
+	updateSync(args)
 	{
 		if (args[0] === undefined || args[0] === null) {
 			return;
