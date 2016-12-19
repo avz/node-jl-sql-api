@@ -15,7 +15,7 @@ class Aggregation
 		this.expressions = expressions;
 		this.lastRow = null;
 
-		this.aggregationCalls = [];
+		this.aggregationCallRuntimes = [];
 
 		const aggregations = this.runtimeContext[this.runtimeContext.aggregationsPropertyName];
 
@@ -27,7 +27,7 @@ class Aggregation
 			for (const ac of expression.aggregationCalls) {
 				const state = new AggregationCallRuntime(ac);
 
-				this.aggregationCalls.push(state);
+				this.aggregationCallRuntimes.push(state);
 
 				aggregations[ac.node.id] = state.result.bind(state);
 			}
@@ -48,14 +48,14 @@ class Aggregation
 
 	init()
 	{
-		for (const call of this.aggregationCalls) {
+		for (const call of this.aggregationCallRuntimes) {
 			call.instance.init();
 		}
 	}
 
 	update(row)
 	{
-		for (const call of this.aggregationCalls) {
+		for (const call of this.aggregationCallRuntimes) {
 			call.update(row);
 		}
 
@@ -68,7 +68,7 @@ class Aggregation
 
 		row.sources = this.propertiesPicker.sliceProperties(this.lastRow);
 
-		for (const call of this.aggregationCalls) {
+		for (const call of this.aggregationCallRuntimes) {
 			row[DataRow.AGGREGATION_CACHE_PROPERTY][call.call.node.id] = call.result();
 		}
 
@@ -77,7 +77,7 @@ class Aggregation
 
 	deinit()
 	{
-		for (const call of this.aggregationCalls) {
+		for (const call of this.aggregationCallRuntimes) {
 			call.instance.deinit();
 		}
 
