@@ -299,7 +299,7 @@ describe('SELECT', () => {
 			let output;
 
 			before(done => {
-				jlSql.query('SELECT a, COUNT(*) AS count GROUP BY a')
+				jlSql.query('SELECT a, COUNT(*) AS count, COUNT(a) AS countA GROUP BY a')
 					.fromArrayOfObjects(input)
 					.toArrayOfObjects((r) => {
 						output = r;
@@ -312,11 +312,11 @@ describe('SELECT', () => {
 				assert.deepStrictEqual(
 					output,
 					[
-						{count: 1},
-						{a: 1, count: 2},
-						{a: 2, count: 1},
-						{a: 3, count: 2},
-						{a: null, count: 1}
+						{count: 1, countA: 0},
+						{a: 1, count: 2, countA: 2},
+						{a: 2, count: 1, countA: 1},
+						{a: 3, count: 2, countA: 2},
+						{a: null, count: 1, countA: 0}
 					]
 				);
 			});

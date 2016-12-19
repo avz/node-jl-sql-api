@@ -251,7 +251,7 @@ expression
 	| expression 'IN' '(' expressionsList ')' { $$ = new Nodes.UnstrictIn($1, $4); }
 	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), $3); }
 	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1)); }
-	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent['@', $1]), new Nodes.ExpressionsList([$3])); }
+	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1])), new Nodes.ExpressionsList([$3])); }
 	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1]))); }
 	| 'COUNT' { $$ = new Nodes.ColumnIdent(['@', $1]) }
 	| complexIdent { $$ = Nodes.ColumnIdent.fromComplexIdent($1) }

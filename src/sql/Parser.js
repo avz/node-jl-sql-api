@@ -210,7 +210,7 @@ case 85:
  this.$ = new Nodes.Call(new Nodes.FunctionIdent($$[$0-2])); 
 break;
 case 86:
- this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent['@', $$[$0-3]]), new Nodes.ExpressionsList([$$[$0-1]])); 
+ this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $$[$0-3]])), new Nodes.ExpressionsList([$$[$0-1]])); 
 break;
 case 87:
  this.$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $$[$0-3]]))); 
