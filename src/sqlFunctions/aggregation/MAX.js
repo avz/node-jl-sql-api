@@ -34,7 +34,7 @@ class MIN extends AggregationFunctionSync
 		}
 	}
 
-	result()
+	resultSync()
 	{
 		return this.max;
 	}

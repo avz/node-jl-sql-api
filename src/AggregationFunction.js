@@ -22,15 +22,6 @@ class AggregationFunction
 	}
 
 	/**
-	 * Get current result. Can be call multiple times per group
-	 * @returns {any}
-	 */
-	result()
-	{
-		throw new ImplementationRequired;
-	}
-
-	/**
 	 * Run once per each group
 	 * @returns {any}
 	 */

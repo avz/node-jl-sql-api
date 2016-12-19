@@ -18,9 +18,13 @@ class AggregationCallRuntime
 		}
 	}
 
-	result()
+	result(done)
 	{
-		return this.instance.result();
+		if (this.instance.resultAsync) {
+			this.instance.resultAsync(done);
+		} else {
+			done(this.instance.resultSync());
+		}
 	}
 }
 

@@ -5,7 +5,6 @@ const BasicExpression = require('./BasicExpression');
 const AggregationFunction = require('./AggregationFunction');
 const AggregationCall = require('./AggregationCall');
 const SqlLogicError = require('./error/SqlLogicError');
-const DataRow = require('./DataRow');
 const ExpressionAnalyser = require('./ExpressionAnalyser');
 
 class AggregationExpression extends BasicExpression
@@ -17,7 +16,7 @@ class AggregationExpression extends BasicExpression
 		this.expressionAnalyser = new ExpressionAnalyser(preparingContext);
 		this.aggregationCalls = this.createAggregationCalls();
 
-		this.result = () => preparingContext.sqlToJs.nodeToFunction(expression)(new DataRow({}));
+		this.result = preparingContext.sqlToJs.nodeToFunction(expression);
 	}
 
 	createAggregationCalls()

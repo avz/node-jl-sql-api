@@ -14,6 +14,16 @@ class AggregationFunctionAsync extends AggregationFunction
 	{
 		throw new ImplementationRequired;
 	}
+
+	/**
+	 * Get current result. Can be call multiple times per group
+	 * @param {Function} cb
+	 * @returns {any}
+	 */
+	result(cb)
+	{
+		throw new ImplementationRequired;
+	}
 }
 
 module.exports = AggregationFunctionAsync;

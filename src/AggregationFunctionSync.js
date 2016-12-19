@@ -14,6 +14,15 @@ class AggregationFunctionSync extends AggregationFunction
 	{
 		throw new ImplementationRequired;
 	}
+
+	/**
+	 * Get current result. Can be call multiple times per group
+	 * @returns {any}
+	 */
+	resultSync()
+	{
+		throw new ImplementationRequired;
+	}
 }
 
 module.exports = AggregationFunctionSync;

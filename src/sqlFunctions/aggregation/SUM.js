@@ -32,7 +32,7 @@ class SUM extends AggregationFunctionSync
 		this.sum += v;
 	}
 
-	result()
+	resultSync()
 	{
 		return this.sum;
 	}

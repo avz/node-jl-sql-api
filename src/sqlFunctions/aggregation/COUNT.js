@@ -36,7 +36,7 @@ class COUNT extends AggregationFunctionSync
 		this.count++;
 	}
 
-	result()
+	resultSync()
 	{
 		return this.count;
 	}

@@ -70,8 +70,16 @@ class Groupper extends JlTransform
 				/* группа поменялась или же это первая группа */
 
 				if (!this.isFirstRow) {
-					this.push([this.aggregation.result()]);
-					this.aggregation.deinit();
+					this.aggregation.result(result => {
+						this.push([result]);
+						this.aggregation.deinit();
+
+						this.aggregation.init();
+						this.aggregation.update(row, done);
+					});
+
+					return;
+
 				} else {
 					this.isFirstRow = false;
 				}
@@ -86,11 +94,15 @@ class Groupper extends JlTransform
 	_flush(cb)
 	{
 		if (!this.firstRow) {
-			this.push([this.aggregation.result()]);
-			this.aggregation.deinit();
-		}
+			this.aggregation.result(result => {
+				this.push([result]);
+				this.aggregation.deinit();
 
-		cb();
+				cb();
+			});
+		} else {
+			cb();
+		}
 	}
 }
 

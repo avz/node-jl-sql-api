@@ -95,25 +95,12 @@ class SqlToJs
 
 		if (func && func.prototype instanceof AggregationFunction) {
 			/*
-			 * Агрегирующие функции хранят состояние, поэтому вызов должен
-			 * быть привязан к определённому контексту.
-			 * Контекст определяется по уникальному идентификатору ноды.
-			 * Конкретно этот код используется только для генерации результата агрегации,
-			 * а обновления, инициализация и очистка происходят в группировщике
+			 * Результат агрегирующей функции берётс из закешированного значения,
+			 * а кеш генерится в Aggregation
 			 */
 			const nodeKey = JSON.stringify(call.id);
 
-			const code = ('' +
-				'( ' + nodeKey + ' in ' + this.aggregationCacheVarName
-					+ ' ? ' + this.aggregationCacheVarName + '[' + nodeKey + ']'
-					+ ' : ('
-						+ this.aggregationPropertyName + '[' + nodeKey + ']'
-						+ '('
-							+ this.nodeToCode(call.args)
-						+ ')'
-					+ ')'
-				+ ')'
-			);
+			const code = this.aggregationCacheVarName + '[' + nodeKey + ']';
 
 			return code;
 		}

@@ -10,16 +10,16 @@ describe('SQL function MAX()', () => {
 
 		max.init();
 
-		assert.strictEqual(max.result(), null);
+		assert.strictEqual(max.resultSync(), null);
 
 		max.updateSync([10]);
-		assert.strictEqual(max.result(), 10);
+		assert.strictEqual(max.resultSync(), 10);
 
 		max.updateSync([undefined]);
-		assert.strictEqual(max.result(), 10);
+		assert.strictEqual(max.resultSync(), 10);
 
 		max.updateSync([null]);
-		assert.strictEqual(max.result(), 10);
+		assert.strictEqual(max.resultSync(), 10);
 	});
 
 	it('.updateSync() with scalars', () => {
@@ -29,28 +29,28 @@ describe('SQL function MAX()', () => {
 
 		max.updateSync([10]);
 		max.updateSync([5]);
-		assert.strictEqual(max.result(), 10);
+		assert.strictEqual(max.resultSync(), 10);
 
 		max.updateSync([15]);
-		assert.strictEqual(max.result(), 15);
+		assert.strictEqual(max.resultSync(), 15);
 	});
 
 	it('reinit', () => {
 		const max = new Max;
 
 		max.init();
-		assert.strictEqual(max.result(), null);
+		assert.strictEqual(max.resultSync(), null);
 
 		max.updateSync([10]);
-		assert.strictEqual(max.result(), 10);
+		assert.strictEqual(max.resultSync(), 10);
 
 		max.deinit();
 		max.init();
 
-		assert.strictEqual(max.result(), null);
+		assert.strictEqual(max.resultSync(), null);
 
 		max.updateSync([5]);
-		assert.strictEqual(max.result(), 5);
+		assert.strictEqual(max.resultSync(), 5);
 	});
 
 	it('dataType()', () => {

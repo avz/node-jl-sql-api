@@ -10,16 +10,16 @@ describe('SQL function MIN()', () => {
 
 		min.init();
 
-		assert.strictEqual(min.result(), null);
+		assert.strictEqual(min.resultSync(), null);
 
 		min.updateSync([10]);
-		assert.strictEqual(min.result(), 10);
+		assert.strictEqual(min.resultSync(), 10);
 
 		min.updateSync([undefined]);
-		assert.strictEqual(min.result(), 10);
+		assert.strictEqual(min.resultSync(), 10);
 
 		min.updateSync([null]);
-		assert.strictEqual(min.result(), 10);
+		assert.strictEqual(min.resultSync(), 10);
 	});
 
 	it('.updateSync() with scalars', () => {
@@ -29,28 +29,28 @@ describe('SQL function MIN()', () => {
 
 		min.updateSync([5]);
 		min.updateSync([10]);
-		assert.strictEqual(min.result(), 5);
+		assert.strictEqual(min.resultSync(), 5);
 
 		min.updateSync([2]);
-		assert.strictEqual(min.result(), 2);
+		assert.strictEqual(min.resultSync(), 2);
 	});
 
 	it('reinit', () => {
 		const min = new Min;
 
 		min.init();
-		assert.strictEqual(min.result(), null);
+		assert.strictEqual(min.resultSync(), null);
 
 		min.updateSync([10]);
-		assert.strictEqual(min.result(), 10);
+		assert.strictEqual(min.resultSync(), 10);
 
 		min.deinit();
 		min.init();
 
-		assert.strictEqual(min.result(), null);
+		assert.strictEqual(min.resultSync(), null);
 
 		min.updateSync([5]);
-		assert.strictEqual(min.result(), 5);
+		assert.strictEqual(min.resultSync(), 5);
 	});
 
 	it('dataType()', () => {

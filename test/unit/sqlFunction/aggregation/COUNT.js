@@ -10,16 +10,16 @@ describe('SQL function COUNT()', () => {
 
 		count.init();
 
-		assert.strictEqual(count.result(), 0);
+		assert.strictEqual(count.resultSync(), 0);
 
 		count.updateSync(['hi']);
-		assert.strictEqual(count.result(), 1);
+		assert.strictEqual(count.resultSync(), 1);
 
 		count.updateSync([undefined]);
-		assert.strictEqual(count.result(), 1);
+		assert.strictEqual(count.resultSync(), 1);
 
 		count.updateSync([null]);
-		assert.strictEqual(count.result(), 1);
+		assert.strictEqual(count.resultSync(), 1);
 	});
 
 	it('.updateSync(*)', () => {
@@ -27,10 +27,10 @@ describe('SQL function COUNT()', () => {
 
 		count.init();
 
-		assert.strictEqual(count.result(), 0);
+		assert.strictEqual(count.resultSync(), 0);
 
 		count.updateSync([]);
-		assert.strictEqual(count.result(), 1);
+		assert.strictEqual(count.resultSync(), 1);
 	});
 
 	it('.updateSync(field) with scalars', () => {
@@ -39,28 +39,28 @@ describe('SQL function COUNT()', () => {
 		max.init();
 
 		max.updateSync(['hi']);
-		assert.strictEqual(max.result(), 1);
+		assert.strictEqual(max.resultSync(), 1);
 
 		max.updateSync(['ho']);
-		assert.strictEqual(max.result(), 2);
+		assert.strictEqual(max.resultSync(), 2);
 	});
 
 	it('reinit', () => {
 		const max = new Count;
 
 		max.init();
-		assert.strictEqual(max.result(), 0);
+		assert.strictEqual(max.resultSync(), 0);
 
 		max.updateSync(['hi']);
-		assert.strictEqual(max.result(), 1);
+		assert.strictEqual(max.resultSync(), 1);
 
 		max.deinit();
 		max.init();
 
-		assert.strictEqual(max.result(), 0);
+		assert.strictEqual(max.resultSync(), 0);
 
 		max.updateSync(['ho']);
-		assert.strictEqual(max.result(), 1);
+		assert.strictEqual(max.resultSync(), 1);
 	});
 
 	it('dataType()', () => {

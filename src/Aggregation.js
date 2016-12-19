@@ -34,17 +34,19 @@ class Aggregation
 			}
 		}
 
-		const resultSetsMap = new Map;
+		const basicResultSetsMap = new Map;
+		const aggregationResultSetsMap = new Map;
 
 		for (const expression of this.expressions) {
 			if (expression instanceof AggregationColumn) {
-				resultSetsMap.set(expression.alias, expression.result);
+				aggregationResultSetsMap.set(expression.alias, expression.result);
 			} else if (expression instanceof BasicColumn) {
-				resultSetsMap.set(expression.alias, expression.valueSource());
+				basicResultSetsMap.set(expression.alias, expression.valueSource());
 			}
 		}
 
-		this.propertiesPicker = new PropertiesPicker(resultSetsMap);
+		this.basicPropertiesPicker = new PropertiesPicker(basicResultSetsMap);
+		this.aggregationPropertiesPicker = new PropertiesPicker(aggregationResultSetsMap);
 	}
 
 	init()
@@ -67,17 +69,26 @@ class Aggregation
 		this.lastRow = row;
 	}
 
-	result()
+	result(cb)
 	{
 		const row = new DataRow(null);
 
-		row.sources = this.propertiesPicker.sliceProperties(this.lastRow);
+		row.sources = this.basicPropertiesPicker.sliceProperties(this.lastRow);
 
-		for (const call of this.aggregationCallRuntimes) {
-			row[DataRow.AGGREGATION_CACHE_PROPERTY][call.call.node.id] = call.result();
-		}
+		AsyncUtils.eachSeriesHalfSync(
+			this.aggregationCallRuntimes,
+			(call, done) => {
+				call.result((result) => {
+					row[DataRow.AGGREGATION_CACHE_PROPERTY][call.call.node.id] = result;
+					done();
+				});
+			},
+			() => {
+				this.aggregationPropertiesPicker.mergeProperties(row, row.sources);
 
-		return row;
+				cb(row);
+			}
+		);
 	}
 
 	deinit()
