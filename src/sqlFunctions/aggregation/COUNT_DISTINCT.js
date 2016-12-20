@@ -113,10 +113,8 @@ class COUNT_DISTINCT extends AggregationFunctionAsync
 			return;
 		}
 
-		const inMemoryKeysCount = this.keys.size;
-
-		this._externalUniqueCounter().pushEnd((count) => {
-			done(count + inMemoryKeysCount);
+		this._externalUniqueCounter().pushMap(this.keys, () => {
+			this._externalUniqueCounter().pushEnd(done);
 		});
 	}
 

@@ -20,8 +20,10 @@ describe('SQL function COUNT_DISTINCT()', () => {
 					c.updateAsync([item], cb);
 				},
 				() => {
-					c.resultAsync(cb);
-					c.deinit();
+					c.resultAsync((count) => {
+						cb(count);
+						c.deinit();
+					});
 				}
 			);
 		};
@@ -57,17 +59,38 @@ describe('SQL function COUNT_DISTINCT()', () => {
 		it('dataType()', () => {
 			assert.strictEqual(CountDistinct.dataType(), DataType.NUMBER);
 		});
+
+		if (!defaultOptions.forceInMemory) {
+			it('buffer split', (done) => {
+				const b = [1, 2, 1];
+
+				countAsync(b, (c) => {
+					assert.strictEqual(c, 2);
+					done();
+				}, {inMemoryBufferSize: 2});
+			});
+
+			it('buffer exact size', (done) => {
+				const b = [1, 2, 3];
+
+				countAsync(b, (c) => {
+					assert.strictEqual(c, 3);
+					done();
+				}, {inMemoryBufferSize: 3});
+			});
+		}
 	};
 
 	describe('in memory', () => {
 		runWithOptions({
+			forceInMemory: true,
 			inMemoryBufferSize: 100
 		});
 	});
 
 	describe('external', () => {
 		runWithOptions({
-			inMemoryBufferSize: 1
+			inMemoryBufferSize: 2
 		});
 	});
 });
