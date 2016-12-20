@@ -326,6 +326,7 @@ class Select
 	 */
 	createGroupper()
 	{
+		const aggregation = new Aggregation(this.preparingContext, this.runtimeContext, this.expressions);
 		let keyGenerators;
 
 		if (this.ast.distinct) {
@@ -339,7 +340,7 @@ class Select
 				/*
 				 * For aggregation queries without GROUP BY, e.g. `SELECT SUM(c) AS sum`
 				 */
-				return new Groupper(() => null, new Aggregation(this.runtimeContext, this.expressions));
+				return new Groupper(() => null, aggregation);
 			}
 
 			if (!this.columns.size || this.ast.allColumns) {
@@ -359,7 +360,7 @@ class Select
 			};
 		}
 
-		return new Groupper(keyGeneratorCb, new Aggregation(this.runtimeContext, this.expressions));
+		return new Groupper(keyGeneratorCb, aggregation);
 	}
 }
 

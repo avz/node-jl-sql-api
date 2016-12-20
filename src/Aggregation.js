@@ -10,7 +10,7 @@ const AsyncUtils = require('./AsyncUtils');
 
 class Aggregation
 {
-	constructor(runtimeContext, expressions)
+	constructor(preparingContext, runtimeContext, expressions)
 	{
 		this.runtimeContext = runtimeContext;
 		this.expressions = expressions;
@@ -26,7 +26,7 @@ class Aggregation
 			}
 
 			for (const ac of expression.aggregationCalls) {
-				const state = new AggregationCallRuntime(ac);
+				const state = new AggregationCallRuntime(preparingContext, runtimeContext, ac);
 
 				this.aggregationCallRuntimes.push(state);
 

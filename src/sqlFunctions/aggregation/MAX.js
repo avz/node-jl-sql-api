@@ -19,6 +19,7 @@ class MIN extends AggregationFunctionSync
 
 	init()
 	{
+		this.max = null;
 	}
 
 	updateSync(args)

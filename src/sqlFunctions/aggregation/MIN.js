@@ -5,13 +5,6 @@ const DataType = require('../../DataType');
 
 class MIN extends AggregationFunctionSync
 {
-	constructor()
-	{
-		super();
-
-		this.min = null;
-	}
-
 	static dataType()
 	{
 		return DataType.MIXED;
@@ -19,6 +12,7 @@ class MIN extends AggregationFunctionSync
 
 	init()
 	{
+		this.min = null;
 	}
 
 	updateSync(args)

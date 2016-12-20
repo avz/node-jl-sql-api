@@ -2,10 +2,10 @@
 
 class AggregationCallRuntime
 {
-	constructor(aggregationCall)
+	constructor(preparingContext, runtimeContext, aggregationCall)
 	{
 		this.call = aggregationCall;
-		this.instance = new aggregationCall.func;
+		this.instance = new aggregationCall.func(preparingContext, runtimeContext);
 	}
 
 	update(row, done)

@@ -5,13 +5,6 @@ const DataType = require('../../DataType');
 
 class SUM extends AggregationFunctionSync
 {
-	constructor()
-	{
-		super();
-
-		this.sum = 0;
-	}
-
 	static dataType()
 	{
 		return DataType.NUMBER;
@@ -19,6 +12,7 @@ class SUM extends AggregationFunctionSync
 
 	init()
 	{
+		this.sum = 0;
 	}
 
 	updateSync(args)

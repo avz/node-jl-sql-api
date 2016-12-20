@@ -6,10 +6,14 @@ class AggregationFunction
 {
 	/**
 	 * Run once during SQL query parsing
+	 * @param {PreparingContext} preparingContext
+	 * @param {RuntimeContext} runtimeContext
 	 * @returns {AggregationFunctionSync}
 	 */
-	constructor()
+	constructor(preparingContext, runtimeContext)
 	{
+		this.preparingContext = preparingContext;
+		this.runtimeContext = runtimeContext;
 	}
 
 	/**

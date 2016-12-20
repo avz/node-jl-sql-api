@@ -5,13 +5,6 @@ const DataType = require('../../DataType');
 
 class COUNT extends AggregationFunctionSync
 {
-	constructor()
-	{
-		super();
-
-		this.count = 0;
-	}
-
 	static dataType()
 	{
 		return DataType.NUMBER;
@@ -19,6 +12,7 @@ class COUNT extends AggregationFunctionSync
 
 	init()
 	{
+		this.count = 0;
 	}
 
 	updateSync(args)
