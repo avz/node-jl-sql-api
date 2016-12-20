@@ -43,9 +43,11 @@ class SortWrapper
 			}
 		}
 
-		for (const keydef of options.keys) {
-			args.push('-k');
-			args.push(keydef);
+		if (options.keys) {
+			for (const keydef of options.keys) {
+				args.push('-k');
+				args.push(keydef);
+			}
 		}
 
 		const p = this._runSimple(
