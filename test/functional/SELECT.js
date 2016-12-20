@@ -586,7 +586,7 @@ describe('SELECT', () => {
 				for (const dsi in dataSets) {
 					const ds = dataSets[dsi];
 
-					describe('dataset #' + (parseInt(dsi) + 1), () => {
+					describe('dataset #' + (parseInt(dsi, 10) + 1), () => {
 						let output;
 
 						before(done => {

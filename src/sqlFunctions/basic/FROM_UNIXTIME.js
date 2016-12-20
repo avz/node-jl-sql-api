@@ -14,7 +14,7 @@ class FROM_UNIXTIME extends BasicFunction
 	{
 		this.needArgumentsCount(args, 1);
 
-		return new Date(parseInt(args[0]) * 1000);
+		return new Date(parseInt(args[0], 0) * 1000);
 	}
 }
 
