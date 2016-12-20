@@ -70,6 +70,7 @@ class Engine
 		// ls */*.js | awk '{print "\t\tmap.add([path.parse('\''"$1"'\'').name], require('\''./sqlFunctions/"$1"'\''));"}'
 
 		map.add([path.parse('aggregation/COUNT.js').name], require('./sqlFunctions/aggregation/COUNT.js'));
+		map.add([path.parse('aggregation/COUNT_DISTINCT.js').name], require('./sqlFunctions/aggregation/COUNT_DISTINCT.js'));
 		map.add([path.parse('aggregation/MAX.js').name], require('./sqlFunctions/aggregation/MAX.js'));
 		map.add([path.parse('aggregation/MIN.js').name], require('./sqlFunctions/aggregation/MIN.js'));
 		map.add([path.parse('aggregation/SUM.js').name], require('./sqlFunctions/aggregation/SUM.js'));
