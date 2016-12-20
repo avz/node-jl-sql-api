@@ -34,8 +34,8 @@ class JlTransformsChain extends Transform
 			this.push(null);
 		});
 
-		// workaround for process.stdin, which has special handle of on('data')
-		if (!this.lastStream.isTTY) {
+		// workaround for process.stdout, which has special handle of on('data')
+		if (this.lastStream !== process.stdout) {
 			this.lastStream.on('data', (d) => {
 				if (!this.push(d)) {
 					this.lastStream.pause();
