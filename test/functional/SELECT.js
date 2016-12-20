@@ -153,6 +153,26 @@ describe('SELECT', () => {
 			});
 		});
 
+		describe('`SELECT COUNT(DISTINCT ...)`', () => {
+			const input = [{a: 1, b: 2}, {a: null, b: 2}, {a: 2, b: 2}, {a: 1, b: 3}, {b: 3}];
+
+			let output;
+
+			before(done => {
+				jlSql.query('SELECT COUNT(DISTINCT a) AS c')
+					.fromArrayOfObjects(input)
+					.toArrayOfObjects((r) => {
+						output = r;
+						done();
+					})
+				;
+			});
+
+			it('right count', () => {
+				assert.deepStrictEqual(output, [{c: 2}]);
+			});
+		});
+
 		describe('`SELECT *, ...`', () => {
 			const input = [{hello: 'world'}, {hello: 'hello'}];
 

@@ -252,6 +252,7 @@ expression
 	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), $3); }
 	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1)); }
 	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1])), new Nodes.ExpressionsList([$3])); }
+	| 'COUNT' '(' 'DISTINCT' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', 'COUNT_DISTINCT'])), new Nodes.ExpressionsList([$4])); }
 	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1]))); }
 	| 'COUNT' { $$ = new Nodes.ColumnIdent(['@', $1]) }
 	| complexIdent { $$ = Nodes.ColumnIdent.fromComplexIdent($1) }
