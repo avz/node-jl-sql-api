@@ -1,7 +1,7 @@
 {
   "name": "jl-sql-api",
   "description": "SQL stream manipulating for JS",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "keywords": [
     "sql",
     "stream"

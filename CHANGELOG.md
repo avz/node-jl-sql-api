@@ -1,4 +1,4 @@
-## `v1.5.0` (upcoming release)
+## `v1.5.0` (2016-12-20)
 
 * `SELECT DISTINCT ...` support
 * `SELECT COUNT(DISTINCT ...)` support
