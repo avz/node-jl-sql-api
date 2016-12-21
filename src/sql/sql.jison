@@ -55,8 +55,8 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)? { return 'NUMBER'; }
 \:[a-z_][a-z0-9_]*	{ return 'BINDING_VALUE_SCALAR'; }
 \:\:[a-z_][a-z0-9_]*	{ return 'BINDING_VALUE_LIST'; }
-\[\:[a-z_][a-z0-9_]*\]	{ return 'BINDING_IDENT'; }
-\[\:\:[a-z_][a-z0-9_]*\]	{ return 'BINDING_IDENT_LIST'; }
+\{\:[a-z_][a-z0-9_]*\}	{ return 'BINDING_IDENT'; }
+\{\:\:[a-z_][a-z0-9_]*\}	{ return 'BINDING_IDENT_LIST'; }
 "AS"	{ return 'AS'; }
 "ASC"	{ return 'ASC'; }
 "DESC"	{ return 'DESC'; }

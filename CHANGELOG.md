@@ -1,3 +1,9 @@
+## `v2.0.0` (upcoming release)
+
+Breaking changes:
+
+* Identifier binding syntax changed: `[:bind]` -> `{:bind}`
+
 ## `v1.5.0` (2016-12-20)
 
 * `SELECT DISTINCT ...` support

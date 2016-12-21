@@ -266,7 +266,7 @@ where `field` is a "slot" whose value must be set using the [`Select.prototype.b
 You can bind not only data but also the field names. In this case the name of binding need to be wrapped into square brackets
 
 ```sql
-SELECT * WHERE [:field] = :value
+SELECT * WHERE {:field} = :value
 ```
 
 Binding are of two types:
@@ -285,7 +285,7 @@ SELECT * WHERE value > FLOOR(:id)
 
 SELECT id, amount * :price AS revenue WHERE value > amount * :price
 
-SELECT * WHERE [:field] = :value
+SELECT * WHERE {:field} = :value
 // to filter a field with the name taken from the value of binding :field
 ```
 
@@ -300,12 +300,12 @@ SELECT * WHERE id IN(::ids)
 SELECT IF(enabled, ::trueFalse)
 // for ::ids = ['true', 'false'] - SELECT IF(enabled, 'true', 'false')
 
-SELECT * WHERE [::fieldPath] IN(::values)
+SELECT * WHERE {::fieldPath} IN(::values)
 // field path will be in ::fieldPath, for example
 // if ::fieldPath = ['key', 'subkey'], then query be
 // SELECT * WHERE key.subkey IN(::values)
 
-SELECT * WHERE [:name1].[:name2].[::tail] IN(::values)
+SELECT * WHERE {:name1}.{:name2}.{::tail} IN(::values)
 // path will be concatenation of :name1, :name2 and elements of ::tail
 ```
 
