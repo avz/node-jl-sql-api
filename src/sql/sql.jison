@@ -204,17 +204,8 @@ jsonObject
 	| '{' '}' { $$ = new Nodes.Map({}); }
 ;
 
-jsonArrayItem
-	: expression { $$ = $1; }
-;
-
-jsonArrayItems
-	: jsonArrayItem { $$ = [$1]; }
-	| jsonArrayItems ',' jsonArrayItem { $$ = $1; $$.push($3); }
-;
-
 jsonArray
-	: '[' jsonArrayItems ']' { $$ = new Nodes.Array($2); }
+	: '[' expressionsList ']' { $$ = new Nodes.Array($2.values); }
 	| '[' ']' { $$ = new Nodes.Array([]); }
 ;
 

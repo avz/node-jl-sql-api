@@ -1,3 +1,7 @@
+## `v2.1.0` (upcoming release)
+
+* Arrays now supports multi-value bindings: `SELECT [1, 2, ::other, 3]`
+
 ## `v2.0.0` (2016-12-21)
 
 Breaking changes:
