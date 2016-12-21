@@ -1,4 +1,4 @@
-## `v2.0.0` (upcoming release)
+## `v2.0.0` (2016-12-21)
 
 Breaking changes:
 
