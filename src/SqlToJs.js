@@ -241,9 +241,26 @@ class SqlToJs
 		return '[' + this.nodeToCode(exp.haystack) + '].includes(' + this.nodeToCode(exp.needle) + ')';
 	}
 
-	codeFrom_JsonValue(exp)
+	codeFrom_Map(exp)
 	{
-		return JSON.stringify(exp.value);
+		const itemsCode = [];
+
+		for (const k in exp.map) {
+			itemsCode.push(JSON.stringify(k) + ': ' + this.nodeToCode(exp.map[k]));
+		}
+
+		return '{' + itemsCode.join(', ') + '}';
+	}
+
+	codeFrom_Array(exp)
+	{
+		const itemsCode = [];
+
+		for (const item of exp.items) {
+			itemsCode.push(this.nodeToCode(item));
+		}
+
+		return '[' + itemsCode.join(', ') + ']';
 	}
 }
 

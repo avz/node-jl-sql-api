@@ -10,7 +10,7 @@ describe('INSERT', () => {
 		const input = [];
 
 		jlSql.query(
-				'INSERT {"hello": "world"}'
+				'INSERT VALUES {"hello": "world"}'
 			)
 			.fromArrayOfObjects(input)
 			.toArrayOfObjects((r) => {
@@ -24,8 +24,23 @@ describe('INSERT', () => {
 		const input = [{r: true}, {r: false}];
 
 		jlSql.query(
-				'INSERT {"hello": "world"}'
+				'INSERT VALUES {"hello": "world"}'
 			)
+			.fromArrayOfObjects(input)
+			.toArrayOfObjects((r) => {
+				assert.deepEqual(r, [{r: true}, {r: false}, {hello: 'world'}]);
+				done();
+			})
+		;
+	});
+
+	it('Bindings', (done) => {
+		const input = [{r: true}, {r: false}];
+
+		jlSql.query(
+				'INSERT VALUES {"hello": :bind}'
+			)
+			.bind(':bind', 'world')
 			.fromArrayOfObjects(input)
 			.toArrayOfObjects((r) => {
 				assert.deepEqual(r, [{r: true}, {r: false}, {hello: 'world'}]);
@@ -38,7 +53,7 @@ describe('INSERT', () => {
 		const input = [{r: true}, {r: false}];
 
 		jlSql.query(
-				'INSERT {"hello": "world"}, {"world": "hello"}'
+				'INSERT VALUES {"hello": "world"}, {"world": "hello"}'
 			)
 			.fromArrayOfObjects(input)
 			.toArrayOfObjects((r) => {

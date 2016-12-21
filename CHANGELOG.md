@@ -3,6 +3,12 @@
 Breaking changes:
 
 * Identifier binding syntax changed: `[:bind]` -> `{:bind}`
+* `INSERT row1[, row2...]` syntax changed to `INSERT VALUES row1[, row2...]`
+
+New features:
+
+* Bindings and column values in JSON: `SELECT {"column": columnName, "binded": :bind}`
+* `INSERT` now supports bindings
 
 ## `v1.5.0` (2016-12-20)
 

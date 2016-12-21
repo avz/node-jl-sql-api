@@ -15,6 +15,11 @@ class Insert extends Node
 	{
 		this.rows.push(row);
 	}
+
+	childNodes()
+	{
+		return this.rows;
+	}
 }
 
 module.exports = Insert;

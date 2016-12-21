@@ -11,7 +11,7 @@ describe('SQL Parser', () => {
 	describe('JSON', () => {
 		describe('scalars', () => {
 			const parseScalar = exp => {
-				return parse('[' + exp + ']').value[0];
+				return parse('[' + exp + ']').items[0].value;
 			};
 
 			it('string double quoted', () => {
@@ -43,35 +43,35 @@ describe('SQL Parser', () => {
 
 		describe('objects', () => {
 			it('empty', () => {
-				assert.deepStrictEqual(parse('{}').value, {});
+				assert.deepStrictEqual(parse('{}').map, {});
 			});
 
 			it('single key', () => {
-				assert.deepStrictEqual(parse('{"hello": "world"}').value, {hello: 'world'});
-			});
-
-			it('complex', () => {
-				assert.deepStrictEqual(
-					parse('{"hello": {"wo\\nrld": 100}, "true": true}').value,
-					{hello: {'wo\nrld': 100}, 'true': true}
-				);
+				assert.deepStrictEqual(parse('{"hello": "world"}').map['hello'].value, 'world');
 			});
 		});
 
 		describe('arrays', () => {
 			it('empty', () => {
-				assert.deepStrictEqual(parse('[]').value, []);
+				assert.deepStrictEqual(parse('[]').items, []);
 			});
 
 			it('single key', () => {
-				assert.deepStrictEqual(parse('[1]').value, [1]);
-				assert.deepStrictEqual(parse('["string"]').value, ['string']);
+				assert.deepStrictEqual(parse('[1]').items[0].value, 1);
+				assert.deepStrictEqual(parse('["string"]').items[0].value, 'string');
 			});
 
 			it('complex', () => {
+				const items = parse('[["hello"], 100]').items;
+
 				assert.deepStrictEqual(
-					parse('[["hello"], 100]').value,
-					[['hello'], 100]
+					items[0].items[0].value,
+					'hello'
+				);
+
+				assert.deepStrictEqual(
+					items[1].value,
+					100
 				);
 			});
 		});

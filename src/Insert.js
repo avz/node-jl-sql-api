@@ -1,6 +1,7 @@
 'use strict';
 
 const Append = require('./stream/Append');
+const DataRow = require('./DataRow');
 
 class Insert
 {
@@ -19,7 +20,14 @@ class Insert
 
 	stream(dataSourceResolversPool)
 	{
-		return new Append(this.ast.rows);
+		const dummyRow = new DataRow({});
+		const rows = [];
+
+		for (const exp of this.ast.rows) {
+			rows.push(this.preparingContext.sqlToJs.nodeToFunction(exp)(dummyRow));
+		}
+
+		return new Append(rows);
 	}
 }
 

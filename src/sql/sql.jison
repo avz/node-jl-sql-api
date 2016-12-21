@@ -20,6 +20,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "SELECT"	{ return 'SELECT'; }
 "DELETE"	{ return 'DELETE'; }
 "INSERT"	{ return 'INSERT'; }
+"VALUES"	{ return 'VALUES'; }
 "UPDATE"	{ return 'UPDATE'; }
 
 ","	{ return ','; }
@@ -190,7 +191,7 @@ interval
 ;
 
 jsonObjectItem
-	: 'STRING' ':' const { $$ = {key: (new Nodes.String($1)).value, value: $3.value}; }
+	: 'STRING' ':' expression { $$ = {key: (new Nodes.String($1)).value, value: $3}; }
 ;
 
 jsonObjectItems
@@ -198,8 +199,13 @@ jsonObjectItems
 	| jsonObjectItems ',' jsonObjectItem { $$ = $1; $$[$3.key] = $3.value; }
 ;
 
+jsonObject
+	: '{' jsonObjectItems '}' { $$ = new Nodes.Map($2); }
+	| '{' '}' { $$ = new Nodes.Map({}); }
+;
+
 jsonArrayItem
-	: const { $$ = $1.value; }
+	: expression { $$ = $1; }
 ;
 
 jsonArrayItems
@@ -207,11 +213,14 @@ jsonArrayItems
 	| jsonArrayItems ',' jsonArrayItem { $$ = $1; $$.push($3); }
 ;
 
+jsonArray
+	: '[' jsonArrayItems ']' { $$ = new Nodes.Array($2); }
+	| '[' ']' { $$ = new Nodes.Array([]); }
+;
+
 jsonValue
-	: '{' '}' { $$ = new Nodes.JsonValue({}); }
-	| '{' jsonObjectItems '}' { $$ = new Nodes.JsonValue($2); }
-	| '[' ']' { $$ = new Nodes.JsonValue([]); }
-	| '[' jsonArrayItems ']' { $$ = new Nodes.JsonValue($2); }
+	: jsonArray { $$ = $1; }
+	| jsonObject { $$ = $1; }
 ;
 
 scalarConst
@@ -224,7 +233,6 @@ scalarConst
 
 const
 	: scalarConst { $$ = $1; }
-	| jsonValue { $$ = $1; }
 ;
 
 expression
@@ -259,6 +267,7 @@ expression
 	| const { $$ = $1; }
 	| 'BINDING_VALUE_SCALAR' { $$ = new Nodes.BindingValueScalar($1); }
 	| '(' expression ')' { $$ = new Nodes.Brackets($2); }
+	| jsonValue { $$ = $1 }
 ;
 
 expressionsList
@@ -285,7 +294,7 @@ selectClause
 ;
 
 deleteClause: 'DELETE' { $$ = new Nodes.Delete(); };
-insertClause: 'INSERT' { $$ = new Nodes.Insert(); };
+insertClause: 'INSERT' 'VALUES' { $$ = new Nodes.Insert(); };
 updateClause: 'UPDATE' { $$ = new Nodes.Update(); };
 
 selectColumns
@@ -328,8 +337,8 @@ deleteWhere
 ;
 
 insertValues
-	: insertClause const { $$ = new Nodes.Insert([$2.value]); }
-	| insertValues ',' const { $$ = $1; $$.push($3.value); }
+	: insertClause expression { $$ = new Nodes.Insert([$2]); }
+	| insertValues ',' expression { $$ = $1; $$.push($3); }
 ;
 
 updateSets

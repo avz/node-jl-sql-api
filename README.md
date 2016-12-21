@@ -118,10 +118,10 @@ The special syntax `@child` is introduced in order to explicitly indicate to the
 
 ## SQL
 
-SUpported queries:
+Supported queries:
 
 * `SELECT field[AS alias][...] [[{LEFT|INNER}] JOIN ... ON expression...] [WHERE ...] [GROUP BY ...] [HAVING ...]`
-* `INSERT {row1}[, ...]` - add object(s) to end of the stream
+* `INSERT VALUES {row1}[, ...]` - add object(s) to end of the stream
 * `UPDATE SET field = 'value'[, ...] [WHERE expression]` - update rows
 * `DELETE [WHERE expression]` - delete rows
 
