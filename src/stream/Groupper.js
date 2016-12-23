@@ -12,6 +12,8 @@ class Groupper extends JlTransform
 		this.groupKeyGenerator = groupKeyGenerator;
 		this.aggregation = aggregation;
 
+		this.aggregation.init();
+
 		this.isFirstRow = true;
 
 		this.currentKey = null;
