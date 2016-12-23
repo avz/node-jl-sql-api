@@ -12,12 +12,10 @@ class Groupper extends JlTransform
 		this.groupKeyGenerator = groupKeyGenerator;
 		this.aggregation = aggregation;
 
-		this.aggregation.init();
-
 		this.isFirstRow = true;
 
 		this.currentKey = null;
-		this.currentKeySerialized = null;
+		this.currentKeySerialized = ''; // _serializeKey() never returns ''
 		this.lastRow = null;
 	}
 
@@ -33,6 +31,12 @@ class Groupper extends JlTransform
 				return '"""' + key;
 			break;
 			case 'number':
+				if (isNaN(key)) {
+					return 'NaN';
+				}
+
+				return key;
+			break;
 			case 'boolean':
 			case 'undefined':
 				return key;
@@ -95,7 +99,7 @@ class Groupper extends JlTransform
 
 	_flush(cb)
 	{
-		if (!this.firstRow) {
+		if (!this.isFirstRow) {
 			this.aggregation.result(result => {
 				this.push([result]);
 				this.aggregation.deinit();
