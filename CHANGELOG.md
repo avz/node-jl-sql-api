@@ -1,3 +1,7 @@
+## `v2.2.0` (upcoming release)
+
+* New aggregation function: AVG()
+
 ## `v2.1.0` (2016-12-22)
 
 * Arrays now supports multi-value bindings: `SELECT [1, 2, ::other, 3]`
