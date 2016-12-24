@@ -5,6 +5,12 @@ const DataRow = require('./DataRow');
 
 class BasicExpression
 {
+	/**
+	 *
+	 * @param {PreparingContext} preparingContext
+	 * @param {Node} expression
+	 * @returns {BasicExpression}
+	 */
 	constructor(preparingContext, expression)
 	{
 		/**
@@ -18,6 +24,10 @@ class BasicExpression
 		this.expression = expression;
 	}
 
+	/**
+	 *
+	 * @returns {Function|string[]}
+	 */
 	valueSource()
 	{
 		if (this.expression instanceof SqlNodes.ColumnIdent) {

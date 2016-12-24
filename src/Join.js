@@ -6,6 +6,15 @@ const ExpressionAnalyser = require('./ExpressionAnalyser');
 
 class Join
 {
+	/**
+	 *
+	 * @param {string} type
+	 * @param {PreparingContext} preparingContext
+	 * @param {DataSource} joiningSourceStream
+	 * @param {string} joiningDataSourceName
+	 * @param {Node} ast
+	 * @returns {Join}
+	 */
 	constructor(type, preparingContext, joiningSourceStream, joiningDataSourceName, ast)
 	{
 		this.type = type;
@@ -20,6 +29,11 @@ class Join
 		this.parseAst(ast);
 	}
 
+	/**
+	 *
+	 * @param {Node} ast
+	 * @returns {undefined}
+	 */
 	parseAst(ast)
 	{
 		if (ast instanceof Nodes.Brackets) {

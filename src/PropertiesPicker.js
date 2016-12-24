@@ -2,6 +2,11 @@
 
 class PropertiesPicker
 {
+	/**
+	 *
+	 * @param {Map} paths
+	 * @returns {PropertiesPicker}
+	 */
 	constructor(paths)
 	{
 		this.paths = paths;
@@ -9,16 +14,32 @@ class PropertiesPicker
 		this.merger = PropertiesPicker._compileMergerProcedural(paths);
 	}
 
+	/**
+	 * Создаёт новый объект, в которй копирует указанный набор свойств
+	 * @param {object} from
+	 * @returns {object}
+	 */
 	sliceProperties(from)
 	{
 		return this.slicer(from);
 	}
 
+	/**
+	 * Копирует свойства из одного объекта в другой
+	 * @param {object} from
+	 * @param {object} to
+	 * @returns {object}
+	 */
 	mergeProperties(from, to)
 	{
 		return this.merger(from, to);
 	}
 
+	/**
+	 *
+	 * @param {Map} paths
+	 * @returns {Function}
+	 */
 	static _compileMergerProcedural(paths)
 	{
 		const env = {
@@ -68,6 +89,11 @@ class PropertiesPicker
 		return (new Function('env', 'row', 'to', code)).bind(undefined, env);
 	}
 
+	/**
+	 *
+	 * @param {Map} paths
+	 * @returns {Function}
+	 */
 	static _compileSlicerProcedural(paths)
 	{
 		const env = {
@@ -141,6 +167,11 @@ class PropertiesPicker
 		return (new Function('env', 'row', code)).bind(undefined, env);
 	}
 
+	/**
+	 *
+	 * @param {Map} path
+	 * @returns {String}
+	 */
 	static _compileGetterCode(path)
 	{
 		var levels = [];
@@ -162,6 +193,13 @@ class PropertiesPicker
 		}
 	}
 
+	/**
+	 *
+	 * @param {Map} path
+	 * @param {object} obj
+	 * @param {mixed} value
+	 * @returns {Boolean}
+	 */
 	static _objectSetProperty(path, obj, value)
 	{
 		function deepSet(path, pathOffset, obj, value)

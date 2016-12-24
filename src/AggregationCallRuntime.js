@@ -2,6 +2,13 @@
 
 class AggregationCallRuntime
 {
+	/**
+	 *
+	 * @param {PreparingContext} preparingContext
+	 * @param {RuntimeContext} runtimeContext
+	 * @param {AggregationCall} aggregationCall
+	 * @returns {AggregationCallRuntime}
+	 */
 	constructor(preparingContext, runtimeContext, aggregationCall)
 	{
 		this.call = aggregationCall;

@@ -2,11 +2,11 @@
 
 class Quoter
 {
-	static quote(string, quoteCharacter)
-	{
-
-	}
-
+	/**
+	 *
+	 * @param {string} string
+	 * @returns {string}
+	 */
 	static unquote(string)
 	{
 		const stringWoQuotes = string.substr(1, string.length - 2);
@@ -14,6 +14,12 @@ class Quoter
 		return Quoter.unescape(stringWoQuotes);
 	}
 
+	/**
+	 *
+	 * @param {string} string
+	 * @param {string} quoteCharacter
+	 * @returns {string}
+	 */
 	static unquoteOptionalQuotes(string, quoteCharacter)
 	{
 		if (!string.length) {
@@ -31,6 +37,11 @@ class Quoter
 		return Quoter.unescape(stringWoQuotes);
 	}
 
+	/**
+	 *
+	 * @param {string} string
+	 * @returns {string}
+	 */
 	static unescape(string)
 	{
 		const specialChars = {

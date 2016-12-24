@@ -86,6 +86,10 @@ class Select
 		}
 	}
 
+	/**
+	 *
+	 * @returns {Sorter|null}
+	 */
 	sorter()
 	{
 		const orders = this.orders(this.ast.orders);
@@ -97,6 +101,10 @@ class Select
 		return this.createSorterInstance(orders);
 	}
 
+	/**
+	 *
+	 * @returns {Filter|null}
+	 */
 	filter()
 	{
 		if (!this.ast.where) {
@@ -106,6 +114,10 @@ class Select
 		return new Filter(this.sqlToJs.nodeToFunction(this.ast.where));
 	}
 
+	/**
+	 *
+	 * @returns {Filter|null}
+	 */
 	having()
 	{
 		if (!this.ast.having) {
@@ -115,6 +127,11 @@ class Select
 		return new Filter(this.sqlToJs.nodeToFunction(this.ast.having));
 	}
 
+	/**
+	 *
+	 * @param {DataSourceResolverPool} dataSourceResolversPool
+	 * @returns {Join[]}
+	 */
 	joins(dataSourceResolversPool)
 	{
 		const joins = [];
@@ -171,6 +188,11 @@ class Select
 		return joins;
 	}
 
+	/**
+	 *
+	 * @param {Node[]} ordersOrGroups
+	 * @returns {Order[]}
+	 */
 	orders(ordersOrGroups)
 	{
 		if (!ordersOrGroups.length) {
@@ -189,6 +211,10 @@ class Select
 		return orders;
 	}
 
+	/**
+	 *
+	 * @returns {Boolean}
+	 */
 	hasAggregationColumns()
 	{
 		for (const expression of this.expressions) {
@@ -200,11 +226,20 @@ class Select
 		return false;
 	}
 
+	/**
+	 *
+	 * @param {Order[]} orders
+	 * @returns {Sorter}
+	 */
 	createSorterInstance(orders)
 	{
 		return new Sorter(orders, this.preparingContext.options.sortOptions);
 	}
 
+	/**
+	 *
+	 * @returns {null|JlTransformsChain|Groupper}
+	 */
 	groupper()
 	{
 		const groupper = this.createGroupper();
@@ -226,6 +261,11 @@ class Select
 		return chain;
 	}
 
+	/**
+	 *
+	 * @param {Join} join
+	 * @returns {JlTransform[]}
+	 */
 	joinerPipeline(join)
 	{
 		if (join.mainDataSourceSortingsColumns.length < 1 || join.mainDataSourceSortingsColumns.length < 1) {
@@ -264,6 +304,11 @@ class Select
 		];
 	}
 
+	/**
+	 *
+	 * @param {DataResolversPool} dataSourceResolversPool
+	 * @returns {JlTransformsChain}
+	 */
 	stream(dataSourceResolversPool)
 	{
 		const pipeline = [
@@ -323,6 +368,7 @@ class Select
 
 	/**
 	 * @private
+	 * @returns {Groupper}
 	 */
 	createGroupper()
 	{

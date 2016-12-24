@@ -9,11 +9,21 @@ class DataSourceResolversPool
 		this.resolvers = [];
 	}
 
+	/**
+	 *
+	 * @param {DataSourceResolver} resolver
+	 * @returns {undefined}
+	 */
 	add(resolver)
 	{
 		this.resolvers.push(resolver);
 	}
 
+	/**
+	 *
+	 * @param {string[]} pathFragments
+	 * @returns {DataSource|null}
+	 */
 	resolve(pathFragments)
 	{
 		for (const resolver of this.resolvers) {
@@ -27,6 +37,11 @@ class DataSourceResolversPool
 		return null;
 	}
 
+	/**
+	 *
+	 * @param {ComplexIdent} complexIdent
+	 * @returns {string}
+	 */
 	extractBindingAlias(complexIdent)
 	{
 		const lastFragment = complexIdent.fragments[complexIdent.fragments.length - 1];
@@ -38,6 +53,11 @@ class DataSourceResolversPool
 		return null;
 	}
 
+	/**
+	 *
+	 * @param {string[]} pathFragments
+	 * @returns {string}
+	 */
 	extractAlias(pathFragments) {
 		for (const resolver of this.resolvers) {
 			const alias = resolver.extractAlias(pathFragments);

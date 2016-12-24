@@ -38,6 +38,11 @@ class Update
 		}
 	}
 
+	/**
+	 *
+	 * @param {DataSourceResolversPool} dataSourceResolversPool
+	 * @returns {JlTransformsChain}
+	 */
 	stream(dataSourceResolversPool)
 	{
 		const filter = this.ast.where ? this.preparingContext.sqlToJs.nodeToFunction(this.ast.where) : null;

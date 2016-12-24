@@ -9,6 +9,12 @@ const ExpressionAnalyser = require('./ExpressionAnalyser');
 
 class AggregationExpression extends BasicExpression
 {
+	/**
+	 *
+	 * @param {PreparingContext} preparingContext
+	 * @param {Node} expression
+	 * @returns {AggregationExpression}
+	 */
 	constructor(preparingContext, expression)
 	{
 		super(preparingContext, expression);
@@ -19,6 +25,10 @@ class AggregationExpression extends BasicExpression
 		this.result = preparingContext.sqlToJs.nodeToFunction(expression);
 	}
 
+	/**
+	 *
+	 * @returns {AggregationCall[]}
+	 */
 	createAggregationCalls()
 	{
 		const calls = [];

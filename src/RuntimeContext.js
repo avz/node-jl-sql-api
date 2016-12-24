@@ -5,6 +5,11 @@ const ProgramError = require('./error/ProgramError');
 
 class RuntimeContext
 {
+	/**
+	 *
+	 * @param {FunctionMap} functionsMap
+	 * @returns {RuntimeContext}
+	 */
 	constructor(functionsMap)
 	{
 		this.basicFunctions = {};

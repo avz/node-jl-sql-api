@@ -9,6 +9,12 @@ const PublicApiOptions = require('./PublicApiOptions');
  */
 class PreparingContext
 {
+	/**
+	 *
+	 * @param {SqlToJs} sqlToJs
+	 * @param {FunctionsMap} functionsMap
+	 * @returns {PreparingContext}
+	 */
 	constructor(sqlToJs, functionsMap)
 	{
 		this.sqlToJs = sqlToJs;

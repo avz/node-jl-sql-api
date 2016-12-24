@@ -20,6 +20,11 @@ class DataRow
 		this.aggregationCache = {};
 	}
 
+	/**
+	 *
+	 * @param {Object} row
+	 * @returns {DataRow}
+	 */
 	static wrap(row)
 	{
 		return new DataRow({'@': row});

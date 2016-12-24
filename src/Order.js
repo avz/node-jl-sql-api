@@ -2,6 +2,13 @@
 
 class Order
 {
+	/**
+	 *
+	 * @param {Function} valueFunction
+	 * @param {string} direction
+	 * @param {string} collation
+	 * @returns {Order}
+	 */
 	constructor(valueFunction, direction, collation = null)
 	{
 		this.valueFunction = valueFunction;

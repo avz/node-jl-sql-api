@@ -10,12 +10,22 @@ const AggregationExpression = require('./AggregationExpression');
 
 class ColumnsAnalyser
 {
+	/**
+	 *
+	 * @param {PreparingContext} preparingContext
+	 * @returns {ColumnsAnalyser}
+	 */
 	constructor(preparingContext)
 	{
 		this.expressionAnalyser = new ExpressionAnalyser(preparingContext);
 		this.preparingContext = preparingContext;
 	}
 
+	/**
+	 *
+	 * @param {Column[]} columns
+	 * @returns {Map<string[], BasicColumn|AggregationColumn>}
+	 */
 	analyseColumns(columns)
 	{
 		const columnsMap = new Map();
@@ -31,6 +41,11 @@ class ColumnsAnalyser
 		return columnsMap;
 	}
 
+	/**
+	 *
+	 * @param {Node} expression
+	 * @returns {AggregationExpression|BasicExpression}
+	 */
 	analyseExpression(expression)
 	{
 		if (this.expressionAnalyser.isAggregationExpression(expression)) {
@@ -42,6 +57,8 @@ class ColumnsAnalyser
 
 	/**
 	 * @private
+	 * @param {Node} column
+	 * @returns {BasicColumn|AggregationColumn}
 	 */
 	analyseColumn(column)
 	{
@@ -72,6 +89,9 @@ class ColumnsAnalyser
 
 	/**
 	 * @private
+	 * @param {string[]} alias
+	 * @param {Node} expression
+	 * @returns {BasicColumn|AggregationColumn}
 	 */
 	column(alias, expression)
 	{

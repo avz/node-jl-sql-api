@@ -7,6 +7,12 @@ const ProgramError = require('./error/ProgramError');
 
 class SqlToJs
 {
+	/**
+	 *
+	 * @param {FunctionsMap} functionsMap
+	 * @param {RuntimeContext} runtimeContext
+	 * @returns {SqlToJs}
+	 */
 	constructor(functionsMap, runtimeContext)
 	{
 		this.runtimeContext = runtimeContext;
@@ -24,6 +30,11 @@ class SqlToJs
 		this.helpers = new SqlToJsHelpers;
 	}
 
+	/**
+	 *
+	 * @param {Node} node
+	 * @returns {string}
+	 */
 	nodeToCode(node)
 	{
 		const nodeType = node.type();
@@ -37,6 +48,11 @@ class SqlToJs
 		return this[codeConstructorName](node);
 	}
 
+	/**
+	 *
+	 * @param {Node} node
+	 * @returns {Function}
+	 */
 	nodeToFunction(node)
 	{
 		return (new Function(
@@ -45,6 +61,11 @@ class SqlToJs
 		)).bind(this.runtimeContext, this.helpers);
 	}
 
+	/**
+	 *
+	 * @param {mixed} basic
+	 * @returns {string}
+	 */
 	basicTypeToCode(basic)
 	{
 		return JSON.stringify(basic);

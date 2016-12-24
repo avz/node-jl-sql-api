@@ -12,16 +12,32 @@ class DataSourceApiResolver extends DataSourceResolver
 		this.sources = new ComplexIdentsMap;
 	}
 
+	/**
+	 *
+	 * @param {string[]} pathFragments
+	 * @param {DataSource} source
+	 * @returns {undefined}
+	 */
 	addDataSource(pathFragments, source)
 	{
 		this.sources.add(pathFragments, source);
 	}
 
+	/**
+	 *
+	 * @param {string[]} pathFragments
+	 * @returns {DataSource}
+	 */
 	resolve(pathFragments)
 	{
 		return this.sources.get(pathFragments);
 	}
 
+	/**
+	 *
+	 * @param {string[]} pathFragments
+	 * @returns {string|null}
+	 */
 	extractAlias(pathFragments)
 	{
 		if (!pathFragments.length) {

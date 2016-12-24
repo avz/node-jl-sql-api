@@ -4,6 +4,12 @@ const ChildProcessError = require('../error/ChildProcessError');
 
 class CutWrapper
 {
+	/**
+	 *
+	 * @param {string} columnSeparator
+	 * @param {string} columnsDef
+	 * @returns {CutWrapper}
+	 */
 	constructor(columnSeparator, columnsDef)
 	{
 		const cmd = 'cut';

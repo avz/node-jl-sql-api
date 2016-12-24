@@ -5,6 +5,11 @@
  */
 class DataSource
 {
+	/**
+	 *
+	 * @param {Readable} stream
+	 * @returns {DataSource}
+	 */
 	constructor(stream)
 	{
 		this.stream = stream;

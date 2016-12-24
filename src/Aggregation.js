@@ -10,6 +10,13 @@ const AsyncUtils = require('./AsyncUtils');
 
 class Aggregation
 {
+	/**
+	 *
+	 * @param {PreparingContext} preparingContext
+	 * @param {RuntimeContext} runtimeContext
+	 * @param {Node} expressions
+	 * @returns {Aggregation}
+	 */
 	constructor(preparingContext, runtimeContext, expressions)
 	{
 		this.runtimeContext = runtimeContext;
@@ -56,6 +63,11 @@ class Aggregation
 		}
 	}
 
+	/**
+	 * @param {DataRow} row
+	 * @param {Function} cb
+	 * @returns {undefined}
+	 */
 	update(row, cb)
 	{
 		AsyncUtils.eachSeriesHalfSync(
@@ -69,6 +81,10 @@ class Aggregation
 		this.lastRow = row;
 	}
 
+	/**
+	 * @param {Function} cb
+	 * @returns {undefined}
+	 */
 	result(cb)
 	{
 		const row = new DataRow(null);

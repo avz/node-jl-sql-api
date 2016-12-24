@@ -24,16 +24,31 @@ class DeepCloner
 		/* eslint-enable indent no-unreachable */
 	}
 
+	/**
+	 *
+	 * @param {Array} array
+	 * @returns {Array}
+	 */
 	static cloneArray(array)
 	{
 		return array.slice().map(DeepCloner.clone);
 	}
 
+	/**
+	 *
+	 * @param {Date} date
+	 * @returns {Date}
+	 */
 	static cloneDate(date)
 	{
 		return new Date(date.valueOf());
 	}
 
+	/**
+	 *
+	 * @param {Object} object
+	 * @returns {Object}
+	 */
 	static cloneRawObject(object)
 	{
 		const copy = {};

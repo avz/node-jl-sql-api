@@ -5,11 +5,20 @@ const Collator = require('../../Collator');
 
 class SortInputTransform extends Transform
 {
+	/**
+	 *
+	 * @param {Order[]} orders
+	 * @returns {SortInputTransform}
+	 */
 	constructor(orders)
 	{
 		super({objectMode: true});
 
 		this.columnSeparator = '\t';
+
+		/**
+		 * @type {Order[]}
+		 */
 		this.orders = orders;
 	}
 

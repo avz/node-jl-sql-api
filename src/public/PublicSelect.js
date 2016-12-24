@@ -38,6 +38,12 @@ class PublicSelect
 		this.dataSourceResolversPool.add(this.dataSourceApiResolver);
 	}
 
+	/**
+	 *
+	 * @param {string} ident
+	 * @param {mixed} value
+	 * @returns {this|PublicSelect}
+	 */
 	bind(ident, value)
 	{
 		this.binder.bind(ident, value);
@@ -45,6 +51,10 @@ class PublicSelect
 		return this;
 	}
 
+	/**
+	 * @param {Readable} input
+	 * @returns {PublicSelectFrom}
+	 */
 	_selectFrom(input)
 	{
 		this.binder.expandInplace(this.select.ast);
@@ -52,6 +62,11 @@ class PublicSelect
 		return new PublicSelectFrom(this, this.select, input);
 	}
 
+	/**
+	 *
+	 * @param {Readable} stream
+	 * @returns {PublicSelectFrom}
+	 */
 	fromJsonStream(stream)
 	{
 		const chain = [new LinesSplitter, new JsonParser];
@@ -65,6 +80,11 @@ class PublicSelect
 		return this._selectFrom(input);
 	}
 
+	/**
+	 *
+	 * @param {Readable} stream
+	 * @returns {PublicSelectFrom}
+	 */
 	fromObjectsStream(stream)
 	{
 		var input = new ChunkJoiner;
@@ -76,6 +96,11 @@ class PublicSelect
 		return this._selectFrom(input);
 	}
 
+	/**
+	 *
+	 * @param {ReadableStream} stream
+	 * @returns {PublicSelectFrom}
+	 */
 	fromArrayOfObjects(array)
 	{
 		const stream = new JlPassThrough(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS);

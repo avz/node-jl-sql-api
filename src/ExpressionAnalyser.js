@@ -11,6 +11,11 @@ class ExpressionAnalyser
 		this.preparingContext = preparingContext;
 	}
 
+	/**
+	 *
+	 * @param {Node} expression
+	 * @returns {Boolean}
+	 */
 	isAggregationExpression(expression)
 	{
 		const callIsAggregation = call => {

@@ -11,6 +11,10 @@ class Node
 		this.id = 'Node_' + Node.lastId;
 	}
 
+	/**
+	 *
+	 * @returns {string}
+	 */
 	type()
 	{
 		return this.constructor.name;
@@ -37,11 +41,18 @@ class Node
 		return type + ' ' + util.inspect(obj, opts);
 	}
 
+	/**
+	 * @returns {Node[]}
+	 */
 	childNodes()
 	{
 		return [];
 	}
 
+	/**
+	 *
+	 * @returns {Generator|Node[]}
+	 */
 	*eachChildNodeRecursive()
 	{
 		const childs = this.childNodes();
@@ -55,6 +66,10 @@ class Node
 		}
 	}
 
+	/**
+	 *
+	 * @returns {Node[]}
+	 */
 	childNodesRecursive()
 	{
 		const nodes = [];
@@ -66,6 +81,10 @@ class Node
 		return nodes;
 	}
 
+	/**
+	 *
+	 * @returns {Node}
+	 */
 	clone()
 	{
 		const clone = (value) => {

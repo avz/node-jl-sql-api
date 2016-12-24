@@ -41,6 +41,13 @@ class Collator
 		return 0;
 	}
 
+	/**
+	 *
+	 * @param {string} dataType
+	 * @param {mixed} a
+	 * @param {mixed} b
+	 * @returns {Number}
+	 */
 	static compare(dataType, a, b)
 	{
 		if (dataType === DataType.NUMBER) {
@@ -50,6 +57,12 @@ class Collator
 		return Collator._compareAsJson(dataType, a, b);
 	}
 
+	/**
+	 *
+	 * @param {string} dataType
+	 * @param {mixed} value
+	 * @returns {String}
+	 */
 	static generateKey(dataType, value)
 	{
 		if (dataType === DataType.NUMBER) {

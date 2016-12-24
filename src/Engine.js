@@ -62,6 +62,9 @@ class Engine
 		}
 	}
 
+	/**
+	 * @@returns {FunctionsMap}
+	 */
 	createFunctionsMap()
 	{
 		const map = new FunctionsMap;

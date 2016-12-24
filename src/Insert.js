@@ -18,6 +18,11 @@ class Insert
 		this.ast = ast;
 	}
 
+	/**
+	 *
+	 * @param {DataSourceResolversPool} dataSourceResolversPool
+	 * @returns {Append}
+	 */
 	stream(dataSourceResolversPool)
 	{
 		const dummyRow = new DataRow({});

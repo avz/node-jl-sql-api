@@ -62,6 +62,12 @@ class Binder
 		return new Nodes.ExpressionsList(nodes);
 	}
 
+	/**
+	 *
+	 * @param {string} ident
+	 * @param {mixed} value
+	 * @returns {undefined}
+	 */
 	bind(ident, value)
 	{
 		let ast = null;

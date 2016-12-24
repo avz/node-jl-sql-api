@@ -9,6 +9,11 @@ const JsonParser = require('./stream/JsonParser');
 
 class DataSourceResolver
 {
+	/**
+	 *
+	 * @param {string[]} location
+	 * @returns {DataSource|null}
+	 */
 	_resolve(location)
 	{
 		const stream = this.resolve(location);
@@ -43,11 +48,21 @@ class DataSourceResolver
 		}
 	}
 
+	/**
+	 *
+	 * @param {string[]} location
+	 * @returns {DataSource}
+	 */
 	resolve(location)
 	{
 		throw new ImplementationRequired;
 	}
 
+	/**
+	 *
+	 * @param {string[]} location
+	 * @returns {string}
+	 */
 	extractAlias(location)
 	{
 		return null;

@@ -2,6 +2,13 @@
 
 class AggregationCall
 {
+	/**
+	 *
+	 * @param {SqlToJs} sqlToJs
+	 * @param {Node} node
+	 * @param {AggregationFunction} func
+	 * @returns {AggregationCall}
+	 */
 	constructor(sqlToJs, node, func)
 	{
 		this.node = node;

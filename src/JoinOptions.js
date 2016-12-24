@@ -4,6 +4,11 @@ const ProgramError = require('./error/ProgramError');
 
 class JoinOptions
 {
+	/**
+	 *
+	 * @param {Object} options
+	 * @returns {JoinOptions}
+	 */
 	constructor(options)
 	{
 		this.maxKeysInMemory = 16000;

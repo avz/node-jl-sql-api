@@ -25,6 +25,11 @@ class PublicSelectFrom
 		this.inputStream = inputStream;
 	}
 
+	/**
+	 *
+	 * @param {Writable} stream
+	 * @returns {Transform}
+	 */
 	toObjectsStream(stream = null)
 	{
 		const chain = [
@@ -40,6 +45,11 @@ class PublicSelectFrom
 		return new JlTransformsChain(chain);
 	}
 
+	/**
+	 *
+	 * @param {Writable} stream
+	 * @returns {Transform}
+	 */
 	toJsonStream(outputStream = null)
 	{
 		const chain = [
@@ -58,6 +68,11 @@ class PublicSelectFrom
 		return stream;
 	}
 
+	/**
+	 *
+	 * @param {Writable} stream
+	 * @returns {Transform}
+	 */
 	toArrayOfObjects(cb)
 	{
 		if (typeof(cb) !== 'function') {
@@ -78,6 +93,12 @@ class PublicSelectFrom
 		return output;
 	}
 
+	/**
+	 *
+	 * @param {string[]|string} location
+	 * @param {Object[]} array
+	 * @returns {PublicSelectFrom}
+	 */
 	addArrayOfObjects(location, array)
 	{
 		const stream = new JlPassThrough(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS);
@@ -89,6 +110,12 @@ class PublicSelectFrom
 		return this;
 	}
 
+	/**
+	 *
+	 * @param {string[]|string} location
+	 * @param {Readable} stream
+	 * @returns {PublicSelectFrom}
+	 */
 	addJsonStream(location, stream)
 	{
 		const chain = new JlTransformsChain([stream, new LinesSplitter, new JsonParser]);
@@ -101,6 +128,12 @@ class PublicSelectFrom
 		return this;
 	}
 
+	/**
+	 *
+	 * @param {string[]|string} location
+	 * @param {Readable} stream
+	 * @returns {PublicSelectFrom}
+	 */
 	addObjectsStream(location, stream)
 	{
 		this.publicSelect.dataSourceApiResolver.addDataSource(
@@ -111,6 +144,11 @@ class PublicSelectFrom
 		return this;
 	}
 
+	/**
+	 *
+	 * @param {string[]|string} location
+	 * @returns {string[]}
+	 */
 	_path(location) {
 		if (typeof(location) === 'string') {
 			return [location];
