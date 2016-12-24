@@ -1,7 +1,7 @@
 'use strict';
 
 const Engine = require('./Engine');
-const PublicSelect = require('./public/Select');
+const PublicSelect = require('./public/PublicSelect');
 const PublicApiOptions = require('./PublicApiOptions');
 const Explainer = require('./Explainer');
 

@@ -16,7 +16,7 @@ const ChunkJoiner = require('../stream/ChunkJoiner');
 
 const ProgramError = require('../error/ProgramError');
 
-class SelectFrom
+class PublicSelectFrom
 {
 	constructor(publicSelect, select, inputStream)
 	{
@@ -124,4 +124,4 @@ class SelectFrom
 	}
 }
 
-module.exports = SelectFrom;
+module.exports = PublicSelectFrom;

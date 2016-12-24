@@ -8,15 +8,21 @@ const JsonParser = require('../stream/JsonParser');
 const LinesSplitter = require('../stream/LinesSplitter');
 const ChunkJoiner = require('../stream/ChunkJoiner');
 
-const SelectFrom = require('./SelectFrom');
+const PublicSelectFrom = require('./PublicSelectFrom');
 
 const DataSourceApiResolver = require('../DataSourceApiResolver');
 const DataSourceResolversPool = require('../DataSourceResolversPool');
 
 const Binder = require('../Binder');
 
-class Select
+class PublicSelect
 {
+	/**
+	 *
+	 * @param {Select} select
+	 * @param {DataSourceResolver[]} dataSourceResolvers
+	 * @returns {PublicSelect}
+	 */
 	constructor(select, dataSourceResolvers = [])
 	{
 		this.select = select;
@@ -43,7 +49,7 @@ class Select
 	{
 		this.binder.expandInplace(this.select.ast);
 
-		return new SelectFrom(this, this.select, input);
+		return new PublicSelectFrom(this, this.select, input);
 	}
 
 	fromJsonStream(stream)
@@ -80,4 +86,4 @@ class Select
 	}
 }
 
-module.exports = Select;
+module.exports = PublicSelect;
