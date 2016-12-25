@@ -61,15 +61,76 @@ class Collator
 	 *
 	 * @param {string} dataType
 	 * @param {mixed} value
-	 * @returns {String}
+	 * @returns {string}
 	 */
 	static generateKey(dataType, value)
 	{
 		if (dataType === DataType.NUMBER) {
 			return value + '';
+		} else if (dataType === DataType.STRING) {
+			return Collator._generateKeyString(value);
+		} else {
+			return Collator._generateKeyMixed(value);
 		}
+	}
 
-		return value === undefined ? '' : JSON.stringify(value + '');
+	static _generateKeyString(value)
+	{
+		/* eslint-disable indent, no-unreachable */
+		switch (typeof(value)) {
+			case 'string':
+				return JSON.stringify(value);
+			break;
+			case 'number':
+				return '"' + value + '"';
+			break;
+			case 'boolean':
+				return value ? '3_true' : '2_false';
+			break;
+			case 'undefined':
+				return '5_undefined';
+			break;
+			default:
+				if (value === null) {
+					return '4_null"';
+				}
+
+				return JSON.stringify(value);
+			break;
+		}
+		/* eslint-enable indent, no-unreachable */
+	}
+
+	/**
+	 *
+	 * @param {mixed} value
+	 * @returns {string}
+	 */
+	static _generateKeyMixed(value)
+	{
+		/* eslint-disable indent, no-unreachable */
+		switch (typeof(value)) {
+			case 'string':
+				return '6_' + JSON.stringify(value);
+			break;
+			case 'number':
+				return '5_' + value + '';
+			break;
+			case 'boolean':
+				return value ? '4_true' : '3_false';
+			break;
+			case 'undefined':
+				return '1_undefined';
+			break;
+			default:
+				if (value === null) {
+					return '2_null';
+				}
+
+				return '9_' + JSON.stringify(value);
+			break;
+		}
+		/* eslint-enable indent, no-unreachable */
 	}
 }
 

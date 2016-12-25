@@ -12,12 +12,10 @@ for (const sorterCtor of [SorterInMemory, SorterExternal]) {
 	describe(sorterCtor.name, () => {
 		const dataRoot = path.join(__dirname, 'sort');
 
-		const createValueFunction = (dataType, field) => {
+		const createValueFunction = (field) => {
 			const cb = (row) => {
 				return row[field];
 			};
-
-			cb.dataType = dataType;
 
 			return cb;
 		};
@@ -30,7 +28,7 @@ for (const sorterCtor of [SorterInMemory, SorterExternal]) {
 				const orders = [];
 
 				for (const [field, direction, type] of testcase.orders) {
-					orders.push(new Order(createValueFunction(type, field), direction));
+					orders.push(new Order(createValueFunction(field), direction, type));
 				}
 
 				it(f + ' / ' + testcaseName, done => {

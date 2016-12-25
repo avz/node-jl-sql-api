@@ -6,14 +6,14 @@ class Order
 	 *
 	 * @param {Function} valueFunction
 	 * @param {string} direction
-	 * @param {string} collation
+	 * @param {string} dataType
 	 * @returns {Order}
 	 */
-	constructor(valueFunction, direction, collation = null)
+	constructor(valueFunction, direction, dataType)
 	{
 		this.valueFunction = valueFunction;
 		this.direction = direction;
-		this.collation = collation;
+		this.dataType = dataType;
 	}
 }
 

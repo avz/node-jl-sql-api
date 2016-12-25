@@ -59,7 +59,7 @@ class SorterExternal extends JlTransformsChain
 
 		for (const i in orders) {
 			const order = orders[i];
-			const dataType = order.valueFunction.dataType;
+			const dataType = order.dataType;
 
 			const sn = parseInt(i, 10) + 1;
 			let def = sn + ',' + sn;

@@ -332,11 +332,11 @@ describe('SELECT', () => {
 				assert.deepStrictEqual(
 					output,
 					[
-						{count: 1, countA: 0},
 						{a: 1, count: 2, countA: 2},
 						{a: 2, count: 1, countA: 1},
 						{a: 3, count: 2, countA: 2},
-						{a: null, count: 1, countA: 0}
+						{a: null, count: 1, countA: 0},
+						{count: 1, countA: 0}
 					]
 				);
 			});

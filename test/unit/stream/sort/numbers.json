@@ -148,7 +148,7 @@
 		},
 		"as mixed": {
 			"orders": [
-				["orderA", "ASC", "MIXED"],
+				["orderA", "ASC", "STRING"],
 				["orderB", "ASC", "NUMBER"]
 			],
 			"expected": [

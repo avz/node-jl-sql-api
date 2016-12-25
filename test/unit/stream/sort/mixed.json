@@ -1,0 +1,55 @@
+{
+	"input": [
+		{"s": true},
+		{"s": false},
+		{"s": null},
+		{"s": "false"},
+		{"s": "true"},
+		{"s": "null"},
+		{"s": "undefined"},
+		{},
+		{"s": "111"},
+		{"s": 10},
+		{"s": 12},
+		{"s": {"key": "v"}},
+		{"s": [1, 2]}
+	],
+	"cases": {
+		"as string": {
+			"orders": [["s", "ASC", "STRING"]],
+			"expected": [
+				{"s": 10},
+				{"s": "111"},
+				{"s": 12},
+				{"s": "false"},
+				{"s": "null"},
+				{"s": "true"},
+				{"s": "undefined"},
+				{"s": false},
+				{"s": true},
+				{"s": null},
+				{},
+				{"s": [1, 2]},
+				{"s": {"key": "v"}}
+			]
+		},
+		"as mixed": {
+			"orders": [["s", "ASC", "MIXED"]],
+			"expected": [
+				{},
+				{"s": null},
+				{"s": false},
+				{"s": true},
+				{"s": 10},
+				{"s": 12},
+				{"s": "111"},
+				{"s": "false"},
+				{"s": "null"},
+				{"s": "true"},
+				{"s": "undefined"},
+				{"s": [1, 2]},
+				{"s": {"key": "v"}}
+			]
+		}
+	}
+}

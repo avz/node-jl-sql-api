@@ -2,6 +2,8 @@
 
 const JlTransform = require('./JlTransform');
 const AsyncUtils = require('../AsyncUtils');
+const Collator = require('../Collator');
+const DataType = require('../DataType');
 
 class Groupper extends JlTransform
 {
@@ -21,37 +23,7 @@ class Groupper extends JlTransform
 
 	_serializeKey(key)
 	{
-		const type = typeof(key);
-
-		/* eslint-disable no-unreachable, indent */
-
-		switch (type) {
-			case 'string':
-				// protect from collision with valid JSON object key
-				return '"""' + key;
-			break;
-			case 'number':
-				if (isNaN(key)) {
-					return 'NaN';
-				}
-
-				return key;
-			break;
-			case 'boolean':
-			case 'undefined':
-				return key;
-			break;
-
-			default:
-				if (key === null) {
-					return null;
-				}
-
-				return JSON.stringify(key);
-			break;
-		}
-
-		/* eslint-enable no-unreachable, indent */
+		return Collator.generateKey(DataType.STRING, key);
 	}
 
 	_transform(chunk, encoding, cb)

@@ -68,7 +68,7 @@ class SorterInMemory extends JlTransform
 				const key1 = order.valueFunction(row1);
 				const key2 = order.valueFunction(row2);
 
-				const diff = Collator.compare(order.valueFunction.dataType, key1, key2);
+				const diff = Collator.compare(order.dataType, key1, key2);
 
 				if (diff) {
 					return direction * diff;

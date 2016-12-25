@@ -15,6 +15,7 @@ const AggregationExpression = require('./AggregationExpression');
 const JlTransformsChain = require('./stream/JlTransformsChain');
 const DataRow = require('./DataRow');
 const DataSource = require('./DataSource');
+const DataType = require('./DataType');
 const Nodes = require('./sql/Nodes');
 const ExpressionAnalyser = require('./ExpressionAnalyser');
 
@@ -203,9 +204,9 @@ class Select
 			const valueFunc = this.sqlToJs.nodeToFunction(item.expression);
 			const direction = item.direction === 'DESC' ? Order.DIRECTION_DESC : Order.DIRECTION_ASC;
 
-			valueFunc.dataType = this.expressionAnalyser.determineExpressionDataType(item.expression);
+			const dataType = this.expressionAnalyser.determineExpressionDataType(item.expression);
 
-			return new Order(valueFunc, direction);
+			return new Order(valueFunc, direction, dataType === DataType.MIXED ? DataType.STRING : dataType);
 		});
 
 		return orders;
