@@ -1,6 +1,7 @@
 'use strict';
 
 const DataType = require('./DataType');
+const NumberUtils = require('./NumberUtils');
 
 /**
  * Класс, который нужен для обеспечения единообразной сортировки
@@ -66,7 +67,7 @@ class Collator
 	static generateKey(dataType, value)
 	{
 		if (dataType === DataType.NUMBER) {
-			return value + '';
+			return NumberUtils.toDecString(value) + '';
 		} else if (dataType === DataType.STRING) {
 			return Collator._generateKeyString(value);
 		} else {
@@ -82,7 +83,7 @@ class Collator
 				return JSON.stringify(value);
 			break;
 			case 'number':
-				return '"' + value + '"';
+				return '"' + NumberUtils.toDecString(value) + '"';
 			break;
 			case 'boolean':
 				return value ? '3_true' : '2_false';
@@ -114,7 +115,7 @@ class Collator
 				return '6_' + JSON.stringify(value);
 			break;
 			case 'number':
-				return '5_' + value + '';
+				return '5_' + NumberUtils.toDecString(value) + '';
 			break;
 			case 'boolean':
 				return value ? '4_true' : '3_false';
