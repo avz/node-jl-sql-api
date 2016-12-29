@@ -86,14 +86,14 @@ class Collator
 				return '"' + NumberUtils.toDecString(value) + '"';
 			break;
 			case 'boolean':
-				return value ? '3_true' : '2_false';
+				return value ? '"true"' : '"false"';
 			break;
 			case 'undefined':
-				return '5_undefined';
+				return '""';
 			break;
 			default:
 				if (value === null) {
-					return '4_null"';
+					return '"null"';
 				}
 
 				return JSON.stringify(value);
