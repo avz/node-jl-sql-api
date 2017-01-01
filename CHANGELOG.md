@@ -1,4 +1,4 @@
-## `v2.2.0` (upcoming release)
+## `v2.2.0` (2017-01-01)
 
 * New aggregation function: AVG()
 
