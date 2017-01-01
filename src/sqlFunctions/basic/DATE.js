@@ -15,7 +15,15 @@ class DATE extends BasicFunction
 		let now = new Date;
 
 		if (args.length) {
+			if (typeof(args[0]) !== 'number' && typeof(args[0]) !== 'string') {
+				return null;
+			}
+
 			now = new Date(args[0]);
+		}
+
+		if (isNaN(now.getTime())) {
+			return null;
 		}
 
 		return now.getFullYear() +
