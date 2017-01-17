@@ -14,6 +14,10 @@ class NUMBER extends BasicFunction
 	{
 		this.needArgumentsCount(args, 1);
 
+		if (typeof(args[0]) === 'object') {
+			return null;
+		}
+
 		const v = parseFloat(args[0]);
 
 		return isNaN(v) ? null : v;
