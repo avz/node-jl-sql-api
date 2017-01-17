@@ -95,7 +95,7 @@ class COUNT_DISTINCT extends AggregationFunctionAsync
 			return;
 		}
 
-		this.keys.set(Collator.generateKey(DataType.MIXED, args[0]), 1);
+		this.keys.set(Collator.generateGroupKey(DataType.MIXED, args[0]), 1);
 
 		if (this.keys.size > this.maxKeysInMemory) {
 			this._externalUniqueCounter().pushMap(this.keys, done);

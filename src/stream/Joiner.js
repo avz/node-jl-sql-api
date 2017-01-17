@@ -59,12 +59,12 @@ class Joiner extends Readable
 
 	mainKey(row)
 	{
-		return Collator.generateKey(DataType.STRING, this.mainValueCb(row));
+		return Collator.generateGroupKey(DataType.STRING, this.mainValueCb(row));
 	}
 
 	joiningKey(row)
 	{
-		return Collator.generateKey(DataType.STRING, this.joiningValueCb(row));
+		return Collator.generateGroupKey(DataType.STRING, this.joiningValueCb(row));
 	}
 
 	popOutput(cb)

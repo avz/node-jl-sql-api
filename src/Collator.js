@@ -2,6 +2,7 @@
 
 const DataType = require('./DataType');
 const NumberUtils = require('./NumberUtils');
+const STRING = require('./sqlFunctions/basic/STRING');
 
 /**
  * Класс, который нужен для обеспечения единообразной сортировки
@@ -22,10 +23,10 @@ class Collator
 		return 0;
 	}
 
-	static _compareAsJson(dataType, a, b)
+	static _compareSortAsJson(dataType, a, b)
 	{
-		const keyA = Collator.generateKey(dataType, a);
-		const keyB = Collator.generateKey(dataType, b);
+		const keyA = Collator.generateSortKey(dataType, a);
+		const keyB = Collator.generateSortKey(dataType, b);
 
 		/*
 		 * JS uses simple string comparsion algo, which is identical to byte-by-byte
@@ -49,13 +50,13 @@ class Collator
 	 * @param {mixed} b
 	 * @returns {Number}
 	 */
-	static compare(dataType, a, b)
+	static compareSortKeys(dataType, a, b)
 	{
 		if (dataType === DataType.NUMBER) {
 			return Collator._compareNumbers(+a, +b);
 		}
 
-		return Collator._compareAsJson(dataType, a, b);
+		return Collator._compareSortAsJson(dataType, a, b);
 	}
 
 	/**
@@ -64,18 +65,36 @@ class Collator
 	 * @param {mixed} value
 	 * @returns {string}
 	 */
-	static generateKey(dataType, value)
+	static generateGroupKey(dataType, value)
 	{
 		if (dataType === DataType.NUMBER) {
 			return NumberUtils.toDecString(value) + '';
 		} else if (dataType === DataType.STRING) {
-			return Collator._generateKeyString(value);
+			return Collator._generateGroupKeyString(value);
 		} else {
 			return Collator._generateKeyMixed(value);
 		}
 	}
 
-	static _generateKeyString(value)
+	static generateSortKey(dataType, value)
+	{
+		if (dataType === DataType.NUMBER) {
+			return NumberUtils.toDecString(value) + '';
+		} else if (dataType === DataType.STRING) {
+			return Collator._generateSortKeyString(value);
+		} else {
+			return Collator._generateKeyMixed(value);
+		}
+	}
+
+	static _generateSortKeyString(value)
+	{
+		const s = STRING.prototype.call([value]);
+
+		return s;
+	}
+
+	static _generateGroupKeyString(value)
 	{
 		/* eslint-disable indent, no-unreachable */
 		switch (typeof(value)) {

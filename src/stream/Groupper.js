@@ -23,7 +23,7 @@ class Groupper extends JlTransform
 
 	_serializeKey(key)
 	{
-		return Collator.generateKey(DataType.STRING, key);
+		return Collator.generateGroupKey(DataType.STRING, key);
 	}
 
 	_transform(chunk, encoding, cb)

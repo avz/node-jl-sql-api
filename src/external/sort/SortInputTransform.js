@@ -33,7 +33,7 @@ class SortInputTransform extends Transform
 			const columnValues = [];
 
 			for (const order of this.orders) {
-				const key = Collator.generateKey(order.dataType, order.valueFunction(row));
+				const key = Collator.generateSortKey(order.dataType, order.valueFunction(row));
 
 				columnValues.push(key);
 			}
