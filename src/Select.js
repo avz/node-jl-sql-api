@@ -269,8 +269,8 @@ class Select
 	 */
 	joinerPipeline(join)
 	{
-		if (join.mainDataSourceSortingsColumns.length < 1 || join.mainDataSourceSortingsColumns.length < 1) {
-			throw new NotSupported;
+		if (join.mainDataSourceSortingsColumns.length < 1 || join.joiningDataSourceSortingsColumns.length < 1) {
+			throw new NotSupported('Only Equi Join is supported: ON @joined.field = [@main.]field');
 		}
 
 		const joiningWrapper = new Mutator(row => {
