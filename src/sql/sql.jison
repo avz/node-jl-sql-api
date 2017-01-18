@@ -140,7 +140,6 @@ keywords
 	| UPDATE { $$ = $1 }
 	| SET { $$ = $1 }
 	| FROM { $$ = $1 }
-	| AS { $$ = $1 }
 	| STRICT { $$ = $1 }
 	| IN { $$ = $1 }
 	| AND { $$ = $1 }

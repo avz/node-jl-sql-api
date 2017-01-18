@@ -14,7 +14,6 @@ describe('SELECT keywords', () => {
 			'UPDATE',
 			'SET',
 			'FROM',
-			'AS',
 			'STRICT',
 			'IN',
 			'AND',
