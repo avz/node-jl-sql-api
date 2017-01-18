@@ -1,138 +1,10 @@
 'use strict';
 
-const JlSql = require('../..');
+const JlSql = require('../../..');
 const assert = require('assert');
 
 describe('SELECT', () => {
 	const run = (jlSql) => {
-		describe('Data Bindings', () => {
-			const input = [{r: true}, {r: false}];
-
-			let output;
-
-			before(done => {
-				jlSql.query(
-						'SELECT IF(r, :trueString, :falseString) AS scalarString'
-						+ ', IF(r, :true, :false) AS scalarBool'
-						+ ', IF(::ifTrue) AS ifTrue'
-						+ ', IF(::ifFalse) AS ifFalse'
-						+ ', IF(true, ::ifCombTrue) AS ifCombTrue'
-						+ ', IF(false, ::ifCombFalse) AS ifCombFalse'
-						+ ', IF(::ifCombComb, true, false) AS ifCombComb'
-					)
-					.bind(':trueString', '-TRUE-')
-					.bind(':falseString', '-FALSE-')
-					.bind(':true', true)
-					.bind(':false', false)
-					.bind('::ifTrue', [true, '-TRUE-', false])
-					.bind('::ifFalse', [false, '-TRUE-', false])
-					.bind('::ifCombTrue', [true, false])
-					.bind('::ifCombFalse', [true, false])
-					.bind('::ifCombComb', [true])
-					.fromArrayOfObjects(input)
-					.toArrayOfObjects((r) => {
-						output = r;
-						done();
-					})
-				;
-			});
-
-			it('scalar', () => {
-				assert.strictEqual(output[0].scalarString, '-TRUE-');
-				assert.strictEqual(output[1].scalarString, '-FALSE-');
-				assert.strictEqual(output[0].scalarBool, true);
-				assert.strictEqual(output[1].scalarBool, false);
-			});
-
-			it('list', () => {
-				assert.strictEqual(output[0].ifTrue, '-TRUE-');
-				assert.strictEqual(output[0].ifFalse, false);
-			});
-
-			it('combined list', () => {
-				assert.strictEqual(output[0].ifCombTrue, true);
-				assert.strictEqual(output[0].ifCombFalse, false);
-				assert.strictEqual(output[0].ifCombComb, true);
-			});
-		});
-
-		describe('Identifier Bindings', () => {
-			const input = [{a: {aa: {aaa: 'A.AA.AAA'}, ab: 'A.AB'}, b: 'B'}];
-
-			let output;
-
-			before(done => {
-				jlSql.query(
-						'SELECT {:a}.{::aa_aaa} AS a_aa_aaa1'
-						+ ', {:a}.{:aa}.{:aaa} AS a_aa_aaa2'
-						+ ', {::a_aa}.{:aaa} AS a_aa_aaa3'
-						+ ', {::a_aa_aaa} AS a_aa_aaa4'
-						+ ', {::bm} AS b1'
-						+ ', {:b} AS b2'
-						+ ', {:b}'
-						+ ', {::a_aa_aaa}'
-						+ ', {::a_aa}.{:aaa}'
-					)
-					.bind(':a', 'a')
-					.bind(':aa', 'aa')
-					.bind(':aaa', 'aaa')
-					.bind(':b', 'b')
-					.bind('::bm', ['b'])
-					.bind('::a_aa', ['a', 'aa'])
-					.bind('::aa_aaa', ['aa', 'aaa'])
-					.bind('::a_aa_aaa', ['a', 'aa', 'aaa'])
-					.fromArrayOfObjects(input)
-					.toArrayOfObjects((r) => {
-						output = r;
-						done();
-					})
-				;
-			});
-
-			it('single ident', () => {
-				assert.strictEqual(output[0].b2, 'B');
-				assert.strictEqual(output[0]['{:b}'], 'B');
-			});
-
-			it('multi ident', () => {
-				assert.strictEqual(output[0].a_aa_aaa4, 'A.AA.AAA');
-				assert.strictEqual(output[0].b2, 'B');
-				assert.strictEqual(output[0]['{::a_aa_aaa}'], 'A.AA.AAA');
-			});
-
-			it('mixed ident', () => {
-				assert.strictEqual(output[0].a_aa_aaa1, 'A.AA.AAA');
-				assert.strictEqual(output[0].a_aa_aaa2, 'A.AA.AAA');
-				assert.strictEqual(output[0].a_aa_aaa3, 'A.AA.AAA');
-				assert.strictEqual(output[0]['{::a_aa}.{:aaa}'], 'A.AA.AAA');
-			});
-		});
-
-		describe('`SELECT * WHERE ...`', () => {
-			const input = [{hello: 'world'}, {hello: 'hello'}];
-
-			let output;
-
-			before(done => {
-				jlSql.query('SELECT * WHERE hello = "hello"')
-					.fromArrayOfObjects(input)
-					.toArrayOfObjects((r) => {
-						output = r;
-						done();
-					})
-				;
-			});
-
-			it('filters', () => {
-				assert.strictEqual(output.length, 1);
-				assert.strictEqual(output[0].hello, 'hello');
-			});
-
-			it('return same objects', () => {
-				assert.strictEqual(output[0], input[1]);
-			});
-		});
-
 		describe('`SELECT DISTINCT ...`', () => {
 			const input = [{a: 1, b: 2}, {a: 1, b: 2}, {a: 2, b: 2}, {a: 1, b: 3}, {a: 1, b: 2}];
 
@@ -170,64 +42,6 @@ describe('SELECT', () => {
 
 			it('right count', () => {
 				assert.deepStrictEqual(output, [{c: 2}]);
-			});
-		});
-
-		describe('`SELECT *, ...`', () => {
-			const input = [{hello: 'world'}, {hello: 'hello'}];
-
-			let output;
-
-			before(done => {
-				jlSql.query('SELECT *, hello AS helloAlias')
-					.fromArrayOfObjects(input)
-					.toArrayOfObjects((r) => {
-						output = r;
-						done();
-					})
-				;
-			});
-
-			it('return new objects', () => {
-				assert.notStrictEqual(output[0], input[0]);
-				assert.notStrictEqual(output[1], input[1]);
-			});
-
-			it('merged row', () => {
-				assert.deepStrictEqual(output[0], {hello: 'world', helloAlias: 'world'});
-				assert.deepStrictEqual(output[1], {hello: 'hello', helloAlias: 'hello'});
-			});
-		});
-
-		describe('`SELECT [field[, ...]]`', () => {
-			const input = [{f1: '11', f2: '12', f3: '13'}];
-
-			let output;
-
-			before(done => {
-				jlSql.query('SELECT f1, f2')
-					.fromArrayOfObjects(input)
-					.toArrayOfObjects((r) => {
-						output = r;
-						done();
-					})
-				;
-			});
-
-			it('returns new objects', () => {
-				assert.notDeepStrictEqual(output[0], input[0]);
-			});
-
-			it('make right properties', () => {
-				assert.strictEqual(output[0].f1, '11');
-				assert.strictEqual(output[0].f2, '12');
-				assert.strictEqual(output[0].f3, undefined);
-			});
-
-			it('original objects was not updated', () => {
-				assert.strictEqual(input[0].f1, '11');
-				assert.strictEqual(input[0].f2, '12');
-				assert.strictEqual(input[0].f3, '13');
 			});
 		});
 
@@ -427,66 +241,6 @@ describe('SELECT', () => {
 			;
 		});
 
-		describe('`SELECT ... AS alias[.deepAlias[. ...]]`', () => {
-			const input = [{a: 10}];
-
-			let output;
-
-			before(done => {
-				jlSql.query(
-						`SELECT
-							a,
-							a AS aliasForA,
-							aliasForA AS nonexistentAlias,
-							a + 10 AS b,
-							a + 20 AS deep.c,
-							a + 30 AS deep.d.e,
-							'hel\\'lo' AS \`wo\\\`rld\`,
-							undef AS deepUndef.undef,
-							a + 40`
-					)
-					.fromArrayOfObjects(input)
-					.toArrayOfObjects((r) => {
-						output = r;
-						done();
-					})
-				;
-			});
-
-			it('original column', () => {
-				assert.strictEqual(output[0].a, input[0].a);
-			});
-
-			it('escaping', () => {
-				assert.strictEqual(output[0]["wo`rld"], "hel'lo");
-			});
-
-			it('alias to alias', () => {
-				assert.strictEqual(output[0].nonexistentAlias, undefined);
-			});
-
-			it('direct column to alias mapping', () => {
-				assert.strictEqual(output[0].aliasForA, input[0].a);
-			});
-
-			it('aliases to top level', () => {
-				assert.strictEqual(output[0].b, input[0].a + 10);
-			});
-
-			it('aliases to deep levels', () => {
-				assert.strictEqual(output[0].deep.c, input[0].a + 20);
-				assert.strictEqual(output[0].deep.d.e, input[0].a + 30);
-			});
-
-			it('alias to undefined make empty deep object', () => {
-				assert.deepEqual(output[0].deepUndef, {});
-			});
-
-			it('auto-generated alias', () => {
-				assert.strictEqual(output[0]['a + 40'], input[0].a + 40);
-			});
-		});
-
 		describe('`SELECT ... XXX JOIN ...`', () => {
 			const dataSets = [
 				{
@@ -659,7 +413,7 @@ describe('SELECT', () => {
 	};
 
 	describe('in-memory sort', () => {
-		run(new JlSql, {sortOptions: {forceInMemory: true}});
+		run(new JlSql({sortOptions: {forceInMemory: true}}));
 	});
 
 	describe('force external sort (unix `sort` cmd)', () => {
