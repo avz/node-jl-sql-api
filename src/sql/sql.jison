@@ -118,6 +118,9 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %left 'FROM' 'AS' 'DISTINCT' 'STRICT' 'IN' 'WHERE' 'HAVING' 'LIMIT' 'OFFSET'
 %left 'ORDER' 'GROUP' 'BY' 'ASC' 'DESC'
 %left 'JOIN' 'INNER' 'LEFT'
+%left 'INTERVAL' 'DAY' 'YEAR' 'MONTH' 'DAYHOUR' 'HOUR' 'MINUTE' 'SECOND'
+
+%left '(' ')'
 
 %start expressions
 
@@ -154,6 +157,13 @@ keywords
 	| JOIN { $$ = $1 }
 	| LEFT { $$ = $1 }
 	| INNER { $$ = $1 }
+	| INTERVAL { $$ = $1 }
+	| YEAR { $$ = $1 }
+	| MONTH { $$ = $1 }
+	| DAY { $$ = $1 }
+	| HOUR { $$ = $1 }
+	| MINUTE { $$ = $1 }
+	| SECOND { $$ = $1 }
 ;
 
 dataSourceIdent
