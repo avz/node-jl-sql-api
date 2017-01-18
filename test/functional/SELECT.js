@@ -134,7 +134,7 @@ describe('SELECT', () => {
 		});
 
 		describe('`SELECT DISTINCT ...`', () => {
-			const input = [{a: 1, b: 2}, {a: 1, b: 2}, {a: 2, b: 2}, {a: 1, b: 3}];
+			const input = [{a: 1, b: 2}, {a: 1, b: 2}, {a: 2, b: 2}, {a: 1, b: 3}, {a: 1, b: 2}];
 
 			let output;
 
@@ -149,7 +149,7 @@ describe('SELECT', () => {
 			});
 
 			it('unique', () => {
-				assert.deepStrictEqual(output, [{a: 1, b: 2}, {a: 2, b: 2}, {a: 1, b: 3}]);
+				assert.deepStrictEqual(output, [{a: 1, b: 2}, {a: 1, b: 3}, {a: 2, b: 2}]);
 			});
 		});
 

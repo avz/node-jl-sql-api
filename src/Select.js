@@ -249,7 +249,15 @@ class Select
 			return null;
 		}
 
-		if (groupper && !this.ast.groups.length) {
+		if (this.ast.distinct) {
+			const sorter = this.createSorterInstance(this.orders(this.ast.columns));
+
+			const chain = new JlTransformsChain([sorter, groupper]);
+
+			return chain;
+		}
+
+		if (!this.ast.groups.length) {
 			// implicit GROUP BY
 			return groupper;
 		}
