@@ -51,4 +51,6 @@ PublicApi.exceptions = {
 	DataSourceNotFound: require('./error/DataSourceNotFound')
 };
 
+PublicApi.version = require('../package.json').version;
+
 module.exports = PublicApi;
