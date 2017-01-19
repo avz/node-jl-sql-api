@@ -29,8 +29,8 @@ class Collator
 		const keyB = Collator.generateSortKey(dataType, b);
 
 		/*
-		 * JS uses simple string comparsion algo, which is identical to byte-by-byte
-		 * comparsion of UTF-8 encoded strings used in `LANG=C sort`
+		 * JS uses simple string comparison algo, which is identical to byte-by-byte
+		 * comparison of UTF-8 encoded strings used in `LANG=C sort`
 		 * http://www.ecma-international.org/ecma-262/6.0/#sec-abstract-relational-comparison Note 2
 		 */
 

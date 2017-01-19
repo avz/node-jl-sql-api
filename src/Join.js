@@ -42,7 +42,7 @@ class Join
 			return;
 		}
 
-		if (!(ast instanceof Nodes.ComparsionOperation)) {
+		if (!(ast instanceof Nodes.ComparisonOperation)) {
 			throw new SqlNotSupported('Only basic JOIN ON expression is supported: @source1.field1 = @source2.field2');
 		}
 

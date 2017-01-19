@@ -183,7 +183,7 @@ case 68: case 69: case 70: case 71: case 72: case 73: case 74:
  this.$ = new Nodes.BinaryArithmeticOperation($$[$0-1], $$[$0-2], $$[$0]); 
 break;
 case 75: case 76: case 77: case 78: case 81: case 82: case 83: case 84:
- this.$ = new Nodes.ComparsionOperation($$[$0-1], $$[$0-2], $$[$0]); 
+ this.$ = new Nodes.ComparisonOperation($$[$0-1], $$[$0-2], $$[$0]); 
 break;
 case 79: case 80:
  this.$ = new Nodes.LogicalOperation($$[$0-1], $$[$0-2], $$[$0]); 

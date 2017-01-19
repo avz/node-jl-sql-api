@@ -244,16 +244,16 @@ expression
 	| expression '-' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| expression '+' interval { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| expression '-' interval { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
-	| expression '=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
-	| expression '!==' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
-	| expression '===' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
-	| expression '!=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression '=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| expression '!==' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| expression '===' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| expression '!=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
 	| expression 'AND' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
 	| expression 'OR' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
-	| expression '>' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
-	| expression '>=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
-	| expression '<' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
-	| expression '<=' expression { $$ = new Nodes.ComparsionOperation($2, $1, $3); }
+	| expression '>' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| expression '>=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| expression '<' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| expression '<=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
 	| '-' expression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
 	| '!' expression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
 	| expression 'STRICT' 'IN' '(' expressionsList ')' { $$ = new Nodes.StrictIn($1, $5); }

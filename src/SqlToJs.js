@@ -218,7 +218,7 @@ class SqlToJs
 		return this.codeFrom_BinaryOperation(binary);
 	}
 
-	codeFrom_ComparsionOperation(comp)
+	codeFrom_ComparisonOperation(comp)
 	{
 		const op = comp.operator === '=' ? '==' : comp.operator;
 

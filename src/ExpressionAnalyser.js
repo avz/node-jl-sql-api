@@ -54,7 +54,7 @@ class ExpressionAnalyser
 
 			[SqlNodes.LogicalOperation, DataType.BOOL],
 			[SqlNodes.UnaryLogicalOperation, DataType.BOOL],
-			[SqlNodes.ComparsionOperation, DataType.BOOL],
+			[SqlNodes.ComparisonOperation, DataType.BOOL],
 		]);
 
 		for (const [ctor, type] of operationTypes) {
