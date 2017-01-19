@@ -201,6 +201,7 @@ interval
 
 jsonObjectItem
 	: 'STRING' ':' expression { $$ = {key: (new Nodes.String($1)).value, value: $3}; }
+	| ident ':' expression { $$ = {key: $1.name, value: $3}; }
 ;
 
 jsonObjectItems
