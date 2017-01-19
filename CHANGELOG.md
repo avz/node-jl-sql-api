@@ -1,3 +1,8 @@
+## `v2.3.0` (2017-01-19)
+
+* `SELECT ... FROM dataSource` support
+* JSON objects can now be created as `{key: "value"}` not only JSON-compliant form `{"key": "value"}`
+
 ## `v2.2.0` (2017-01-01)
 
 * New aggregation function: AVG()
