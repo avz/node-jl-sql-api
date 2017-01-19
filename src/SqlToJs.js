@@ -310,6 +310,30 @@ class SqlToJs
 
 		return '[' + itemsCode.join(', ') + ']';
 	}
+
+	/**
+	 *
+	 * @param {LikeOpearion} exp
+	 * @returns {string}
+	 */
+	codeFrom_LikeOperation(exp)
+	{
+		if (exp.right.deepType() === 'String') {
+			// pattern - constant string. Can be compiled once
+
+			const regex = this.helpers.operators.likeCompileRegex(exp.right.value, exp.caseSensitive);
+
+			return '(' + regex + '.test(' + this.nodeToCode(exp.left).toString() + '))';
+		} else {
+			return (
+				'_helpers.operators.like('
+					+ '"" + ' + this.nodeToCode(exp.right)
+					+ ', ' + (exp.caseSensitive ? 'true' : 'false')
+					+ ', ' + this.nodeToCode(exp.left)
+				+ ')'
+			);
+		}
+	}
 }
 
 module.exports = SqlToJs;

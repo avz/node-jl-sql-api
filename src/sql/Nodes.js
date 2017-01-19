@@ -28,6 +28,7 @@ exports['Insert'] = require('./nodes/Insert.js');
 exports['Interval'] = require('./nodes/Interval.js');
 exports['IntervalOperation'] = require('./nodes/IntervalOperation.js');
 exports['LeftJoin'] = require('./nodes/LeftJoin.js');
+exports['LikeOperation'] = require('./nodes/LikeOperation.js');
 exports['Limit'] = require('./nodes/Limit.js');
 exports['LogicalOperation'] = require('./nodes/LogicalOperation.js');
 exports['Map'] = require('./nodes/Map.js');

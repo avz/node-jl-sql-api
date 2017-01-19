@@ -63,5 +63,33 @@ describe('Quoter', () => {
 				'\u0000\b\n\r\t\u001a\\%\\_fghj'
 			);
 		});
+
+		it('custom callbacks', () => {
+			const results = [
+				['c', 2],
+				['d', 4],
+				['f', 7]
+			];
+
+			const handler = (...args) => {
+				const expected = results.shift();
+
+				assert.deepStrictEqual(args, expected);
+
+				return '>' + args[0] + '<';
+			};
+
+			const r = Quoter.unescape(
+				"ab\\c\\de\\f",
+				{
+					c: handler,
+					d: handler,
+					f: handler
+				}
+			);
+
+			assert.strictEqual(results.length, 0);
+			assert.strictEqual(r, 'ab>c<>d<e>f<');
+		});
 	});
 });

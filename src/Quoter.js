@@ -40,9 +40,10 @@ class Quoter
 	/**
 	 *
 	 * @param {string} string
+	 * @param {object} customEscapes
 	 * @returns {string}
 	 */
-	static unescape(string)
+	static unescape(string, customEscapes = {})
 	{
 		/**
 		 * @see http://dev.mysql.com/doc/refman/5.7/en/string-literals.html Table 10.1
@@ -58,13 +59,25 @@ class Quoter
 			'_': '\\_'   // For LIKE
 		};
 
+		for (const char in customEscapes) {
+			specialChars[char] = customEscapes[char];
+		}
+
 		let unescapedString = '';
 		let charIsEscaped = false;
 
+		var position = -1;
+
 		for (const char of string) {
+			position++;
+
 			if (charIsEscaped) {
 				if (char in specialChars) {
-					unescapedString += specialChars[char];
+					if (specialChars[char] instanceof Function) {
+						unescapedString += specialChars[char](char, position - 1);
+					} else {
+						unescapedString += specialChars[char];
+					}
 				} else {
 					unescapedString += char;
 				}

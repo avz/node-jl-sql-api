@@ -51,6 +51,9 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "MINUTE" { return 'MINUTE'; }
 "SECOND" { return 'SECOND'; }
 
+"LIKE" { return 'LIKE'; }
+"ILIKE" { return 'ILIKE'; }
+
 \"(\\.|[^\\"])*\"	{ return 'STRING'; }
 \'(\\.|[^\\'])*\'	{ return 'STRING'; }
 [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)? { return 'NUMBER'; }
@@ -106,6 +109,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 
 %left ','
 %left 'AS'
+%left 'LIKE' 'ILIKE'
 %left 'AND' 'OR'
 
 %left '.' '!'
@@ -163,6 +167,8 @@ keywords
 	| HOUR { $$ = $1 }
 	| MINUTE { $$ = $1 }
 	| SECOND { $$ = $1 }
+	| LIKE { $$ = $1 }
+	| ILIKE { $$ = $1 }
 ;
 
 dataSourceIdent
@@ -248,6 +254,8 @@ expression
 	| expression '!==' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
 	| expression '===' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
 	| expression '!=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| expression 'LIKE' expression { $$ = new Nodes.LikeOperation($2, $1, $3); }
+	| expression 'ILIKE' expression { $$ = new Nodes.LikeOperation($2, $1, $3); }
 	| expression 'AND' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
 	| expression 'OR' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
 	| expression '>' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
