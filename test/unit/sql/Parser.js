@@ -49,6 +49,10 @@ describe('SQL Parser', () => {
 			it('single key', () => {
 				assert.deepStrictEqual(parse('{"hello": "world"}').map['hello'].value, 'world');
 			});
+
+			it('without quotes', () => {
+				assert.deepStrictEqual(parse('{hello: "world"}').map['hello'].value, 'world');
+			});
 		});
 
 		describe('arrays', () => {
