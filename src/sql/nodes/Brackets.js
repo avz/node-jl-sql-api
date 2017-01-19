@@ -15,6 +15,11 @@ class Brackets extends Node
 	{
 		return [this.expression];
 	}
+
+	deepType()
+	{
+		return this.expression.deepType();
+	}
 }
 
 module.exports = Brackets;

@@ -179,8 +179,11 @@ break;
 case 66:
  this.$ = new Nodes.Boolean(false); 
 break;
-case 68: case 69: case 70: case 71: case 72: case 73: case 74:
+case 68: case 69: case 70: case 71: case 72:
  this.$ = new Nodes.BinaryArithmeticOperation($$[$0-1], $$[$0-2], $$[$0]); 
+break;
+case 73: case 74:
+ this.$ = new Nodes.IntervalOperation($$[$0-1], $$[$0-2], $$[$0]); 
 break;
 case 75: case 76: case 77: case 78: case 81: case 82: case 83: case 84:
  this.$ = new Nodes.ComparisonOperation($$[$0-1], $$[$0-2], $$[$0]); 

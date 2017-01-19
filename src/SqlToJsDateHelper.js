@@ -33,6 +33,15 @@ class SqlTOJsDateHelper
 		return result;
 	}
 
+	toDate(dateOrTs)
+	{
+		if (dateOrTs instanceof Date) {
+			return dateOrTs;
+		}
+
+		return this._date(dateOrTs);
+	}
+
 	moveOnInterval(ts, intervalUnit, intervalSize)
 	{
 		const date = this._date(ts);

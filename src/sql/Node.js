@@ -20,6 +20,15 @@ class Node
 		return this.constructor.name;
 	}
 
+	/**
+	 * Must be overrided in bracket-like nodes
+	 * @returns {string}
+	 */
+	deepType()
+	{
+		return this.type();
+	}
+
 	inspect(depth, opts)
 	{
 		var obj = {};

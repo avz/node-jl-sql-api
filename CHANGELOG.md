@@ -1,3 +1,7 @@
+## `v2.4.0` (upcoming release)
+
+* Automatical type coercion in date comparisons like `ts > NOW() - INTERVAL 1 DAY`
+
 ## `v2.3.0` (2017-01-19)
 
 * `SELECT ... FROM dataSource` support

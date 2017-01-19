@@ -242,8 +242,8 @@ expression
 	| expression '/' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| expression '+' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| expression '-' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
-	| expression '+' interval { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
-	| expression '-' interval { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| expression '+' interval { $$ = new Nodes.IntervalOperation($2, $1, $3); }
+	| expression '-' interval { $$ = new Nodes.IntervalOperation($2, $1, $3); }
 	| expression '=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
 	| expression '!==' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
 	| expression '===' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }

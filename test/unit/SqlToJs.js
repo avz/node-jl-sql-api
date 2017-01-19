@@ -148,4 +148,122 @@ describe('SqlToJs', () => {
 			}
 		}
 	});
+
+	describe('timestamps comparison', () => {
+		const makeDeltaNode = (baseNode, deltaSeconds) => {
+			const interval = new SqlNodes.Interval;
+
+			interval.add(new SqlNodes.Number(deltaSeconds), SqlNodes.Interval.UNIT_SECOND);
+
+			return new SqlNodes.IntervalOperation(
+				'+',
+				baseNode,
+				interval
+			);
+		};
+
+		const makeCase = (operator, baseNode, deltaSeconds) => {
+			return new SqlNodes.ComparisonOperation(
+				operator,
+				baseNode,
+				makeDeltaNode(baseNode, deltaSeconds)
+			);
+		};
+
+		const baseNodes = {
+			'unix timestamp': new SqlNodes.Number(1484834780)
+		};
+
+		for (const baseNodeName in baseNodes) {
+			const baseNode = baseNodes[baseNodeName];
+
+			const cases = {
+				'=': [
+					makeCase('=', baseNode, 0),
+					true
+				],
+				'===': [
+					makeCase('===', baseNode, 0),
+					true
+				],
+				'>': [
+					makeCase('>', baseNode, 0),
+					false
+				],
+				'<': [
+					makeCase('<', baseNode, 0),
+					false
+				],
+				'>=': [
+					makeCase('>=', baseNode, 0),
+					true
+				],
+
+				'<=': [
+					makeCase('<=', baseNode, 0),
+					true
+				],
+				'shifted+ =': [
+					makeCase('=', baseNode, 1),
+					false
+				],
+				'shifted+ ===': [
+					makeCase('===', baseNode, 1),
+					false
+				],
+				'shifted+ >': [
+					makeCase('>', baseNode, 1),
+					false
+				],
+				'shifted+ <': [
+					makeCase('<', baseNode, 1),
+					true
+				],
+				'shifted+ >=': [
+					makeCase('>=', baseNode, 1),
+					false
+				],
+				'shifted+ <=': [
+					makeCase('<=', baseNode, 1),
+					true
+				],
+				'shifted- =': [
+					makeCase('=', baseNode, -1),
+					false
+				],
+				'shifted- ===': [
+					makeCase('===', baseNode, -1),
+					false
+				],
+				'shifted- >': [
+					makeCase('>', baseNode, -1),
+					true
+				],
+				'shifted- <': [
+					makeCase('<', baseNode, -1),
+					false
+				],
+				'shifted- >=': [
+					makeCase('>=', baseNode, -1),
+					true
+				],
+				'shifted- <=': [
+					makeCase('<=', baseNode, -1),
+					false
+				]
+			};
+
+			describe(baseNodeName, () => {
+				for (const cn in cases) {
+					const c = cases[cn];
+
+					it(cn, () => {
+						const f = sqlToJs.nodeToFunction(c[0]);
+
+						assert.equal(f({sources: {'@': {}}}), c[1]);
+					});
+				}
+			});
+		}
+	});
 });

@@ -176,7 +176,7 @@ class SqlToJs
 
 	codeFrom_BinaryOperation(binary)
 	{
-		if (binary.right.type() === 'Interval') {
+		if (binary.right.deepType() === 'Interval') {
 			return this.codeFrom_BinaryOperator_interval(binary);
 		}
 
@@ -218,11 +218,38 @@ class SqlToJs
 		return this.codeFrom_BinaryOperation(binary);
 	}
 
+	codeFrom_IntervalOperation(oper)
+	{
+		return this.codeFrom_BinaryOperation(oper);
+	}
+
 	codeFrom_ComparisonOperation(comp)
 	{
-		const op = comp.operator === '=' ? '==' : comp.operator;
+		var op = comp.operator === '=' ? '==' : comp.operator;
 
-		return this.nodeToCode(comp.left) + ' ' + op + ' ' + this.nodeToCode(comp.right);
+		var leftCode = this.nodeToCode(comp.left);
+		var rightCode = this.nodeToCode(comp.right);
+
+		var isDates = false;
+
+		if (comp.left.deepType() === 'IntervalOperation') {
+			rightCode = '_helpers.date.toDate(' + rightCode + ')';
+
+			isDates = true;
+		}
+
+		if (comp.right.deepType() === 'IntervalOperation') {
+			leftCode = '_helpers.date.toDate(' + leftCode + ')';
+
+			isDates = true;
+		}
+
+		if (isDates) {
+			rightCode = '(' + rightCode + ').getTime()';
+			leftCode = '(' + leftCode + ').getTime()';
+		}
+
+		return leftCode + ' ' + op + ' ' + rightCode;
 	}
 
 	codeFrom_LogicalOperation(comp)
@@ -254,7 +281,7 @@ class SqlToJs
 
 	codeFrom_UnstrictIn(exp)
 	{
-		return '_helpers.unstrictIn([' + this.nodeToCode(exp.haystack) + '], ' + this.nodeToCode(exp.needle) + ')';
+		return '_helpers.operators.unstrictIn([' + this.nodeToCode(exp.haystack) + '], ' + this.nodeToCode(exp.needle) + ')';
 	}
 
 	codeFrom_StrictIn(exp)
