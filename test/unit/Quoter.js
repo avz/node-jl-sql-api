@@ -55,5 +55,13 @@ describe('Quoter', () => {
 				Quoter.unescape('hello\\');
 			}, Error, 'Unexpected end of string after');
 		});
+
+		// http://dev.mysql.com/doc/refman/5.7/en/string-literals.html Table 10.1
+		it('MySQL compatibility', () => {
+			assert.strictEqual(
+				Quoter.unescape('\\0\\b\\n\\r\\t\\Z\\%\\_\\f\\g\\h\\j'),
+				'\u0000\b\n\r\t\u001a\\%\\_fghj'
+			);
+		});
 	});
 });
