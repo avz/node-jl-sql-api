@@ -1,4 +1,4 @@
-'use script';
+'use strict';
 
 const assert = require('assert');
 const LineSplitter = require('../../../src/stream/LinesSplitter');

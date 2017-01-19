@@ -26,6 +26,7 @@ class LinesSplitter extends JlTransform
 			}
 
 			cb();
+
 			return;
 		}
 
