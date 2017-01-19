@@ -81,6 +81,19 @@ class PublicSelect
 	}
 
 	/**
+	 * Empty stream to support FROM clause
+	 * @returns {PublicSelectFrom}
+	 */
+	fromEmptyStream()
+	{
+		const stream = new JlPassThrough(JlTransform.ARRAYS_OF_OBJECTS, JlTransform.ARRAYS_OF_OBJECTS);
+
+		stream.end();
+
+		return this._selectFrom(stream);
+	}
+
+	/**
 	 *
 	 * @param {Readable} stream
 	 * @returns {PublicSelectFrom}

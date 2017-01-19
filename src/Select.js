@@ -34,10 +34,6 @@ class Select
 	 */
 	constructor(preparingContext, runtimeContext, ast)
 	{
-		if (ast.table) {
-			throw new SqlNotSupported('FROM is not supported yet');
-		}
-
 		if (ast.limit) {
 			throw new SqlNotSupported('LIMIT is not supported yet');
 		}
@@ -128,6 +124,17 @@ class Select
 		return new Filter(this.sqlToJs.nodeToFunction(this.ast.having));
 	}
 
+	resolveDataSource(dataSourceResolversPool, tableAst)
+	{
+		const dataSource = dataSourceResolversPool.resolve(tableAst.location.getFragments());
+
+		if (!dataSource) {
+			throw new DataSourceNotFound(tableAst.location.getFragments());
+		}
+
+		return dataSource;
+	}
+
 	/**
 	 *
 	 * @param {DataSourceResolverPool} dataSourceResolversPool
@@ -171,11 +178,7 @@ class Select
 				throw new SqlLogicError('Tables must have an alias');
 			}
 
-			const dataSource = dataSourceResolversPool.resolve(dataSourcePath);
-
-			if (!dataSource) {
-				throw new DataSourceNotFound(dataSourcePath);
-			}
+			const dataSource = this.resolveDataSource(dataSourceResolversPool, joinAst.table);
 
 			joins.push(new Join(
 				joinType,
@@ -320,9 +323,21 @@ class Select
 	 */
 	stream(dataSourceResolversPool)
 	{
-		const pipeline = [
-			new Mutator(DataRow.wrap)
-		];
+		const pipeline = [];
+
+		if (this.ast.table) {
+			// FROM clause
+			if (this.ast.table.alias) {
+				throw new SqlNotSupported('Data source in FROM should not have an alias');
+			}
+
+			const mainDataSource = this.resolveDataSource(dataSourceResolversPool, this.ast.table);
+
+			pipeline.push(new Terminator);
+			pipeline.push(mainDataSource.stream);
+		}
+
+		pipeline.push(new Mutator(DataRow.wrap));
 
 		const joins = this.joins(dataSourceResolversPool);
 
