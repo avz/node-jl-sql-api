@@ -20,11 +20,6 @@ class SqlToJsOperatorsHelper
 
 		return false;
 	}
-
-	_toDate(dateOrTs)
-	{
-		return this.dateHelper._date(dateOrTs);
-	}
 }
 
 module.exports = SqlToJsOperatorsHelper;
