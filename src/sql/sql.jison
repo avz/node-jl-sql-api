@@ -28,6 +28,8 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "TRUE"	{ return 'TRUE'; }
 "FALSE"	{ return 'FALSE'; }
 
+"NOT" { return 'NOT'; }s
+
 "FROM"	{ return 'FROM'; }
 "DISTINCT"	{ return 'DISTINCT'; }
 "NUMERIC"	{ return 'NUMERIC'; }
@@ -115,6 +117,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %left 'AND' 'OR'
 
 %left '.' '!'
+%left 'NOT'
 %left '>' '<' '>=' '<='
 
 %left '=' '==' '!=' '===' '!=='
@@ -259,6 +262,8 @@ expression
 	| expression '!=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
 	| expression 'LIKE' expression { $$ = new Nodes.LikeOperation($2, $1, $3); }
 	| expression 'ILIKE' expression { $$ = new Nodes.LikeOperation($2, $1, $3); }
+	| expression 'NOT' 'LIKE' expression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.LikeOperation($3, $1, $4)); }
+	| expression 'NOT' 'ILIKE' expression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.LikeOperation($3, $1, $4)); }
 	| expression 'REGEXP' expression { $$ = new Nodes.RegexpOperation($2, $1, $3); }
 	| expression 'AND' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
 	| expression 'OR' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
