@@ -321,7 +321,7 @@ class SqlToJs
 		if (exp.right.deepType() === 'String') {
 			// pattern - constant string. Can be compiled once
 
-			const regex = this.helpers.operators.likeCompileRegex(exp.right.value, exp.caseSensitive);
+			const regex = this.helpers.operators.likeCompileRegexString(exp.right.value, exp.caseSensitive);
 
 			return '(' + regex + '.test(' + this.nodeToCode(exp.left).toString() + '))';
 		} else {

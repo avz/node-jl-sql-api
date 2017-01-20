@@ -28,10 +28,10 @@ class SqlToJsOperatorsHelper
 		/**
 		 * @see https://developer.mozilla.org/ru/docs/Web/JavaScript/Guide/Regular_Expressions
 		 */
-		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		return string.replace(/[/.*+?^${}()|[\]\\]/g, '\\$&');
 	}
 
-	likeCompileRegex(likeString, caseSensitive)
+	likeCompileRegexBaseString(likeString)
 	{
 		/*
 		 * У LIKE в MySQL мягко говоря станная логика экранирования
@@ -60,7 +60,21 @@ class SqlToJsOperatorsHelper
 
 		nextRegexSegment('', likeString.length);
 
-		return new RegExp('^' + regex + '$', caseSensitive ? '' : 'i');
+		return '^' + regex + '$';
+	}
+
+	likeCompileRegexString(likeString, caseSensitive)
+	{
+		const regex = this.likeCompileRegexBaseString(likeString);
+
+		return '/' + regex + '/' + (caseSensitive ? '' : 'i');
+	}
+
+	likeCompileRegex(likeString, caseSensitive)
+	{
+		const regex = this.likeCompileRegexBaseString(likeString);
+
+		return new RegExp(regex, caseSensitive ? '' : 'i');
 	}
 
 	like(likeString, caseSensitive, value)
