@@ -2,6 +2,7 @@
 
 const AggregationFunction = require('./AggregationFunction');
 const SqlToJsHelpers = require('./SqlToJsHelpers');
+const SqlNotSupported = require('./error/SqlNotSupported');
 
 const ProgramError = require('./error/ProgramError');
 
@@ -333,6 +334,16 @@ class SqlToJs
 				+ ')'
 			);
 		}
+	}
+
+	/**
+	 *
+	 * @param {RegexpOpearion} exp
+	 * @returns {string}
+	 */
+	codeFrom_RegexpOperation(exp)
+	{
+		throw new SqlNotSupported('REGEXP is not supported yet');
 	}
 }
 

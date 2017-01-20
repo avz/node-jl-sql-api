@@ -35,6 +35,7 @@ exports['Map'] = require('./nodes/Map.js');
 exports['Null'] = require('./nodes/Null.js');
 exports['Number'] = require('./nodes/Number.js');
 exports['OrderBy'] = require('./nodes/OrderBy.js');
+exports['RegexpOperation'] = require('./nodes/RegexpOperation.js');
 exports['Select'] = require('./nodes/Select.js');
 exports['StrictIn'] = require('./nodes/StrictIn.js');
 exports['String'] = require('./nodes/String.js');

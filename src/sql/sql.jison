@@ -53,6 +53,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 
 "LIKE" { return 'LIKE'; }
 "ILIKE" { return 'ILIKE'; }
+"REGEXP" { return 'REGEXP'; }
 
 \"(\\.|[^\\"])*\"	{ return 'STRING'; }
 \'(\\.|[^\\'])*\'	{ return 'STRING'; }
@@ -110,6 +111,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %left ','
 %left 'AS'
 %left 'LIKE' 'ILIKE'
+%left 'REGEXP'
 %left 'AND' 'OR'
 
 %left '.' '!'
@@ -169,6 +171,7 @@ keywords
 	| SECOND { $$ = $1 }
 	| LIKE { $$ = $1 }
 	| ILIKE { $$ = $1 }
+	| REGEXP { $$ = $1 }
 ;
 
 dataSourceIdent
@@ -256,6 +259,7 @@ expression
 	| expression '!=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
 	| expression 'LIKE' expression { $$ = new Nodes.LikeOperation($2, $1, $3); }
 	| expression 'ILIKE' expression { $$ = new Nodes.LikeOperation($2, $1, $3); }
+	| expression 'REGEXP' expression { $$ = new Nodes.RegexpOperation($2, $1, $3); }
 	| expression 'AND' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
 	| expression 'OR' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
 	| expression '>' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
