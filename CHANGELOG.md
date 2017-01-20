@@ -1,4 +1,4 @@
-## `v2.4.0` (upcoming release)
+## `v2.4.0` (2017-01-20)
 
 * LIKE and ILIKE (case-insensitive LIKE) was added
 * Automatical type coercion in date comparisons like `ts > NOW() - INTERVAL 1 DAY`
