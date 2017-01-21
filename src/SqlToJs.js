@@ -170,7 +170,7 @@ class SqlToJs
 		return this.codeFrom_UnaryOperation(unary);
 	}
 
-	codeFrom_UnaryArithmeticalOperation(unary)
+	codeFrom_UnaryArithmeticOperation(unary)
 	{
 		return this.codeFrom_UnaryOperation(unary);
 	}

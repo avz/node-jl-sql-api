@@ -271,6 +271,7 @@ expression
 	| expression '>=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
 	| expression '<' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
 	| expression '<=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| '+' expression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
 	| '-' expression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
 	| '!' expression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
 	| expression 'STRICT' 'IN' '(' expressionsList ')' { $$ = new Nodes.StrictIn($1, $5); }
