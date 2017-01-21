@@ -1,3 +1,7 @@
+## `v2.5.0` (upcoming release)
+
+* REGEXP support: `"string" REGEXP "/pattern/im"`
+
 ## `v2.4.0` (2017-01-20)
 
 * LIKE and ILIKE (case-insensitive LIKE) was added

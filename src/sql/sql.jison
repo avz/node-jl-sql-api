@@ -112,8 +112,6 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 
 %left ','
 %left 'AS'
-%left 'LIKE' 'ILIKE'
-%left 'REGEXP'
 %left 'AND' 'OR'
 
 %left '.' '!'
@@ -123,6 +121,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %left '=' '==' '!=' '===' '!=='
 %left '+' '-'
 %left '*' '/' '%'
+%left 'LIKE' 'ILIKE' 'REGEXP'
 %left 'COUNT'
 %left 'FROM' 'AS' 'DISTINCT' 'STRICT' 'IN' 'WHERE' 'HAVING' 'LIMIT' 'OFFSET'
 %left 'ORDER' 'GROUP' 'BY' 'ASC' 'DESC'

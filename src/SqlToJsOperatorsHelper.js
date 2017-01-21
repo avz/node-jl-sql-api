@@ -1,6 +1,7 @@
 'use strict';
 
 const Quoter = require('./Quoter');
+const RegexpUtils = require('./RegexpUtils');
 
 class SqlToJsOperatorsHelper
 {
@@ -82,6 +83,17 @@ class SqlToJsOperatorsHelper
 		const re = this.likeCompileRegex(likeString, caseSensitive);
 
 		return re.test('' + value);
+	}
+
+	/**
+	 * Этот метод используется только для динамических REGEXP
+	 * @param {string} regexpString
+	 * @param {string} value
+	 * @returns {boolean}
+	 */
+	regexp(regexpString, value)
+	{
+		return RegexpUtils.parseRegexp(regexpString).regexp.test(value);
 	}
 }
 
