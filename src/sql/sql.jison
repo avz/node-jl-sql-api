@@ -28,7 +28,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "TRUE"	{ return 'TRUE'; }
 "FALSE"	{ return 'FALSE'; }
 
-"NOT" { return 'NOT'; }s
+"NOT" { return 'NOT'; }
 
 "FROM"	{ return 'FROM'; }
 "DISTINCT"	{ return 'DISTINCT'; }
