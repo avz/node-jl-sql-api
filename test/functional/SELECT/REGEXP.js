@@ -38,6 +38,26 @@ describe('SELECT', () => {
 			;
 		});
 
+		it('NOT #1', (done) => {
+			jlSql.query('SELECT "hi" NOT REGEXP "/hi/" AS t')
+				.fromArrayOfObjects([{}])
+				.toArrayOfObjects((r) => {
+					assert.strictEqual(r[0].t, false);
+					done();
+				})
+			;
+		});
+
+		it('NOT #2', (done) => {
+			jlSql.query('SELECT "hi" NOT REGEXP "/hiy/" AS t')
+				.fromArrayOfObjects([{}])
+				.toArrayOfObjects((r) => {
+					assert.strictEqual(r[0].t, true);
+					done();
+				})
+			;
+		});
+
 		it('dynamic regexps', (done) => {
 			jlSql.query('SELECT "hi" REGEXP CONCAT("/", "hi", "/") AS t')
 				.fromArrayOfObjects([{}])

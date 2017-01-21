@@ -264,6 +264,7 @@ expression
 	| expression 'NOT' 'LIKE' expression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.LikeOperation($3, $1, $4)); }
 	| expression 'NOT' 'ILIKE' expression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.LikeOperation($3, $1, $4)); }
 	| expression 'REGEXP' expression { $$ = new Nodes.RegexpOperation($2, $1, $3); }
+	| expression 'NOT' 'REGEXP' expression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.RegexpOperation($3, $1, $4)); }
 	| expression 'AND' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
 	| expression 'OR' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
 	| expression '>' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
