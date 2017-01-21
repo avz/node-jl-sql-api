@@ -37,5 +37,15 @@ describe('SELECT', () => {
 				})
 			;
 		});
+
+		it('dynamic regexps', (done) => {
+			jlSql.query('SELECT "hi" REGEXP CONCAT("/", "hi", "/") AS t')
+				.fromArrayOfObjects([{}])
+				.toArrayOfObjects((r) => {
+					assert.strictEqual(r[0].t, true);
+					done();
+				})
+			;
+		});
 	});
 });
