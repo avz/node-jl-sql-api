@@ -2,6 +2,7 @@
 
 const assert = require('assert');
 const Parser = require('../../../src/sql/Parser');
+const SqlNodes = require('../../../src/sql/Nodes');
 
 describe('SQL Parser', () => {
 	const parse = (exp) => {
@@ -78,6 +79,29 @@ describe('SQL Parser', () => {
 					100
 				);
 			});
+		});
+	});
+
+	describe('BETWEEN', () => {
+		it('precedence with AND', () => {
+			const node = parse('1 AND 2 BETWEEN 3 AND 4 AND 5');
+
+			assert.ok(node.left.right instanceof SqlNodes.BetweenOperation);
+			assert.ok(node.left.right.left.value === 2);
+			assert.ok(node.left.right.rangeStart.value === 3);
+			assert.ok(node.left.right.rangeEnd.value === 4);
+		});
+
+		it('precedence with arithmetical', () => {
+			const node = parse('1 AND 2 + 2 BETWEEN 3 + 3 AND 4 + 4 AND 5');
+
+			assert.ok(node.left.right instanceof SqlNodes.BetweenOperation);
+			assert.ok(node.left.right.left instanceof SqlNodes.BinaryArithmeticOperation);
+			assert.ok(node.left.right.left.left.value === 2);
+			assert.ok(node.left.right.rangeStart instanceof SqlNodes.BinaryArithmeticOperation);
+			assert.ok(node.left.right.rangeStart.left.value === 3);
+			assert.ok(node.left.right.rangeEnd instanceof SqlNodes.BinaryArithmeticOperation);
+			assert.ok(node.left.right.rangeEnd.left.value === 4);
 		});
 	});
 });

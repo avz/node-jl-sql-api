@@ -57,6 +57,8 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "ILIKE" { return 'ILIKE'; }
 "REGEXP" { return 'REGEXP'; }
 
+"BETWEEN" { return 'BETWEEN'; }
+
 \"(\\.|[^\\"])*\"	{ return 'STRING'; }
 \'(\\.|[^\\'])*\'	{ return 'STRING'; }
 [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)? { return 'NUMBER'; }
@@ -113,6 +115,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %left ','
 %left 'AS'
 %left 'AND' 'OR'
+%left 'BETWEEN'
 
 %left '.' '!'
 %left 'NOT'
@@ -121,23 +124,28 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %left '=' '==' '!=' '===' '!=='
 %left '+' '-'
 %left '*' '/' '%'
+
 %left 'LIKE' 'ILIKE' 'REGEXP'
+
+%left 'UNARY_PREC'
+
 %left 'COUNT'
 %left 'FROM' 'AS' 'DISTINCT' 'STRICT' 'IN' 'WHERE' 'HAVING' 'LIMIT' 'OFFSET'
 %left 'ORDER' 'GROUP' 'BY' 'ASC' 'DESC'
 %left 'JOIN' 'INNER' 'LEFT'
-%left 'INTERVAL' 'DAY' 'YEAR' 'MONTH' 'DAYHOUR' 'HOUR' 'MINUTE' 'SECOND'
+%left 'DAY' 'YEAR' 'MONTH' 'DAYHOUR' 'HOUR' 'MINUTE' 'SECOND'
+%left 'INTERVAL'
 
 %left '(' ')'
 
-%start expressions
+%start queries
 
 %% /* language grammar */
 
-expressions
-	: select EOF { return $1; }
+queries
+	: insert EOF { return $1; }
 	| delete EOF { return $1; }
-	| insert EOF { return $1; }
+	| select EOF { return $1; }
 	| update EOF { return $1; }
 ;
 
@@ -174,6 +182,7 @@ keywords
 	| LIKE { $$ = $1 }
 	| ILIKE { $$ = $1 }
 	| REGEXP { $$ = $1 }
+	| NOT { $$ = $1 }
 ;
 
 dataSourceIdent
@@ -248,34 +257,32 @@ const
 ;
 
 expression
-	: expression '*' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
-	| expression '%' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
-	| expression '/' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
-	| expression '+' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
-	| expression '-' expression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
-	| expression '+' interval { $$ = new Nodes.IntervalOperation($2, $1, $3); }
-	| expression '-' interval { $$ = new Nodes.IntervalOperation($2, $1, $3); }
-	| expression '=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
-	| expression '!==' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
-	| expression '===' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
-	| expression '!=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
-	| expression 'LIKE' expression { $$ = new Nodes.LikeOperation($2, $1, $3); }
-	| expression 'ILIKE' expression { $$ = new Nodes.LikeOperation($2, $1, $3); }
-	| expression 'NOT' 'LIKE' expression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.LikeOperation($3, $1, $4)); }
-	| expression 'NOT' 'ILIKE' expression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.LikeOperation($3, $1, $4)); }
-	| expression 'REGEXP' expression { $$ = new Nodes.RegexpOperation($2, $1, $3); }
-	| expression 'NOT' 'REGEXP' expression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.RegexpOperation($3, $1, $4)); }
+	: predicate
 	| expression 'AND' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
 	| expression 'OR' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
-	| expression '>' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
-	| expression '>=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
-	| expression '<' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
-	| expression '<=' expression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
-	| '+' expression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
-	| '-' expression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
-	| '!' expression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
-	| expression 'STRICT' 'IN' '(' expressionsList ')' { $$ = new Nodes.StrictIn($1, $5); }
-	| expression 'IN' '(' expressionsList ')' { $$ = new Nodes.UnstrictIn($1, $4); }
+;
+
+baseExpression
+	: baseExpression '*' baseExpression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| baseExpression '%' baseExpression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| baseExpression '/' baseExpression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| baseExpression '+' baseExpression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| baseExpression '-' baseExpression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
+	| baseExpression '+' interval { $$ = new Nodes.IntervalOperation($2, $1, $3); }
+	| baseExpression '-' interval { $$ = new Nodes.IntervalOperation($2, $1, $3); }
+	| baseExpression '=' baseExpression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| baseExpression '!==' baseExpression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| baseExpression '===' baseExpression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| baseExpression '!=' baseExpression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| baseExpression '>' baseExpression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| baseExpression '>=' baseExpression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| baseExpression '<' baseExpression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| baseExpression '<=' baseExpression { $$ = new Nodes.ComparisonOperation($2, $1, $3); }
+	| '+' baseExpression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
+	| '-' baseExpression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
+	| '!' baseExpression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
+	| baseExpression 'STRICT' 'IN' '(' expressionsList ')' { $$ = new Nodes.StrictIn($1, $5); }
+	| baseExpression 'IN' '(' expressionsList ')' { $$ = new Nodes.UnstrictIn($1, $4); }
 	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), $3); }
 	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1)); }
 	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1])), new Nodes.ExpressionsList([$3])); }
@@ -287,6 +294,20 @@ expression
 	| 'BINDING_VALUE_SCALAR' { $$ = new Nodes.BindingValueScalar($1); }
 	| '(' expression ')' { $$ = new Nodes.Brackets($2); }
 	| jsonValue { $$ = $1 }
+	| baseExpression 'LIKE' baseExpression { $$ = new Nodes.LikeOperation($2, $1, $3); }
+	| baseExpression 'ILIKE' baseExpression { $$ = new Nodes.LikeOperation($2, $1, $3); }
+	| baseExpression 'NOT' 'LIKE' baseExpression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.LikeOperation($3, $1, $4)); }
+	| baseExpression 'NOT' 'ILIKE' baseExpression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.LikeOperation($3, $1, $4)); }
+	| baseExpression 'REGEXP' baseExpression { $$ = new Nodes.RegexpOperation($2, $1, $3); }
+	| baseExpression 'NOT' 'REGEXP' baseExpression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.RegexpOperation($3, $1, $4)); }
+;
+
+
+// only for solving `BETWEEN ... AND ...` issue
+predicate
+	: baseExpression 'BETWEEN' baseExpression AND predicate { $$ = new Nodes.BetweenOperation($1, $3, $5); }
+	| baseExpression 'NOT' 'BETWEEN' baseExpression AND predicate { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.BetweenOperation($1, $4, $6)); }
+	| baseExpression
 ;
 
 expressionsList

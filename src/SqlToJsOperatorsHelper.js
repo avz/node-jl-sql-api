@@ -95,6 +95,17 @@ class SqlToJsOperatorsHelper
 	{
 		return RegexpUtils.parseRegexp(regexpString).regexp.test(value);
 	}
+
+	/**
+	 * @param {mixed} value
+	 * @param {mixed} rangeStart
+	 * @param {mixed} rangeEnd
+	 * @returns {Boolean}
+	 */
+	between(value, rangeStart, rangeEnd)
+	{
+		return value >= rangeStart && value <= rangeEnd;
+	}
 }
 
 module.exports = SqlToJsOperatorsHelper;

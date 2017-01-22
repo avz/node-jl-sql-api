@@ -358,6 +358,22 @@ class SqlToJs
 			);
 		}
 	}
+
+	/**
+	 *
+	 * @param {BetweenOperation} exp
+	 * @returns {string}
+	 */
+	codeFrom_BetweenOperation(exp)
+	{
+		return (
+			'_helpers.operators.between('
+				+ this.nodeToCode(exp.left)
+				+ ', ' + this.nodeToCode(exp.rangeStart)
+				+ ', ' + this.nodeToCode(exp.rangeEnd)
+			+ ')'
+		);
+	}
 }
 
 module.exports = SqlToJs;

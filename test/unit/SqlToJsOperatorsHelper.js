@@ -39,4 +39,24 @@ describe('SqlToJsHelpers', () => {
 			assert.strictEqual(helper.likeCompileRegex(...c[0]).toString(), c[1]);
 		}
 	});
+
+	describe('between()', () => {
+		it('ranges', () => {
+			assert.strictEqual(helper.between(2, 1, 3), true);
+			assert.strictEqual(helper.between(0, 1, 3), false);
+			assert.strictEqual(helper.between(4, 1, 3), false);
+
+			assert.strictEqual(helper.between('aab', 'aaa', 'aac'), true);
+			assert.strictEqual(helper.between('aa', 'aaa', 'aac'), false);
+			assert.strictEqual(helper.between('aad', 'aaa', 'aac'), false);
+		});
+
+		it('including boundaries', () => {
+			assert.strictEqual(helper.between(1, 1, 2), true);
+			assert.strictEqual(helper.between(2, 1, 2), true);
+
+			assert.strictEqual(helper.between('aaa', 'aaa', 'aac'), true);
+			assert.strictEqual(helper.between('aac', 'aaa', 'aac'), true);
+		});
+	});
 });

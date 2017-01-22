@@ -1,6 +1,7 @@
 ## `v2.5.0` (upcoming release)
 
 * REGEXP support: `"string" REGEXP "/pattern/im"`
+* BETWEEN support
 
 ## `v2.4.0` (2017-01-20)
 
