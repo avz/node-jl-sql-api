@@ -21,6 +21,11 @@ class BindingIdent extends Node
 	{
 		return this.ident.slice(1);
 	}
+
+	childNodes()
+	{
+		return [];
+	}
 }
 
 module.exports = BindingIdent;

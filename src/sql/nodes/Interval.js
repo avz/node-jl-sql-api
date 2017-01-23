@@ -15,6 +15,17 @@ class Interval extends Node
 	{
 		this.deltas.push({expression, unit});
 	}
+
+	childNodes()
+	{
+		const childs = [];
+
+		for (const d of this.deltas) {
+			childs.push(d.expression);
+		}
+
+		return childs;
+	}
 }
 
 Interval.UNIT_YEAR = 'year';

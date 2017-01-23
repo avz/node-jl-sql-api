@@ -10,6 +10,11 @@ class Number extends Node
 
 		this.value = number - 0;
 	}
+
+	childNodes()
+	{
+		return [];
+	}
 }
 
 module.exports = Number;

@@ -16,6 +16,11 @@ class Ident extends Node
 	{
 		return Quoter.unquoteOptionalQuotes(string, '`');
 	}
+
+	childNodes()
+	{
+		return [];
+	}
 }
 
 module.exports = Ident;

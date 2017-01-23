@@ -10,6 +10,11 @@ class Null extends Node
 
 		this.value = null;
 	}
+
+	childNodes()
+	{
+		return [];
+	}
 }
 
 module.exports = Null;

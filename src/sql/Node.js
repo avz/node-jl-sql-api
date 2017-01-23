@@ -2,6 +2,7 @@
 
 const util = require('util');
 const ProgramError = require('../error/ProgramError');
+const ImplementationRequired = require('../error/ImplementationRequired');
 
 class Node
 {
@@ -55,7 +56,7 @@ class Node
 	 */
 	childNodes()
 	{
-		return [];
+		throw new ImplementationRequired(this.type() + '::childNodes()');
 	}
 
 	/**

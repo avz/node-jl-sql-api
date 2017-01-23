@@ -11,6 +11,11 @@ class Limit extends Node
 		this.count = count === undefined ? null : count;
 		this.offset = offset === undefined ? null : offset;
 	}
+
+	childNodes()
+	{
+		return [];
+	}
 }
 
 module.exports = Limit;

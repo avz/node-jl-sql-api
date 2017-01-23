@@ -10,6 +10,11 @@ class TableAlias extends Node
 
 		this.name = ident.name;
 	}
+
+	childNodes()
+	{
+		return [];
+	}
 }
 
 module.exports = TableAlias;

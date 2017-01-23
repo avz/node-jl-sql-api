@@ -10,6 +10,11 @@ class Boolean extends Node
 
 		this.value = !!bool;
 	}
+
+	childNodes()
+	{
+		return [];
+	}
 }
 
 module.exports = Boolean;

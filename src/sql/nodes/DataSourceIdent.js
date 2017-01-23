@@ -10,6 +10,11 @@ class DataSourceIdent extends Node
 
 		this.name = name;
 	}
+
+	childNodes()
+	{
+		return [];
+	}
 }
 
 module.exports = DataSourceIdent;

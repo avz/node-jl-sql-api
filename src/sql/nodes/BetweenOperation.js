@@ -12,6 +12,11 @@ class BetweenOperation extends Node
 		this.rangeStart = rangeStart;
 		this.rangeEnd = rangeEnd;
 	}
+
+	childNodes()
+	{
+		return [this.left];
+	}
 }
 
 module.exports = BetweenOperation;

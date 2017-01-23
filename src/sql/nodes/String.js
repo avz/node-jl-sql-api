@@ -11,6 +11,11 @@ class String extends Node
 
 		this.value = Quoter.unquote(string);
 	}
+
+	childNodes()
+	{
+		return [];
+	}
 }
 
 module.exports = String;
