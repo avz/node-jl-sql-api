@@ -2,6 +2,13 @@
 
 * REGEXP support: `"string" REGEXP "/pattern/im"`
 * BETWEEN support
+* IS support:
+  - `IS [NOT] NULL`
+  - `IS [NOT] BOOL` and alias `IS [NOT] BOOLEAN`
+  - `IS [NOT] NUMBER`
+  - `IS [NOT] ARRAY`
+  - `IS [NOT] OBJECT`
+  - `IS [NOT] STRING`
 
 ## `v2.4.0` (2017-01-20)
 

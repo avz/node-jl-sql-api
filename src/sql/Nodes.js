@@ -26,6 +26,7 @@ exports['InnerJoin'] = require('./nodes/InnerJoin.js');
 exports['Insert'] = require('./nodes/Insert.js');
 exports['Interval'] = require('./nodes/Interval.js');
 exports['IntervalOperation'] = require('./nodes/IntervalOperation.js');
+exports['IsOperation'] = require('./nodes/IsOperation.js');
 exports['LeftJoin'] = require('./nodes/LeftJoin.js');
 exports['LikeOperation'] = require('./nodes/LikeOperation.js');
 exports['Limit'] = require('./nodes/Limit.js');

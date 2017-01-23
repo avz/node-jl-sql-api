@@ -374,6 +374,21 @@ class SqlToJs
 			+ ')'
 		);
 	}
+
+	/**
+	 *
+	 * @param {IsOperation} exp
+	 * @returns {string}
+	 */
+	codeFrom_IsOperation(exp)
+	{
+		return (
+			'_helpers.operators.is('
+				+ this.nodeToCode(exp.left)
+				+ ', ' + JSON.stringify(exp.expected)
+			+ ')'
+		);
+	}
 }
 
 module.exports = SqlToJs;

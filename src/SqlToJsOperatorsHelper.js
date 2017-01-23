@@ -106,6 +106,34 @@ class SqlToJsOperatorsHelper
 	{
 		return value >= rangeStart && value <= rangeEnd;
 	}
+
+	is(value, expected)
+	{
+		/* eslint-disable indent, no-unreachable */
+		switch (expected) {
+			case 'array':
+				return value instanceof Array;
+			break;
+			case 'object':
+				return value !== null && typeof(value) === 'object' && !(value instanceof Array);
+			break;
+			case 'string':
+				return typeof(value) === 'string';
+			break;
+			case 'number':
+				return typeof(value) === 'number';
+			break;
+			case 'bool':
+				return typeof(value) === 'boolean';
+			break;
+			case 'null':
+				return value === null;
+			break;
+			default:
+				throw new Error('Unknown expected type: ' + expected);
+		}
+		/* eslint-enable indent, no-unreachable */
+	}
 }
 
 module.exports = SqlToJsOperatorsHelper;

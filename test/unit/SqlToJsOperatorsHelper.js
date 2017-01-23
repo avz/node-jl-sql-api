@@ -59,4 +59,47 @@ describe('SqlToJsHelpers', () => {
 			assert.strictEqual(helper.between('aac', 'aaa', 'aac'), true);
 		});
 	});
+
+	describe('is()', () => {
+		it('array', () => {
+			assert.strictEqual(helper.is([], 'array'), true);
+			assert.strictEqual(helper.is([1], 'array'), true);
+			assert.strictEqual(helper.is('abc', 'array'), false);
+			assert.strictEqual(helper.is({}, 'array'), false);
+		});
+
+		it('object', () => {
+			assert.strictEqual(helper.is({}, 'object'), true);
+			assert.strictEqual(helper.is(null, 'object'), false);
+			assert.strictEqual(helper.is([], 'object'), false);
+		});
+
+		it('string', () => {
+			assert.strictEqual(helper.is("", 'string'), true);
+			assert.strictEqual(helper.is("hi", 'string'), true);
+			assert.strictEqual(helper.is(1, 'string'), false);
+			assert.strictEqual(helper.is(['h'], 'string'), false);
+		});
+
+		it('number', () => {
+			assert.strictEqual(helper.is(1, 'number'), true);
+			assert.strictEqual(helper.is(0, 'number'), true);
+			assert.strictEqual(helper.is(1.1233, 'number'), true);
+			assert.strictEqual(helper.is("1", 'number'), false);
+		});
+
+		it('bool', () => {
+			assert.strictEqual(helper.is('true', 'bool'), false);
+			assert.strictEqual(helper.is(true, 'bool'), true);
+			assert.strictEqual(helper.is(false, 'bool'), true);
+			assert.strictEqual(helper.is(0, 'bool'), false);
+			assert.strictEqual(helper.is(1, 'bool'), false);
+		});
+
+		it('null', () => {
+			assert.strictEqual(helper.is(null, 'null'), true);
+			assert.strictEqual(helper.is(false, 'null'), false);
+			assert.strictEqual(helper.is({}, 'null'), false);
+		});
+	});
 });

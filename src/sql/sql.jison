@@ -23,10 +23,20 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 "VALUES"	{ return 'VALUES'; }
 "UPDATE"	{ return 'UPDATE'; }
 
-","	{ return ','; }
-"NULL"	{ return 'NULL'; }
-"TRUE"	{ return 'TRUE'; }
-"FALSE"	{ return 'FALSE'; }
+","      { return ','; }
+
+"NULL"   { return 'NULL'; }
+"TRUE"   { return 'TRUE'; }
+"FALSE"  { return 'FALSE'; }
+
+"IS"  { return 'IS_KEYWORD'; }
+
+"STRING"  { return 'STRING_KEYWORD'; }
+"NUMBER"  { return 'NUMBER_KEYWORD'; }
+"BOOL"    { return 'BOOL_KEYWORD'; }
+"BOOLEAN" { return 'BOOL_KEYWORD'; }
+"OBJECT"  { return 'OBJECT_KEYWORD'; }
+"ARRAY"   { return 'ARRAY_KEYWORD'; }
 
 "NOT" { return 'NOT'; }
 
@@ -117,7 +127,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %left 'AND' 'OR'
 %left 'BETWEEN'
 
-%left '.' '!'
+%left '.'
 %left 'NOT'
 %left '>' '<' '>=' '<='
 
@@ -127,7 +137,10 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 
 %left 'LIKE' 'ILIKE' 'REGEXP'
 
+%left 'IS_KEYWORD'
+
 %left 'UNARY_PREC'
+%left '!'
 
 %left 'COUNT'
 %left 'FROM' 'AS' 'DISTINCT' 'STRICT' 'IN' 'WHERE' 'HAVING' 'LIMIT' 'OFFSET'
@@ -136,6 +149,7 @@ if (!(JL_JISON_INPUT_SYMBOL in yy.lexer)) {
 %left 'DAY' 'YEAR' 'MONTH' 'DAYHOUR' 'HOUR' 'MINUTE' 'SECOND'
 %left 'INTERVAL'
 
+%left 'CALL_PREC'
 %left '(' ')'
 
 %start queries
@@ -183,6 +197,12 @@ keywords
 	| ILIKE { $$ = $1 }
 	| REGEXP { $$ = $1 }
 	| NOT { $$ = $1 }
+	| IS_KEYWORD { $$ = $1 }
+	| STRING_KEYWORD { $$ = $1 }
+	| NUMBER_KEYWORD { $$ = $1 }
+	| BOOL_KEYWORD { $$ = $1 }
+	| OBJECT_KEYWORD { $$ = $1 }
+	| ARRAY_KEYWORD { $$ = $1 }
 ;
 
 dataSourceIdent
@@ -262,6 +282,30 @@ expression
 	| expression 'OR' expression { $$ = new Nodes.LogicalOperation($2, $1, $3); }
 ;
 
+callExpression
+	: complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), $3); }
+	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1)); }
+	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1])), new Nodes.ExpressionsList([$3])); }
+	| 'COUNT' '(' 'DISTINCT' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', 'COUNT_DISTINCT'])), new Nodes.ExpressionsList([$4])); }
+	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1]))); }
+	| 'COUNT' { $$ = new Nodes.ColumnIdent(['@', $1]) }
+;
+
+typeKeyword
+	: 'STRING_KEYWORD' { $$ = $1 }
+	| 'NUMBER_KEYWORD' { $$ = $1 }
+	| 'BOOL_KEYWORD' { $$ = $1 }
+	| 'OBJECT_KEYWORD' { $$ = $1 }
+	| 'ARRAY_KEYWORD' { $$ = $1 }
+;
+
+isExpression
+	: baseExpression 'IS_KEYWORD' typeKeyword { $$ = new Nodes.IsOperation($1, $3); }
+	| baseExpression 'IS_KEYWORD' 'NULL' { $$ = new Nodes.IsOperation($1, $3); }
+	| baseExpression 'IS_KEYWORD' 'NOT' typeKeyword { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.IsOperation($1, $4)); }
+	| baseExpression 'IS_KEYWORD' 'NOT' 'NULL' { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.IsOperation($1, $4)); }
+;
+
 baseExpression
 	: baseExpression '*' baseExpression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
 	| baseExpression '%' baseExpression { $$ = new Nodes.BinaryArithmeticOperation($2, $1, $3); }
@@ -283,12 +327,7 @@ baseExpression
 	| '!' baseExpression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
 	| baseExpression 'STRICT' 'IN' '(' expressionsList ')' { $$ = new Nodes.StrictIn($1, $5); }
 	| baseExpression 'IN' '(' expressionsList ')' { $$ = new Nodes.UnstrictIn($1, $4); }
-	| complexIdent '(' expressionsList ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1), $3); }
-	| complexIdent '(' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent($1)); }
-	| 'COUNT' '(' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1])), new Nodes.ExpressionsList([$3])); }
-	| 'COUNT' '(' 'DISTINCT' expression ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', 'COUNT_DISTINCT'])), new Nodes.ExpressionsList([$4])); }
-	| 'COUNT' '(' '*' ')' { $$ = new Nodes.Call(new Nodes.FunctionIdent(new Nodes.ComplexIdent(['@', $1]))); }
-	| 'COUNT' { $$ = new Nodes.ColumnIdent(['@', $1]) }
+	| callExpression %prec 'CALL_PREC' { $$ = $1 }
 	| complexIdent { $$ = Nodes.ColumnIdent.fromComplexIdent($1) }
 	| const { $$ = $1; }
 	| 'BINDING_VALUE_SCALAR' { $$ = new Nodes.BindingValueScalar($1); }
@@ -300,6 +339,7 @@ baseExpression
 	| baseExpression 'NOT' 'ILIKE' baseExpression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.LikeOperation($3, $1, $4)); }
 	| baseExpression 'REGEXP' baseExpression { $$ = new Nodes.RegexpOperation($2, $1, $3); }
 	| baseExpression 'NOT' 'REGEXP' baseExpression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.RegexpOperation($3, $1, $4)); }
+	| isExpression %prec 'IS_KEYWORD' { $$ = $1 }
 ;
 
 
