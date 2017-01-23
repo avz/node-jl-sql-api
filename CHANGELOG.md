@@ -1,4 +1,4 @@
-## `v2.5.0` (upcoming release)
+## `v2.5.0` (2017-01-23)
 
 * `REGEXP` support: `"string" REGEXP "/pattern/im"`
 * `BETWEEN` support
