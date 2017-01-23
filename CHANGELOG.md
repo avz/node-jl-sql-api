@@ -1,8 +1,8 @@
 ## `v2.5.0` (upcoming release)
 
-* REGEXP support: `"string" REGEXP "/pattern/im"`
-* BETWEEN support
-* IS support:
+* `REGEXP` support: `"string" REGEXP "/pattern/im"`
+* `BETWEEN` support
+* `IS` support:
   - `IS [NOT] NULL`
   - `IS [NOT] BOOL` and alias `IS [NOT] BOOLEAN`
   - `IS [NOT] NUMBER`
@@ -12,7 +12,7 @@
 
 ## `v2.4.0` (2017-01-20)
 
-* LIKE and ILIKE (case-insensitive LIKE) was added
+* `LIKE` and `ILIKE` (case-insensitive `LIKE`) was added
 * Automatical type coercion in date comparisons like `ts > NOW() - INTERVAL 1 DAY`
 
 ## `v2.3.0` (2017-01-19)
@@ -22,7 +22,7 @@
 
 ## `v2.2.0` (2017-01-01)
 
-* New aggregation function: AVG()
+* New aggregation function: `AVG()`
 
 ## `v2.1.0` (2016-12-22)
 
