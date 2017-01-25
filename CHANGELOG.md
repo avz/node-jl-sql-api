@@ -2,6 +2,7 @@
 
 * Multiline JSON object are supported
 
+
 ## `v2.5.0` (2017-01-23)
 
 * `REGEXP` support: `"string" REGEXP "/pattern/im"`
@@ -14,23 +15,28 @@
   - `IS [NOT] OBJECT`
   - `IS [NOT] STRING`
 
+
 ## `v2.4.0` (2017-01-20)
 
 * `LIKE` and `ILIKE` (case-insensitive `LIKE`) was added
 * Automatical type coercion in date comparisons like `ts > NOW() - INTERVAL 1 DAY`
+
 
 ## `v2.3.0` (2017-01-19)
 
 * `SELECT ... FROM dataSource` support
 * JSON objects can now be created as `{key: "value"}` not only JSON-compliant form `{"key": "value"}`
 
+
 ## `v2.2.0` (2017-01-01)
 
 * New aggregation function: `AVG()`
 
+
 ## `v2.1.0` (2016-12-22)
 
 * Arrays now supports multi-value bindings: `SELECT [1, 2, ::other, 3]`
+
 
 ## `v2.0.0` (2016-12-21)
 
@@ -44,10 +50,12 @@ New features:
 * Bindings and column values in JSON: `SELECT {"column": columnName, "binded": :bind}`
 * `INSERT` now supports bindings
 
+
 ## `v1.5.0` (2016-12-20)
 
 * `SELECT DISTINCT ...` support
 * `SELECT COUNT(DISTINCT ...)` support
+
 
 ## `v1.4.0` (2016-12-14)
 
@@ -58,16 +66,19 @@ New features:
 * Added support for E-notation for floating numbers
 * Support for `SELECT *, [fields...]`
 
+
 ## `v1.3.0` (2016-12-05)
 
 * Added the ability to manipulate dates using the INTERVAL operators
 * `DATE()` now return dates in local timezone instead of UTC
+
 
 ## `v1.2.0` (2016-12-03)
 
 * Binding can now be used for data sources (`JOIN [:name] ON @name.field = field`)
 * Sorting strings are now always done in byte-by-byte representation of the string in UTF-8.
   Made to be compatible with the sorting of `sort`
+
 
 ## `v1.1.0` (2016-12-01)
 
