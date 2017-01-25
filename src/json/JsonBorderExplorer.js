@@ -218,7 +218,7 @@ class JsonBorderExplorer
 
 	earnKeyword()
 	{
-		if (this.buf.length - this.off > this.keywordRemaining) {
+		if (this.buf.length - this.off >= this.keywordRemaining) {
 			this.off += this.keywordRemaining;
 
 			return true;
@@ -236,7 +236,7 @@ class JsonBorderExplorer
 		for (; this.off < this.buf.length; this.off++) {
 			const chr = this.buf[this.off];
 
-			if (!((chr >= 0x30 && chr <= 0x39) || chr === 0x2d || chr === 0x2e || chr === 0x45 || chr === 0x65)) { // '0' - '9', '-', 'E', 'e'
+			if (!((chr >= 0x30 && chr <= 0x39) || chr === 0x2d || chr === 0x2b || chr === 0x2e || chr === 0x45 || chr === 0x65)) { // '0' - '9', '-', 'E', 'e'
 				return true;
 			}
 		}
