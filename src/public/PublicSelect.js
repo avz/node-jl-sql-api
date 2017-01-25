@@ -5,7 +5,7 @@ const JlPassThrough = require('../stream/JlPassThrough');
 const JlTransformsChain = require('../stream/JlTransformsChain');
 
 const JsonParser = require('../stream/JsonParser');
-const LinesSplitter = require('../stream/LinesSplitter');
+const JsonSplitter = require('../stream/JsonSplitter');
 const ChunkJoiner = require('../stream/ChunkJoiner');
 
 const PublicSelectFrom = require('./PublicSelectFrom');
@@ -69,7 +69,7 @@ class PublicSelect
 	 */
 	fromJsonStream(stream)
 	{
-		const chain = [new LinesSplitter, new JsonParser];
+		const chain = [new JsonSplitter, new JsonParser];
 
 		if (stream) {
 			chain.unshift(stream);

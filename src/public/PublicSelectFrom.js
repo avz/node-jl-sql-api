@@ -11,7 +11,7 @@ const ChunkSplitter = require('../stream/ChunkSplitter');
 const DataSource = require('../DataSource');
 
 const JsonParser = require('../stream/JsonParser');
-const LinesSplitter = require('../stream/LinesSplitter');
+const JsonSplitter = require('../stream/JsonSplitter');
 const ChunkJoiner = require('../stream/ChunkJoiner');
 
 const ProgramError = require('../error/ProgramError');
@@ -118,7 +118,7 @@ class PublicSelectFrom
 	 */
 	addJsonStream(location, stream)
 	{
-		const chain = new JlTransformsChain([stream, new LinesSplitter, new JsonParser]);
+		const chain = new JlTransformsChain([stream, new JsonSplitter, new JsonParser]);
 
 		this.publicSelect.dataSourceApiResolver.addDataSource(
 			this._path(location),

@@ -1,3 +1,7 @@
+## `v2.6.0` (upcoming release)
+
+* Multiline JSON object are supported
+
 ## `v2.5.0` (2017-01-23)
 
 * `REGEXP` support: `"string" REGEXP "/pattern/im"`
