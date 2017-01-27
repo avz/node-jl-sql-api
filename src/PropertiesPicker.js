@@ -158,9 +158,9 @@ class PropertiesPicker
 			return lines;
 		};
 
-		let code = 'const result = ' + genObjectLiteral(resultObject) + ';\n\n';
+		let code = 'var result = ' + genObjectLiteral(resultObject) + ';\n\n';
 
-		code += 'let tmp;\n\n';
+		code += 'var tmp;\n\n';
 		code += genPropertiesAssigns('result', [], resultObject, 'tmp').join('\n') + '\n';
 		code += 'return result;\n';
 
