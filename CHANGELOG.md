@@ -1,4 +1,4 @@
-## `v2.6.0` (upcoming release)
+## `v2.6.0` (2017-01-27)
 
 * Multiline JSON objects are supported
 
