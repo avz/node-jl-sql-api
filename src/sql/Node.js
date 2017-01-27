@@ -59,20 +59,14 @@ class Node
 		throw new ImplementationRequired(this.type() + '::childNodes()');
 	}
 
-	/**
-	 *
-	 * @returns {Generator|Node[]}
-	 */
-	*eachChildNodeRecursive()
+	eachChildNodeRecursive(cb)
 	{
 		const childs = this.childNodes();
 
 		for (const child of childs) {
-			yield child;
+			cb(child);
 
-			for (const subchild of child.eachChildNodeRecursive()) {
-				yield subchild;
-			}
+			child.eachChildNodeRecursive(cb);
 		}
 	}
 
@@ -84,9 +78,9 @@ class Node
 	{
 		const nodes = [];
 
-		for (const f of this.eachChildNodeRecursive()) {
+		this.eachChildNodeRecursive(f => {
 			nodes.push(f);
-		}
+		});
 
 		return nodes;
 	}

@@ -100,7 +100,7 @@ class Binder
 
 	expandInplace(ast)
 	{
-		for (const node of ast.eachChildNodeRecursive()) {
+		ast.eachChildNodeRecursive(node => {
 			if (node instanceof Nodes.BindingValueScalar) {
 
 				node.expand(this._need(node.ident));
@@ -115,7 +115,7 @@ class Binder
 
 				node.expand(fragments);
 			}
-		}
+		});
 	}
 }
 

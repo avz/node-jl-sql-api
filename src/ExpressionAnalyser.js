@@ -34,13 +34,15 @@ class ExpressionAnalyser
 			}
 		}
 
-		for (const node of expression.eachChildNodeRecursive()) {
-			if (this.isAggregationExpression(node)) {
-				return true;
-			}
-		}
+		var isAggregation = false;
 
-		return false;
+		expression.eachChildNodeRecursive(node => {
+			if (this.isAggregationExpression(node)) {
+				isAggregation = true;
+			}
+		});
+
+		return isAggregation;
 	}
 
 	determineExpressionDataType(expression)
