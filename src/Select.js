@@ -126,11 +126,32 @@ class Select
 
 	resolveDataSource(dataSourceResolversPool, tableAst)
 	{
-		const dataSource = dataSourceResolversPool.resolve(tableAst.location.getFragments());
+		const dataSource = dataSourceResolversPool.resolve(tableAst.source.getFragments());
 
 		if (!dataSource) {
-			throw new DataSourceNotFound(tableAst.location.getFragments());
+			throw new DataSourceNotFound(tableAst.source.getFragments());
 		}
+
+		let tableAlias = tableAst.alias && tableAst.alias.name;
+		const dataSourcePath = tableAst.source.getFragments();
+
+		if (!tableAlias) {
+			tableAlias = dataSourceResolversPool.extractBindingAlias(tableAst.source);
+
+			if (tableAlias !== null) {
+				tableAlias = '@' + tableAlias;
+			}
+		}
+
+		if (!tableAlias) {
+			tableAlias = dataSourceResolversPool.extractAlias(dataSourcePath);
+
+			if (tableAlias !== null) {
+				tableAlias = '@' + tableAlias;
+			}
+		}
+
+		dataSource.alias = tableAlias;
 
 		return dataSource;
 	}
@@ -155,36 +176,16 @@ class Select
 				throw new SqlNotSupported('INNER ans LEFT JOINs only supported yet');
 			}
 
-			let tableAlias = joinAst.table.alias && joinAst.table.alias.name;
-			const dataSourcePath = joinAst.table.location.getFragments();
+			const dataSource = this.resolveDataSource(dataSourceResolversPool, joinAst.table);
 
-			if (!tableAlias) {
-				tableAlias = dataSourceResolversPool.extractBindingAlias(joinAst.table.location);
-
-				if (tableAlias !== null) {
-					tableAlias = '@' + tableAlias;
-				}
-			}
-
-			if (!tableAlias) {
-				tableAlias = dataSourceResolversPool.extractAlias(dataSourcePath);
-
-				if (tableAlias !== null) {
-					tableAlias = '@' + tableAlias;
-				}
-			}
-
-			if (!tableAlias) {
+			if (dataSource.alias === null) {
 				throw new SqlLogicError('Tables must have an alias');
 			}
-
-			const dataSource = this.resolveDataSource(dataSourceResolversPool, joinAst.table);
 
 			joins.push(new Join(
 				joinType,
 				this.preparingContext,
 				dataSource,
-				tableAlias,
 				joinAst.expression
 			));
 		}

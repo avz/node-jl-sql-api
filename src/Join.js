@@ -11,16 +11,15 @@ class Join
 	 * @param {string} type
 	 * @param {PreparingContext} preparingContext
 	 * @param {DataSource} joiningSourceStream
-	 * @param {string} joiningDataSourceName
 	 * @param {Node} ast
 	 * @returns {Join}
 	 */
-	constructor(type, preparingContext, joiningSourceStream, joiningDataSourceName, ast)
+	constructor(type, preparingContext, joiningSourceStream, ast)
 	{
 		this.type = type;
 		this.preparingContext = preparingContext;
 		this.joiningDataSource = joiningSourceStream;
-		this.joiningDataSourceName = joiningDataSourceName;
+		this.joiningDataSourceName = joiningSourceStream.alias;
 		this.ast = ast;
 
 		this.joiningDataSourceSortingsColumns = [];

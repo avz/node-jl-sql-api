@@ -8,11 +8,13 @@ class DataSource
 	/**
 	 *
 	 * @param {Readable} stream
+	 * @param {string} alias
 	 * @returns {DataSource}
 	 */
-	constructor(stream)
+	constructor(stream, alias = undefined)
 	{
 		this.stream = stream;
+		this.alias = alias;
 	}
 }
 
