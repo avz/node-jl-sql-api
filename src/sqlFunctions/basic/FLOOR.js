@@ -14,7 +14,9 @@ class FLOOR extends BasicFunction
 	{
 		this.needArgumentsCount(args, 1);
 
-		return Math.floor(args[0]);
+		const r = Math.floor(args[0]);
+
+		return isNaN(r) ? null : r;
 	}
 }
 

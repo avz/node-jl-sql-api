@@ -14,7 +14,9 @@ class CEIL extends BasicFunction
 	{
 		this.needArgumentsCount(args, 1);
 
-		return Math.ceil(args[0]);
+		const r = Math.ceil(args[0]);
+
+		return isNaN(r) ? null : r;
 	}
 }
 

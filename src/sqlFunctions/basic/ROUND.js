@@ -14,7 +14,9 @@ class ROUND extends BasicFunction
 	{
 		this.needArgumentsCount(args, 1);
 
-		return Math.round(args[0]);
+		const r = Math.round(args[0]);
+
+		return isNaN(r) ? null : r;
 	}
 }
 
