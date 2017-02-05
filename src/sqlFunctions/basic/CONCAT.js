@@ -2,6 +2,7 @@
 
 const BasicFunction = require('../../BasicFunction');
 const DataType = require('../../DataType');
+const STRING = require('./STRING');
 
 class CONCAT extends BasicFunction
 {
@@ -10,9 +11,14 @@ class CONCAT extends BasicFunction
 		return DataType.STRING;
 	}
 
+	_stringify(arg)
+	{
+		return STRING.prototype.call([arg]);
+	}
+
 	call(args)
 	{
-		return args.join('');
+		return args.map(this._stringify).join('');
 	}
 }
 
