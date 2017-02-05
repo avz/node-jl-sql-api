@@ -18,7 +18,13 @@ class UNIX_TIMESTAMP extends BasicFunction
 			now = new Date(args[0]);
 		}
 
-		return Math.floor(now.getTime() / 1000);
+		const ts = now.getTime();
+
+		if (isNaN(ts)) {
+			return null;
+		}
+
+		return Math.floor(ts / 1000);
 	}
 }
 
