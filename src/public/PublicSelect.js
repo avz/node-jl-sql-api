@@ -10,9 +10,6 @@ const ChunkJoiner = require('../stream/ChunkJoiner');
 
 const PublicSelectFrom = require('./PublicSelectFrom');
 
-const DataSourceApiResolver = require('../DataSourceApiResolver');
-const DataSourceResolversPool = require('../DataSourceResolversPool');
-
 const Binder = require('../Binder');
 
 class PublicSelect
@@ -20,22 +17,14 @@ class PublicSelect
 	/**
 	 *
 	 * @param {Select} select
-	 * @param {DataSourceResolver[]} dataSourceResolvers
+	 * @param {DataSourceApiResolver} dataSourceApiResolver
 	 * @returns {PublicSelect}
 	 */
-	constructor(select, dataSourceResolvers = [])
+	constructor(select, dataSourceApiResolver)
 	{
 		this.select = select;
 		this.binder = new Binder;
-		this.dataSourceApiResolver = new DataSourceApiResolver;
-
-		this.dataSourceResolversPool = new DataSourceResolversPool;
-
-		for (const resolver of dataSourceResolvers) {
-			this.dataSourceResolversPool.add(resolver);
-		}
-
-		this.dataSourceResolversPool.add(this.dataSourceApiResolver);
+		this.dataSourceApiResolver = dataSourceApiResolver;
 	}
 
 	/**

@@ -1,6 +1,6 @@
 'use strict';
 
-const SqlNodes = require('./sql/Nodes');
+const DataSource = require('./DataSource');
 
 class DataSourceResolversPool
 {
@@ -30,24 +30,12 @@ class DataSourceResolversPool
 			const source = resolver._resolve(pathFragments);
 
 			if (source) {
-				return source;
+				if (source instanceof DataSource) {
+					return source;
+				} else {
+					return new DataSource(source, resolver.extractAlias(pathFragments));
+				}
 			}
-		}
-
-		return null;
-	}
-
-	/**
-	 *
-	 * @param {ComplexIdent} complexIdent
-	 * @returns {string}
-	 */
-	extractBindingAlias(complexIdent)
-	{
-		const lastFragment = complexIdent.fragments[complexIdent.fragments.length - 1];
-
-		if (lastFragment instanceof SqlNodes.BindingIdent || lastFragment instanceof SqlNodes.BindingIdentList) {
-			return lastFragment.basename();
 		}
 
 		return null;

@@ -3,6 +3,7 @@
 const Engine = require('./Engine');
 const PublicSelect = require('./public/PublicSelect');
 const PublicApiOptions = require('./PublicApiOptions');
+const DataSourceApiResolver = require('./DataSourceApiResolver');
 const Explainer = require('./Explainer');
 
 class PublicApi
@@ -19,7 +20,7 @@ class PublicApi
 			this.options = new PublicApiOptions(options);
 		}
 
-		this.engine = new Engine();
+		this.engine = new Engine(this.options);
 	}
 
 	/**
@@ -29,7 +30,9 @@ class PublicApi
 	 */
 	query(sql)
 	{
-		return new PublicSelect(this.engine.createQuery(sql, this.options), this.options.dataSourceResolvers);
+		const dataSourceInternalResolver = new DataSourceApiResolver();
+
+		return new PublicSelect(this.engine.createQuery(sql, dataSourceInternalResolver), dataSourceInternalResolver);
 	}
 
 	explain(select)

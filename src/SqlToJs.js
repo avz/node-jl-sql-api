@@ -3,6 +3,8 @@
 const AggregationFunction = require('./AggregationFunction');
 const SqlToJsHelpers = require('./SqlToJsHelpers');
 const RegexpUtils = require('./RegexpUtils');
+const RuntimeContext = require('./RuntimeContext');
+const FunctionsMap = require('./FunctionsMap');
 
 const ProgramError = require('./error/ProgramError');
 
@@ -14,7 +16,7 @@ class SqlToJs
 	 * @param {RuntimeContext} runtimeContext
 	 * @returns {SqlToJs}
 	 */
-	constructor(functionsMap, runtimeContext)
+	constructor(functionsMap = new FunctionsMap, runtimeContext = new RuntimeContext(new FunctionsMap))
 	{
 		this.runtimeContext = runtimeContext;
 		this.functionsMap = functionsMap;

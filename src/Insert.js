@@ -6,24 +6,23 @@ const DataRow = require('./DataRow');
 class Insert
 {
 	/**
-	 *
+	 * @param {DataProvider} dataProvider
 	 * @param {PreparingContext} preparingContext
 	 * @param {RuntimeContext} runtimeContext
 	 * @param {Node} ast
 	 */
-	constructor(preparingContext, runtimeContext, ast)
+	constructor(dataProvider, preparingContext, runtimeContext, ast)
 	{
+		this.dataProvider = dataProvider;
 		this.preparingContext = preparingContext;
 		this.runtimeContext = runtimeContext;
 		this.ast = ast;
 	}
 
 	/**
-	 *
-	 * @param {DataSourceResolversPool} dataSourceResolversPool
 	 * @returns {Append}
 	 */
-	stream(dataSourceResolversPool)
+	stream()
 	{
 		const dummyRow = new DataRow({});
 		const rows = [];

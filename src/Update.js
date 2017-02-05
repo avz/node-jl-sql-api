@@ -12,13 +12,14 @@ const SqlLogicError = require('./error/SqlLogicError');
 class Update
 {
 	/**
-	 *
+	 * @param {DataProvider} dataProvider
 	 * @param {PreparingContext} preparingContext
 	 * @param {RuntimeContext} runtimeContext
 	 * @param {SqlNodes.Update} ast
 	 */
-	constructor(preparingContext, runtimeContext, ast)
+	constructor(dataProvider, preparingContext, runtimeContext, ast)
 	{
+		this.dataProvider = dataProvider;
 		this.preparingContext = preparingContext;
 		this.runtimeContext = runtimeContext;
 		this.ast = ast;
@@ -39,11 +40,9 @@ class Update
 	}
 
 	/**
-	 *
-	 * @param {DataSourceResolversPool} dataSourceResolversPool
 	 * @returns {JlTransformsChain}
 	 */
-	stream(dataSourceResolversPool)
+	stream()
 	{
 		const filter = this.ast.where ? this.preparingContext.sqlToJs.nodeToFunction(this.ast.where) : null;
 		const pipeline = [new Mutator(DataRow.wrap)];

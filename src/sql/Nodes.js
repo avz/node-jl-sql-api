@@ -16,6 +16,7 @@ exports['Column'] = require('./nodes/Column.js');
 exports['ColumnIdent'] = require('./nodes/ColumnIdent.js');
 exports['ComparisonOperation'] = require('./nodes/ComparisonOperation.js');
 exports['ComplexIdent'] = require('./nodes/ComplexIdent.js');
+exports['DataSourceCall'] = require('./nodes/DataSourceCall.js');
 exports['DataSourceIdent'] = require('./nodes/DataSourceIdent.js');
 exports['Delete'] = require('./nodes/Delete.js');
 exports['ExpressionsList'] = require('./nodes/ExpressionsList.js');

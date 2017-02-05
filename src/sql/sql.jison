@@ -274,6 +274,7 @@ scalarConst
 
 const
 	: scalarConst { $$ = $1; }
+	| jsonValue { $$ = $1; }
 ;
 
 expression
@@ -332,7 +333,6 @@ baseExpression
 	| const { $$ = $1; }
 	| 'BINDING_VALUE_SCALAR' { $$ = new Nodes.BindingValueScalar($1); }
 	| '(' expression ')' { $$ = new Nodes.Brackets($2); }
-	| jsonValue { $$ = $1 }
 	| baseExpression 'LIKE' baseExpression { $$ = new Nodes.LikeOperation($2, $1, $3); }
 	| baseExpression 'ILIKE' baseExpression { $$ = new Nodes.LikeOperation($2, $1, $3); }
 	| baseExpression 'NOT' 'LIKE' baseExpression { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.LikeOperation($3, $1, $4)); }
@@ -384,8 +384,16 @@ selectColumns
 ;
 
 table
-	: complexIdent AS dataSourceIdent { $$ = new Nodes.Table(new Nodes.TableLocation($1), new Nodes.TableAlias($3)); }
-	| complexIdent { $$ = new Nodes.Table(new Nodes.TableLocation($1)); }
+	: dataSourceReadable { $$ = new Nodes.Table($1); }
+	| dataSourceReadable AS dataSourceIdent { $$ = new Nodes.Table($1, new Nodes.TableAlias($3)); }
+;
+
+dataSourceReadable
+	: complexIdent { $$ = new Nodes.TableLocation($1); }
+	| STRING { $$ = new Nodes.TableLocation(new Nodes.ComplexIdent([$1])); }
+	| complexIdent '(' ')' { $$ = new Nodes.DataSourceCall(new Nodes.FunctionIdent($1)); }
+	| complexIdent '(' dataSourceReadable ')' { $$ = new Nodes.DataSourceCall(new Nodes.FunctionIdent($1), $3); }
+	| complexIdent '(' dataSourceReadable ',' const ')' { $$ = new Nodes.DataSourceCall(new Nodes.FunctionIdent($1), $3, $5); }
 ;
 
 selectFrom

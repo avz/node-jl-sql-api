@@ -27,12 +27,12 @@ const DataSourceNotFound = require('./error/DataSourceNotFound');
 class Select
 {
 	/**
-	 *
+	 * @param {DataProvider} dataProvider
 	 * @param {PreparingContext} preparingContext
 	 * @param {RuntimeContext} runtimeContext
 	 * @param {Node} ast
 	 */
-	constructor(preparingContext, runtimeContext, ast)
+	constructor(dataProvider, preparingContext, runtimeContext, ast)
 	{
 		if (ast.limit) {
 			throw new SqlNotSupported('LIMIT is not supported yet');
@@ -41,6 +41,11 @@ class Select
 		if (ast.distinct && ast.groups.length) {
 			throw new SqlNotSupported('SELECT DISTINCT and GROUP BY');
 		}
+
+		/**
+		 * @type {DataProvider}
+		 */
+		this.dataProvider = dataProvider;
 
 		/**
 		 * @type {PreparingContext}
@@ -124,44 +129,30 @@ class Select
 		return new Filter(this.sqlToJs.nodeToFunction(this.ast.having));
 	}
 
-	resolveDataSource(dataSourceResolversPool, tableAst)
+	/**
+	 *
+	 * @param {SqlNodes.Table} tableAst
+	 * @returns {DataSource}
+	 */
+	resolveDataSource(tableAst)
 	{
-		const dataSource = dataSourceResolversPool.resolve(tableAst.source.getFragments());
+		const dataSource = this.dataProvider.getDataSource(tableAst);
 
 		if (!dataSource) {
 			throw new DataSourceNotFound(tableAst.source.getFragments());
 		}
 
-		let tableAlias = tableAst.alias && tableAst.alias.name;
-		const dataSourcePath = tableAst.source.getFragments();
-
-		if (!tableAlias) {
-			tableAlias = dataSourceResolversPool.extractBindingAlias(tableAst.source);
-
-			if (tableAlias !== null) {
-				tableAlias = '@' + tableAlias;
-			}
+		if (tableAst.alias && tableAst.alias.name) {
+			dataSource.alias = tableAst.alias.name;
 		}
-
-		if (!tableAlias) {
-			tableAlias = dataSourceResolversPool.extractAlias(dataSourcePath);
-
-			if (tableAlias !== null) {
-				tableAlias = '@' + tableAlias;
-			}
-		}
-
-		dataSource.alias = tableAlias;
 
 		return dataSource;
 	}
 
 	/**
-	 *
-	 * @param {DataSourceResolverPool} dataSourceResolversPool
 	 * @returns {Join[]}
 	 */
-	joins(dataSourceResolversPool)
+	joins()
 	{
 		const joins = [];
 
@@ -176,7 +167,7 @@ class Select
 				throw new SqlNotSupported('INNER ans LEFT JOINs only supported yet');
 			}
 
-			const dataSource = this.resolveDataSource(dataSourceResolversPool, joinAst.table);
+			const dataSource = this.resolveDataSource(joinAst.table);
 
 			if (dataSource.alias === null) {
 				throw new SqlLogicError('Tables must have an alias');
@@ -318,11 +309,9 @@ class Select
 	}
 
 	/**
-	 *
-	 * @param {DataResolversPool} dataSourceResolversPool
 	 * @returns {JlTransformsChain}
 	 */
-	stream(dataSourceResolversPool)
+	stream()
 	{
 		const pipeline = [];
 
@@ -332,7 +321,7 @@ class Select
 				throw new SqlNotSupported('Data source in FROM should not have an alias');
 			}
 
-			const mainDataSource = this.resolveDataSource(dataSourceResolversPool, this.ast.table);
+			const mainDataSource = this.resolveDataSource(this.ast.table);
 
 			pipeline.push(new Terminator);
 			pipeline.push(mainDataSource.stream);
@@ -340,7 +329,7 @@ class Select
 
 		pipeline.push(new Mutator(DataRow.wrap));
 
-		const joins = this.joins(dataSourceResolversPool);
+		const joins = this.joins();
 
 		for (const join of joins) {
 			pipeline.push(...this.joinerPipeline(join));

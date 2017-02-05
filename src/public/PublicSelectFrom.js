@@ -34,7 +34,7 @@ class PublicSelectFrom
 	{
 		const chain = [
 			this.inputStream,
-			this.select.stream(this.publicSelect.dataSourceResolversPool),
+			this.select.stream(),
 			new ChunkSplitter
 		];
 
@@ -54,7 +54,7 @@ class PublicSelectFrom
 	{
 		const chain = [
 			this.inputStream,
-			this.select.stream(this.publicSelect.dataSourceResolversPool),
+			this.select.stream(),
 			new JsonStringifier,
 			new LinesJoiner
 		];

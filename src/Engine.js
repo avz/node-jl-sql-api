@@ -3,44 +3,68 @@
 const SqlParser = require('./sql/Parser');
 const SqlNodes = require('./sql/Nodes');
 const SqlToJs = require('./SqlToJs');
+
 const PreparingContext = require('./PreparingContext');
 const RuntimeContext = require('./RuntimeContext');
 const FunctionsMap = require('./FunctionsMap');
+
+const DataSourceNotFound = require('./error/DataSourceNotFound');
+
+const DataSource = require('./DataSource');
+const DataSourceApiResolver = require('./DataSourceApiResolver');
+const DataSourceResolversPool = require('./DataSourceResolversPool');
+const DataProvider = require('./DataProvider');
+const DataSourceAnalyzer = require('./dataSource/DataSourceAnalyzer');
+const DataFunctionsRegistry = require('./dataSource/DataFunctionsRegistry');
+const DataFunctionDescription = require('./dataSource/DataFunctionDescription');
+
 const Select = require('./Select');
 const Insert = require('./Insert');
 const Update = require('./Update');
+
 const path = require('path');
 
 class Engine
 {
 	/**
 	 *
-	 * @param {string} sql
 	 * @param {PublicApiOptions} options
+	 */
+	constructor(options = {})
+	{
+		this.options = options;
+		this.functionsMap = this.createFunctionsMap();
+	}
+
+	/**
+	 *
+	 * @param {string} sql
+	 * @param {DataSourceApiResolver} dataSourceInternalResolver
 	 * @returns {Select|Insert}
 	 */
-	createQuery(sql, options = {})
+	createQuery(sql, dataSourceInternalResolver = new DataSourceApiResolver())
 	{
-		const functionsMap = this.createFunctionsMap();
-		const runtimeContext = new RuntimeContext(functionsMap);
+		const runtimeContext = new RuntimeContext(this.functionsMap);
 
 		const sqlToJs = new SqlToJs(
-			functionsMap,
+			this.functionsMap,
 			runtimeContext
 		);
 
 		const preparingContext = new PreparingContext(
 			sqlToJs,
-			functionsMap
+			this.functionsMap
 		);
 
-		preparingContext.options = options;
+		const dataProvider = this.createDataProvider(sqlToJs, dataSourceInternalResolver);
+
+		preparingContext.options = this.options;
 
 		const ast = SqlParser.parse(sql);
 
 		if (ast instanceof SqlNodes.Select) {
 
-			return new Select(preparingContext, runtimeContext, ast);
+			return new Select(dataProvider, preparingContext, runtimeContext, ast);
 		} else if (ast instanceof SqlNodes.Delete) {
 			const selectAst = new SqlNodes.Select;
 
@@ -50,16 +74,51 @@ class Engine
 				selectAst.where = new SqlNodes.Boolean(false);
 			}
 
-			return new Select(preparingContext, runtimeContext, selectAst);
+			return new Select(dataProvider, preparingContext, runtimeContext, selectAst);
 		} else if (ast instanceof SqlNodes.Insert) {
 
-			return new Insert(preparingContext, runtimeContext, ast);
+			return new Insert(dataProvider, preparingContext, runtimeContext, ast);
 		} else if (ast instanceof SqlNodes.Update) {
 
-			return new Update(preparingContext, runtimeContext, ast);
+			return new Update(dataProvider, preparingContext, runtimeContext, ast);
 		} else {
 			throw new Error('Unknown query: ' + ast.constructor.name);
 		}
+	}
+
+	createDataProvider(sqlToJs, dataSourceInternalResolver)
+	{
+		const pool = new DataSourceResolversPool;
+
+		if (this.options.dataSourceResolvers) {
+			for (const resolver of this.options.dataSourceResolvers) {
+				pool.add(resolver);
+			}
+		}
+
+		pool.add(dataSourceInternalResolver);
+
+		const dataFunctionsRegistry = new DataFunctionsRegistry();
+
+		dataFunctionsRegistry.add(new DataFunctionDescription(
+			DataFunctionDescription.TYPE_READ,
+			'INTERNAL',
+			(location, options) => {
+				const dataSource = pool.resolve(location);
+
+				if (!dataSource) {
+					throw new DataSourceNotFound(location);
+				}
+
+				return dataSource;
+			},
+			null,
+			DataSource.TYPE_OBJECTS
+		));
+
+		const dataSourceAnalyzer = new DataSourceAnalyzer(sqlToJs, dataFunctionsRegistry, 'INTERNAL', null);
+
+		return new DataProvider(dataSourceAnalyzer);
 	}
 
 	/**
