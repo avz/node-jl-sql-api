@@ -17,29 +17,33 @@ class STRING extends BasicFunction
 
 		const value = args[0];
 
+		var result;
+
 		/* eslint-disable indent, no-unreachable */
 		switch (typeof(value)) {
 			case 'string':
-				return value;
+				result = value;
 			break;
 			case 'number':
-				return NumberUtils.toDecString(value);
+				result = NumberUtils.toDecString(value);
 			break;
 			case 'boolean':
-				return value ? 'true' : 'false';
+				result = value ? 'true' : 'false';
 			break;
 			case 'undefined':
-				return '';
+				result = '';
 			break;
 			default:
 				if (value === null) {
-					return 'null';
+					result = 'null';
+				} else {
+					result = '[object Object]';
 				}
-
-				return '[object Object]';
 			break;
 		}
 		/* eslint-enable indent, no-unreachable */
+
+		return result;
 	}
 }
 
