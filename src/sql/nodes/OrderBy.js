@@ -9,7 +9,7 @@ class OrderBy extends Node
 		super();
 
 		this.expression = expression;
-		this.direction = direction;
+		this.direction = direction ? direction.toUpperCase() : null;
 		this.collation = collation;
 	}
 
