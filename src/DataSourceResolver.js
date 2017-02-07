@@ -3,7 +3,7 @@
 const DataSource = require('./DataSource');
 const ImplementationRequired = require('./error/ImplementationRequired');
 const JlTransformsChain = require('./stream/JlTransformsChain');
-const LinesSplitter = require('./stream/LinesSplitter');
+const JsonSplitter = require('./stream/JsonSplitter');
 const ChunkJoiner = require('./stream/ChunkJoiner');
 const JsonParser = require('./stream/JsonParser');
 
@@ -37,7 +37,7 @@ class DataSourceResolver
 			} else {
 				const objectsStream = new JlTransformsChain([
 					stream,
-					new LinesSplitter,
+					new JsonSplitter,
 					new JsonParser
 				]);
 
