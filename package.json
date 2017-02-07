@@ -8,14 +8,15 @@
   ],
   "license": "MIT",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/avz/node-jl-sql-api.git"
+    "type": "git",
+    "url": "https://github.com/avz/node-jl-sql-api.git"
   },
   "main": "main.js",
   "author": "avz@nologin.ru",
   "contributors": [],
   "dependencies": {},
   "devDependencies": {
+    "chai": "^3.5.0",
     "eslint": "^3.10.2",
     "eslint-plugin-mocha": "^4.7.0",
     "istanbul": "^0.4.5",
