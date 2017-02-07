@@ -16,7 +16,6 @@
   "contributors": [],
   "dependencies": {},
   "devDependencies": {
-    "chai": "^3.5.0",
     "eslint": "^3.10.2",
     "eslint-plugin-mocha": "^4.7.0",
     "istanbul": "^0.4.5",
