@@ -51,6 +51,11 @@ describe('SQL Parser', () => {
 				assert.deepStrictEqual(parse('{"hello": "world"}').map['hello'].value, 'world');
 			});
 
+			it('multiple keys', () => {
+				assert.deepStrictEqual(parse('{"a": "b", "c": "d"}').map['a'].value, 'b');
+				assert.deepStrictEqual(parse('{"a": "b", "c": "d"}').map['c'].value, 'd');
+			});
+
 			it('without quotes', () => {
 				assert.deepStrictEqual(parse('{hello: "world"}').map['hello'].value, 'world');
 			});
@@ -102,6 +107,154 @@ describe('SQL Parser', () => {
 			assert.ok(node.left.right.rangeStart.left.value === 3);
 			assert.ok(node.left.right.rangeEnd instanceof SqlNodes.BinaryArithmeticOperation);
 			assert.ok(node.left.right.rangeEnd.left.value === 4);
+		});
+	});
+
+	describe('INTERVAL', () => {
+		it('single', () => {
+			const nodeOp = parse('1 + INTERVAL 10 SECOND');
+			const interval = nodeOp.right;
+
+			assert.ok(nodeOp instanceof SqlNodes.IntervalOperation);
+			assert.ok(interval instanceof SqlNodes.Interval);
+
+			assert.strictEqual(interval.deltas.length, 1);
+			assert.strictEqual(interval.deltas[0].unit, 'second');
+			assert.strictEqual(interval.deltas[0].expression.value, 10);
+		});
+
+		it('multi', () => {
+			const nodeOp = parse('1 + INTERVAL 1 YEAR 2 MONTH 3 DAY 4 HOUR 5 MINUTE 6 SECOND');
+			const interval = nodeOp.right;
+
+			assert.ok(nodeOp instanceof SqlNodes.IntervalOperation);
+			assert.ok(interval instanceof SqlNodes.Interval);
+
+			assert.strictEqual(interval.deltas.length, 6);
+			assert.strictEqual(interval.deltas[0].unit, 'year');
+			assert.strictEqual(interval.deltas[0].expression.value, 1);
+			assert.strictEqual(interval.deltas[1].unit, 'month');
+			assert.strictEqual(interval.deltas[1].expression.value, 2);
+			assert.strictEqual(interval.deltas[2].unit, 'day');
+			assert.strictEqual(interval.deltas[2].expression.value, 3);
+			assert.strictEqual(interval.deltas[3].unit, 'hour');
+			assert.strictEqual(interval.deltas[3].expression.value, 4);
+			assert.strictEqual(interval.deltas[4].unit, 'minute');
+			assert.strictEqual(interval.deltas[4].expression.value, 5);
+			assert.strictEqual(interval.deltas[5].unit, 'second');
+			assert.strictEqual(interval.deltas[5].expression.value, 6);
+		});
+	});
+
+
+	describe('calls', () => {
+		it('empty', () => {
+			const node = parse('FUNC()');
+
+			assert.ok(node instanceof SqlNodes.Call);
+			assert.deepStrictEqual(node.function.fragments, ['FUNC']);
+			assert.deepStrictEqual(node.args.values, []);
+		});
+
+		it('with args', () => {
+			const singleArg = parse('FUNC(1)');
+
+			assert.ok(singleArg instanceof SqlNodes.Call);
+			assert.deepStrictEqual(singleArg.function.fragments, ['FUNC']);
+			assert.deepStrictEqual(singleArg.args.values.length, 1);
+
+			const multiArgs = parse('FUNC(1, 2, 3)');
+
+			assert.ok(multiArgs instanceof SqlNodes.Call);
+			assert.deepStrictEqual(multiArgs.function.fragments, ['FUNC']);
+			assert.deepStrictEqual(multiArgs.args.values.length, 3);
+		});
+
+		describe('COUNT', () => {
+			it('COUNT() must throw error', () => {
+				assert.throws(
+					() => {
+						return parse('COUNT()');
+					},
+					() => {
+						return true;
+					}
+				);
+			});
+
+			it('COUNT(*)', () => {
+				const nodeAst = parse('COUNT(*)');
+
+				assert.ok(nodeAst instanceof SqlNodes.Call);
+				assert.deepStrictEqual(nodeAst.function.fragments, ['COUNT']);
+				assert.deepStrictEqual(nodeAst.args.values, []);
+			});
+
+			it('COUNT(exp)', () => {
+				const node = parse('COUNT(hello)');
+
+				assert.ok(node instanceof SqlNodes.Call);
+				assert.deepStrictEqual(node.function.fragments, ['COUNT']);
+				assert.deepStrictEqual(node.args.values.length, 1);
+			});
+		});
+	});
+
+	describe('NOT', () => {
+		it('NOT IN', () => {
+			const nodeUnstrict = parse('1 NOT IN(1, 2)');
+
+			assert.ok(nodeUnstrict instanceof SqlNodes.UnaryLogicalOperation);
+			assert.strictEqual(nodeUnstrict.operator, '!');
+			assert.ok(nodeUnstrict.right instanceof SqlNodes.UnstrictIn);
+
+			const nodeStrict = parse('1 NOT STRICT IN(1, 2)');
+
+			assert.ok(nodeStrict instanceof SqlNodes.UnaryLogicalOperation);
+			assert.strictEqual(nodeStrict.operator, '!');
+			assert.ok(nodeStrict.right instanceof SqlNodes.StrictIn);
+		});
+
+		it('NOT LIKE', () => {
+			const node = parse('1 NOT LIKE "a"');
+
+			assert.ok(node instanceof SqlNodes.UnaryLogicalOperation);
+			assert.strictEqual(node.operator, '!');
+			assert.ok(node.right instanceof SqlNodes.LikeOperation);
+			assert.strictEqual(node.right.caseSensitive, true);
+		});
+
+		it('NOT ILIKE', () => {
+			const node = parse('1 NOT ILIKE "a"');
+
+			assert.ok(node instanceof SqlNodes.UnaryLogicalOperation);
+			assert.strictEqual(node.operator, '!');
+			assert.ok(node.right instanceof SqlNodes.LikeOperation);
+			assert.strictEqual(node.right.caseSensitive, false);
+		});
+
+		it('NOT REGEXP', () => {
+			const node = parse('1 NOT REGEXP "/hi/"');
+
+			assert.ok(node instanceof SqlNodes.UnaryLogicalOperation);
+			assert.strictEqual(node.operator, '!');
+			assert.ok(node.right instanceof SqlNodes.RegexpOperation);
+		});
+
+		it('NOT IS', () => {
+			const node = parse('1 IS NOT NUMBER');
+
+			assert.ok(node instanceof SqlNodes.UnaryLogicalOperation);
+			assert.strictEqual(node.operator, '!');
+			assert.ok(node.right instanceof SqlNodes.IsOperation);
+		});
+
+		it('unary !', () => {
+			const node = parse('!10');
+
+			assert.ok(node instanceof SqlNodes.UnaryLogicalOperation);
+			assert.strictEqual(node.operator, '!');
+			assert.ok(node.right instanceof SqlNodes.Number);
 		});
 	});
 });

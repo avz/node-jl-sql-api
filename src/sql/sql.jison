@@ -327,7 +327,9 @@ baseExpression
 	| '-' baseExpression { $$ = new Nodes.UnaryArithmeticOperation($1, $2); }
 	| '!' baseExpression { $$ = new Nodes.UnaryLogicalOperation($1, $2); }
 	| baseExpression 'STRICT' 'IN' '(' expressionsList ')' { $$ = new Nodes.StrictIn($1, $5); }
+	| baseExpression 'NOT' 'STRICT' 'IN' '(' expressionsList ')' { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.StrictIn($1, $6)); }
 	| baseExpression 'IN' '(' expressionsList ')' { $$ = new Nodes.UnstrictIn($1, $4); }
+	| baseExpression 'NOT' 'IN' '(' expressionsList ')' { $$ = new Nodes.UnaryLogicalOperation('!', new Nodes.UnstrictIn($1, $5)); }
 	| callExpression %prec 'CALL_PREC' { $$ = $1 }
 	| complexIdent { $$ = Nodes.ColumnIdent.fromComplexIdent($1) }
 	| const { $$ = $1; }
