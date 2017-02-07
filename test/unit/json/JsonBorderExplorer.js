@@ -74,6 +74,8 @@ describe('JsonBorderExplorer', () => {
 			['[{"a":[{}]}]', '[ { "a"  : [ {  } ] }  ]'],
 			['[{"a":[{"привет":"мир"}]}]', '[{"a"\n:\t[\n{\t\t"привет": "мир"  }]}]'],
 			['[{"a":[{"п\\\\р\\"и\\вет\\"":"мир\\""}]}]', '[{"a"\n:\t[\n{\t\t"привет": "мир"  }]}]'],
+			['{"A":"b", "c": "d"}'],
+			['[1, 2, 3]'],
 			['123'],
 			['null'],
 			['false'],
@@ -117,18 +119,20 @@ describe('JsonBorderExplorer', () => {
 
 	describe('invalid', () => {
 		const cases = [
-			'{{}}',
-			'"hello\\"',
-			'"hello',
-			'[',
-			']',
-			'{',
-			'}',
-			'{"hello"}',
-			'{10:11}',
-			'nul',
-			'tru',
-			'fa'
+			['{{}}', /Object key expected/],
+			['"hello\\"', /Unexpected end of JSON, expected ending of: string/],
+			['"hello', /Unexpected end of JSON, expected ending of: string/],
+			['[', /Unexpected end of JSON, expected ending of: array/],
+			[']', /Unexpected character: ]/],
+			['{', /Unexpected end of JSON, expected ending of: object/],
+			['}', /Unexpected character: }/],
+			['{"hello"}', /Colon expected after object key/],
+			['{10:11}', /Object key expected/],
+			['{"aaa":"bbb"ccc}', /Comma or end of object expected/],
+			['[1, 2"hello"]', /Comma or end of array expected/],
+			['nul', /Unexpected end of JSON, expected ending of: nul/],
+			['tru', /Unexpected end of JSON, expected ending of: true/],
+			['fa', /Unexpected end of JSON, expected ending of: false/]
 		];
 
 		var cn = 0;
@@ -139,9 +143,9 @@ describe('JsonBorderExplorer', () => {
 			it('case #' + cn, () => {
 				assert.throws(
 					() => {
-						parse(c);
+						parse([Buffer.from(c[0])]);
 					},
-					Error
+					c[1]
 				);
 			});
 		}
