@@ -25,6 +25,16 @@ class DataFunctionsRegistry
 	{
 		return this.map.need(name instanceof Array ? name : [name]);
 	}
+
+	/**
+	 *
+	 * @param {string|string[]} name
+	 * @returns {Boolean}
+	 */
+	exists(name)
+	{
+		return !!this.map.get(name instanceof Array ? name : [name]);
+	}
 }
 
 module.exports = DataFunctionsRegistry;

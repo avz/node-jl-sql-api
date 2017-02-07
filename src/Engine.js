@@ -10,6 +10,7 @@ const FunctionsMap = require('./FunctionsMap');
 
 const DataSourceNotFound = require('./error/DataSourceNotFound');
 
+const PublicApiOptions = require('./PublicApiOptions');
 const DataSource = require('./DataSource');
 const DataSourceApiResolver = require('./DataSourceApiResolver');
 const DataSourceResolversPool = require('./DataSourceResolversPool');
@@ -30,7 +31,7 @@ class Engine
 	 *
 	 * @param {PublicApiOptions} options
 	 */
-	constructor(options = {})
+	constructor(options = new PublicApiOptions)
 	{
 		this.options = options;
 		this.functionsMap = this.createFunctionsMap();
@@ -116,7 +117,20 @@ class Engine
 			DataSource.TYPE_OBJECTS
 		));
 
-		const dataSourceAnalyzer = new DataSourceAnalyzer(sqlToJs, dataFunctionsRegistry, 'INTERNAL', null);
+		for (const ft in this.options.dataFunctions) {
+			const map = this.options.dataFunctions[ft];
+
+			for (const name in map) {
+				dataFunctionsRegistry.add(map[name]);
+			}
+		}
+
+		const dataSourceAnalyzer = new DataSourceAnalyzer(
+			sqlToJs,
+			dataFunctionsRegistry,
+			this.options.dataFunctionsDefaults.read,
+			this.options.dataFunctionsDefaults.transform
+		);
 
 		return new DataProvider(dataSourceAnalyzer);
 	}
