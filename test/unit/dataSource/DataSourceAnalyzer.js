@@ -115,16 +115,6 @@ describe('DataSourceAnalyzer', () => {
 			DataSource.TYPE_OBJECTS
 		);
 
-		const readObjectsOptsDesc = new DataFunctionDescription(
-			DataFunctionDescription.TYPE_READ,
-			'readObjectsOpts',
-			(location, options) => {
-				assert.deepStrictEqual(options, {path: location});
-			},
-			null,
-			DataSource.TYPE_OBJECTS
-		);
-
 		const readBinaryDesc = new DataFunctionDescription(
 			DataFunctionDescription.TYPE_READ,
 			'readBinary',
@@ -141,32 +131,18 @@ describe('DataSourceAnalyzer', () => {
 			DataSource.TYPE_OBJECTS
 		);
 
-		const transformOptsDesc = new DataFunctionDescription(
+		const transformObjObjDesc = new DataFunctionDescription(
 			DataFunctionDescription.TYPE_TRANSFORM,
-			'transformOpts',
-			(location, options) => {
-				assert.deepStrictEqual(options, {path: location});
-			},
-			DataSource.TYPE_BINARY,
-			DataSource.TYPE_OBJECTS
-		);
-
-		const transformObjObjOptsDesc = new DataFunctionDescription(
-			DataFunctionDescription.TYPE_TRANSFORM,
-			'transformObjObjOpts',
-			(location, options) => {
-				assert.deepStrictEqual(options, {path: location});
-			},
+			'transformObjObj',
+			() => {},
 			DataSource.TYPE_OBJECTS,
 			DataSource.TYPE_OBJECTS
 		);
 
 		dataFunctionsRegistry.add(readObjectsDesc);
-		dataFunctionsRegistry.add(readObjectsOptsDesc);
 		dataFunctionsRegistry.add(readBinaryDesc);
 		dataFunctionsRegistry.add(transformDesc);
-		dataFunctionsRegistry.add(transformOptsDesc);
-		dataFunctionsRegistry.add(transformObjObjOptsDesc);
+		dataFunctionsRegistry.add(transformObjObjDesc);
 
 		it('default read', () => {
 			const dsa = new DataSourceAnalyzer(new SqlToJs, dataFunctionsRegistry, 'readObjects', null);
@@ -195,45 +171,49 @@ describe('DataSourceAnalyzer', () => {
 			const dsa = new DataSourceAnalyzer(new SqlToJs, dataFunctionsRegistry, null, null);
 			const stack = dsa.createCallChain(
 				new SqlNodes.DataSourceCall(
-					new SqlNodes.FunctionIdent(new SqlNodes.ComplexIdent(['@', 'READOBJECTSOPTS'])),
+					new SqlNodes.FunctionIdent(new SqlNodes.ComplexIdent(['@', 'READOBJECTS'])),
 					new SqlNodes.TableLocation(new SqlNodes.ComplexIdent(['@', 'path.json'])),
 					new SqlNodes.Map({path: new SqlNodes.String('"path.json"')})
 				)
 			);
 
 			assert.ok(stack instanceof DataSourceRead);
-			assert.strictEqual(stack.desc, readObjectsOptsDesc);
+			assert.strictEqual(stack.desc, readObjectsDesc);
+			assert.deepStrictEqual(stack.location, ['path.json']);
+			assert.deepStrictEqual(stack.options, {path: 'path.json'});
 		});
 
 		it('transform', () => {
 			const dsa = new DataSourceAnalyzer(new SqlToJs, dataFunctionsRegistry, 'readBinary', null);
 			const stack = dsa.createCallChain(
 				new SqlNodes.DataSourceCall(
-					new SqlNodes.FunctionIdent(new SqlNodes.ComplexIdent(['@', 'TraNsFormOPTS'])),
+					new SqlNodes.FunctionIdent(new SqlNodes.ComplexIdent(['@', 'TraNsForm'])),
 					new SqlNodes.TableLocation(new SqlNodes.ComplexIdent(['@', 'path2.json'])),
 					new SqlNodes.Map({path: new SqlNodes.String('"path2.json"')})
 				)
 			);
 
 			assert.ok(stack instanceof DataSourceTransform);
-			assert.strictEqual(stack.desc, transformOptsDesc);
+			assert.strictEqual(stack.desc, transformDesc);
 
 			assert.ok(stack.input instanceof DataSourceRead);
 			assert.strictEqual(stack.input.desc, readBinaryDesc);
+			assert.deepStrictEqual(stack.input.location, ['path2.json']);
+			assert.deepStrictEqual(stack.input.options, {});
 		});
 
 		it('transforms chain', () => {
 			const dsa = new DataSourceAnalyzer(new SqlToJs, dataFunctionsRegistry, 'readBinary', 'transform');
 			const stack = dsa.createCallChain(
 				new SqlNodes.DataSourceCall(
-					new SqlNodes.FunctionIdent(new SqlNodes.ComplexIdent(['@', 'TraNsFormObjObjOpts'])),
+					new SqlNodes.FunctionIdent(new SqlNodes.ComplexIdent(['@', 'TraNsFormObjObj'])),
 					new SqlNodes.TableLocation(new SqlNodes.ComplexIdent(['@', 'path3.json'])),
 					new SqlNodes.Map({path: new SqlNodes.String('"path3.json"')})
 				)
 			);
 
 			assert.ok(stack instanceof DataSourceTransform);
-			assert.strictEqual(stack.desc, transformObjObjOptsDesc);
+			assert.strictEqual(stack.desc, transformObjObjDesc);
 
 			assert.ok(stack.input instanceof DataSourceTransform);
 			assert.strictEqual(stack.input.desc, transformDesc);
