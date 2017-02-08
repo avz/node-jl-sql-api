@@ -70,7 +70,9 @@ class DataSourceAnalyzer
 				throw new SqlLogicError('Invalid argument of read function ' + desc.name);
 			}
 
-			return this.createRead(desc.name, expression.source.fragments, options);
+			const p = expression.source ? expression.source.fragments : null;
+
+			return this.createRead(desc.name, p, options);
 
 		} else if (desc.isTransform()) {
 			if (!expression.source) {

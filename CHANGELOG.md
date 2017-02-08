@@ -1,3 +1,9 @@
+## `v2.7.0` (2017-02-08)
+
+* `NOT IN` and `NOT STRICT IN`
+* Way to bind pluggable data transfors
+
+
 ## `v2.6.0` (2017-01-27)
 
 * Multiline JSON objects are supported
