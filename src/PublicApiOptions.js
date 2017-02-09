@@ -107,7 +107,7 @@ class PublicApiOptions
 					outputType = DataSource.TYPE_BINARY;
 				} else if (type === DataFunctionDescription.TYPE_TRANSFORM) {
 					inputType = DataSource.TYPE_BINARY;
-					outputType = DataSource.TYPE_OBJECTS;
+					outputType = DataSource.TYPE_ARRAY_OF_ROWS;
 				} else {
 					assert.ok(false, 'Unknown type: ' + type);
 				}

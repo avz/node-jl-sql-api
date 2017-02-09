@@ -44,6 +44,7 @@ class PublicApi
 }
 
 PublicApi.DataSourceResolver = require('./DataSourceResolver');
+PublicApi.DataSource = require('./DataSource');
 
 PublicApi.exceptions = {
 	JlException: require('./error/JlException'),

@@ -19,7 +19,7 @@ class DataSource
 }
 
 DataSource.DEFAULT_NAME = '@';
-DataSource.TYPE_OBJECTS = 'objects';
+DataSource.TYPE_ARRAY_OF_ROWS = 'array_of_rows';
 DataSource.TYPE_BINARY = 'binary';
 
 module.exports = DataSource;

@@ -1,6 +1,7 @@
 'use strict';
 
 const ProgramError = require('../error/ProgramError');
+const DataSource = require('../DataSource');
 
 class DataFunctionDescription
 {
@@ -14,12 +15,20 @@ class DataFunctionDescription
 			throw new ProgramError('Output type must be specified');
 		}
 
+		if (outputType !== DataSource.TYPE_ARRAY_OF_ROWS && outputType !== DataSource.TYPE_BINARY) {
+			throw new ProgramError('Invalid data source function outputType: ' + outputType);
+		}
+
 		if (type === DataFunctionDescription.TYPE_TRANSFORM && !inputType) {
 			throw new ProgramError('Input type must be specified');
 		}
 
 		if (type === DataFunctionDescription.TYPE_READ && inputType) {
 			throw new ProgramError('Input type must be null');
+		}
+
+		if (inputType && (inputType !== DataSource.TYPE_ARRAY_OF_ROWS && inputType !== DataSource.TYPE_BINARY)) {
+			throw new ProgramError('Invalid data source function inputType: ' + inputType);
 		}
 
 		this.type = type;

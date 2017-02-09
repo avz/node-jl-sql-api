@@ -44,7 +44,7 @@ describe('DataFunctionDescription', () => {
 					'hi',
 					() => {},
 					null,
-					DataSource.TYPE_OBJECTS
+					DataSource.TYPE_ARRAY_OF_ROWS
 				);
 			},
 			ProgramError
@@ -59,7 +59,7 @@ describe('DataFunctionDescription', () => {
 					'hi',
 					() => {},
 					DataSource.TYPE_BINARY,
-					DataSource.TYPE_OBJECTS
+					DataSource.TYPE_ARRAY_OF_ROWS
 				);
 			},
 			ProgramError

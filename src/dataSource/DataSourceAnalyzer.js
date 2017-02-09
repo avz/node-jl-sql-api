@@ -20,7 +20,7 @@ class DataSourceAnalyzer
 	{
 		if (defaultRead) {
 			if (!dataFunctionRegistry.need(defaultRead).isRead()) {
-				throw new ProgramError('Default read function must be type TYPE_READ');
+				throw new ProgramError('Default read function must be type TYPE_ROW or TYPE_ARRAY_OF_ROWS');
 			}
 		}
 
@@ -35,7 +35,7 @@ class DataSourceAnalyzer
 				throw new ProgramError('Default transform inputType must be DataSource.TYPE_BINARY');
 			}
 
-			if (defaultTransformDesc.outputType !== DataSource.TYPE_OBJECTS) {
+			if (defaultTransformDesc.outputType !== DataSource.TYPE_ARRAY_OF_ROWS) {
 				throw new ProgramError('Default transform outputType must be DataSource.TYPE_ROWS');
 			}
 		}
@@ -97,7 +97,7 @@ class DataSourceAnalyzer
 	{
 		const tree = this.makeCallStack(expression);
 
-		return this.needTypedStream(tree, DataSource.TYPE_OBJECTS);
+		return this.needTypedStream(tree, DataSource.TYPE_ARRAY_OF_ROWS);
 	}
 
 	/**
@@ -112,7 +112,7 @@ class DataSourceAnalyzer
 			return source;
 		}
 
-		if (type === DataSource.TYPE_OBJECTS) {
+		if (type === DataSource.TYPE_ARRAY_OF_ROWS) {
 			return this.createDefaultTransform(source);
 		}
 

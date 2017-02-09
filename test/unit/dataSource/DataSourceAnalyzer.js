@@ -35,7 +35,7 @@ describe('DataSourceAnalyzer', () => {
 
 			},
 			DataSource.TYPE_BINARY,
-			DataSource.TYPE_OBJECTS
+			DataSource.TYPE_ARRAY_OF_ROWS
 		));
 
 		dataFunctionsRegistry.add(new DataFunctionDescription(
@@ -44,7 +44,7 @@ describe('DataSourceAnalyzer', () => {
 			() => {
 
 			},
-			DataSource.TYPE_OBJECTS,
+			DataSource.TYPE_ARRAY_OF_ROWS,
 			DataSource.TYPE_BINARY
 		));
 
@@ -112,7 +112,7 @@ describe('DataSourceAnalyzer', () => {
 			'readObjects',
 			() => {},
 			null,
-			DataSource.TYPE_OBJECTS
+			DataSource.TYPE_ARRAY_OF_ROWS
 		);
 
 		const readBinaryDesc = new DataFunctionDescription(
@@ -128,15 +128,15 @@ describe('DataSourceAnalyzer', () => {
 			'transform',
 			() => {},
 			DataSource.TYPE_BINARY,
-			DataSource.TYPE_OBJECTS
+			DataSource.TYPE_ARRAY_OF_ROWS
 		);
 
 		const transformObjObjDesc = new DataFunctionDescription(
 			DataFunctionDescription.TYPE_TRANSFORM,
 			'transformObjObj',
 			() => {},
-			DataSource.TYPE_OBJECTS,
-			DataSource.TYPE_OBJECTS
+			DataSource.TYPE_ARRAY_OF_ROWS,
+			DataSource.TYPE_ARRAY_OF_ROWS
 		);
 
 		dataFunctionsRegistry.add(readObjectsDesc);

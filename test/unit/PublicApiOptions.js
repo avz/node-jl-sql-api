@@ -38,7 +38,7 @@ describe('PublicApiOptions', () => {
 			assert.strictEqual(transformer.ctor, ft);
 			assert.strictEqual(transformer.name, 'TRANSFORMER');
 			assert.strictEqual(transformer.inputType, DataSource.TYPE_BINARY);
-			assert.strictEqual(transformer.outputType, DataSource.TYPE_OBJECTS);
+			assert.strictEqual(transformer.outputType, DataSource.TYPE_ARRAY_OF_ROWS);
 		});
 
 		it('long', () => {
@@ -50,13 +50,13 @@ describe('PublicApiOptions', () => {
 					read: {
 						READER: {
 							ctor: fr,
-							outputType: DataSource.TYPE_OBJECTS
+							outputType: DataSource.TYPE_ARRAY_OF_ROWS
 						}
 					},
 					transform: {
 						TRANSFORMER: {
 							ctor: ft,
-							inputType: DataSource.TYPE_OBJECTS,
+							inputType: DataSource.TYPE_ARRAY_OF_ROWS,
 							outputType: DataSource.TYPE_BINARY
 						}
 					}
@@ -70,7 +70,7 @@ describe('PublicApiOptions', () => {
 			assert.strictEqual(reader.ctor, fr);
 			assert.strictEqual(reader.name, 'READER');
 			assert.strictEqual(reader.inputType, null);
-			assert.strictEqual(reader.outputType, DataSource.TYPE_OBJECTS);
+			assert.strictEqual(reader.outputType, DataSource.TYPE_ARRAY_OF_ROWS);
 
 			const transformer = o.dataFunctions.transform.TRANSFORMER;
 
@@ -78,7 +78,7 @@ describe('PublicApiOptions', () => {
 			assert.strictEqual(transformer.type, DataFunctionDescription.TYPE_TRANSFORM);
 			assert.strictEqual(transformer.ctor, ft);
 			assert.strictEqual(transformer.name, 'TRANSFORMER');
-			assert.strictEqual(transformer.inputType, DataSource.TYPE_OBJECTS);
+			assert.strictEqual(transformer.inputType, DataSource.TYPE_ARRAY_OF_ROWS);
 			assert.strictEqual(transformer.outputType, DataSource.TYPE_BINARY);
 		});
 

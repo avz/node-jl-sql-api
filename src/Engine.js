@@ -114,7 +114,7 @@ class Engine
 				return dataSource;
 			},
 			null,
-			DataSource.TYPE_OBJECTS
+			DataSource.TYPE_ARRAY_OF_ROWS
 		));
 
 		for (const ft in this.options.dataFunctions) {
