@@ -3,6 +3,7 @@
 const DataSource = require('./DataSource');
 const DataSourceRead = require('./dataSource/DataSourceRead');
 const ProgramError = require('./error/ProgramError');
+const JlTransformsChain = require('./stream/JlTransformsChain');
 
 class DataProvider
 {
@@ -79,20 +80,46 @@ class DataProvider
 	 */
 	createStream(desc, source, options)
 	{
-		const s = desc.createStream(source, options);
-		var dataSource;
+		var s = desc.createStream(source, options);
 
-		if (s instanceof DataSource) {
-			dataSource = s;
-		} else {
-			dataSource = new DataSource(s);
+		if (s instanceof Array) {
+			const chain = [];
+			let alias = null;
+
+			for (const ds of s) {
+				const dss = this.ensureDataSource(ds);
+
+				chain.push(dss.stream);
+
+				if (dss.alias !== null && dss.alias !== undefined) {
+					alias = dss.alias;
+				}
+			}
+
+			s = new DataSource(new JlTransformsChain(chain), alias);
 		}
+
+		const dataSource = this.ensureDataSource(s);
 
 		if (source instanceof DataSource) {
 			dataSource.alias = source.alias;
 		}
 
 		return dataSource;
+	}
+
+	/**
+	 * @private
+	 * @param {Readable|DataSource} st
+	 * @returns {DataSource}
+	 */
+	ensureDataSource(st)
+	{
+		if (st instanceof DataSource) {
+			return st;
+		} else {
+			return new DataSource(st);
+		}
 	}
 }
 
