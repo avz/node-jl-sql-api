@@ -169,7 +169,7 @@ class Select
 
 			const dataSource = this.resolveDataSource(joinAst.table);
 
-			if (dataSource.alias === null) {
+			if (dataSource.alias === null || dataSource.alias === undefined) {
 				throw new SqlLogicError('Tables must have an alias');
 			}
 

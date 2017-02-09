@@ -130,7 +130,17 @@ class DataSourceAnalyzer
 	{
 		const desc = this.dataFunctionRegistry.need(name);
 
-		return new DataSourceRead(desc, location, options);
+		const p = [];
+
+		for (const fragment of location) {
+			if (fragment instanceof SqlNodes.BindingIdent) {
+				p.push(fragment.binded);
+			} else {
+				p.push(fragment);
+			}
+		}
+
+		return new DataSourceRead(desc, p, options);
 	}
 
 	/**
