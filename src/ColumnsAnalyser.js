@@ -83,7 +83,8 @@ class ColumnsAnalyser
 
 		return this.column(
 			alias,
-			column.expression
+			column.expression,
+			!!column.alias
 		);
 	}
 
@@ -91,14 +92,15 @@ class ColumnsAnalyser
 	 * @private
 	 * @param {string[]} alias
 	 * @param {Node} expression
+	 * @param {boolean} isUserDefinedAlias
 	 * @returns {BasicColumn|AggregationColumn}
 	 */
-	column(alias, expression)
+	column(alias, expression, isUserDefinedAlias)
 	{
 		if (this.expressionAnalyser.isAggregationExpression(expression)) {
-			return new AggregationColumn(this.preparingContext, alias, expression);
+			return new AggregationColumn(this.preparingContext, alias, expression, isUserDefinedAlias);
 		} else {
-			return new BasicColumn(this.preparingContext, alias, expression);
+			return new BasicColumn(this.preparingContext, alias, expression, isUserDefinedAlias);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 const ColumnsAnalyser = require('./ColumnsAnalyser');
+const Aliaser = require('./Aliaser');
 const Sorter = require('./stream/Sorter');
 const Filter = require('./stream/Filter');
 const Joiner = require('./stream/Joiner');
@@ -30,10 +31,12 @@ class Select
 	 * @param {DataProvider} dataProvider
 	 * @param {PreparingContext} preparingContext
 	 * @param {RuntimeContext} runtimeContext
-	 * @param {Node} ast
+	 * @param {Node} queryAst
 	 */
-	constructor(dataProvider, preparingContext, runtimeContext, ast)
+	constructor(dataProvider, preparingContext, runtimeContext, queryAst)
 	{
+		const ast = queryAst.clone();
+
 		if (ast.limit) {
 			throw new SqlNotSupported('LIMIT is not supported yet');
 		}
@@ -64,6 +67,18 @@ class Select
 		const columnsAnalyser = new ColumnsAnalyser(preparingContext);
 
 		this.columns = columnsAnalyser.analyseColumns(ast.columns);
+
+		const aliaser = new Aliaser(this.columns);
+
+		if (ast.where) {
+			aliaser.expandInplace(ast.where);
+		}
+
+		if (ast.groups) {
+			for (const group of ast.groups) {
+				aliaser.expandInplace(group);
+			}
+		}
 
 		if (this.ast.where && columnsAnalyser.expressionAnalyser.isAggregationExpression(this.ast.where)) {
 			throw new SqlLogicError('aggregation function in WHERE');

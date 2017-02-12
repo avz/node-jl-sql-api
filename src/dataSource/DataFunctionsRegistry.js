@@ -6,7 +6,7 @@ class DataFunctionsRegistry
 {
 	constructor()
 	{
-		this.map = new ComplexIdentsMap;
+		this.map = new ComplexIdentsMap(false);
 	}
 
 	/**

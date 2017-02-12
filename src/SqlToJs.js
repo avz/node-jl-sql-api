@@ -80,6 +80,10 @@ class SqlToJs
 		 * SQL: `a`.`b`.`c`
 		 * JS: ((item.a || undefined) && (item.a.b || undefined) && item.a.b.c)
 		 */
+		if (columnIdent.expandedAlias) {
+			return this.nodeToCode(columnIdent.expandedAlias);
+		}
+
 		var levels = [];
 		var rel = this.rowVarName;
 		const frags = columnIdent.getFragments();

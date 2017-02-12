@@ -65,4 +65,42 @@ describe('SELECT', () => {
 			assert.strictEqual(output[0]['a + 40'], input[0].a + 40);
 		});
 	});
+
+	describe('aliases accessibility', () => {
+		it('WHERE', done => {
+			const input = [{a: 1}, {a: 2}];
+
+			jlSql.query('SELECT a AS b WHERE b = 1 AND a = 1')
+				.fromArrayOfObjects(input)
+				.toArrayOfObjects((r) => {
+					assert.deepStrictEqual(r, [{b: 1}]);
+					done();
+				})
+			;
+		});
+
+		it('GROUP BY', done => {
+			const input = [{a: 1}, {a: 2}];
+
+			jlSql.query('SELECT a AS b, COUNT(*) AS c GROUP BY b')
+				.fromArrayOfObjects(input)
+				.toArrayOfObjects((r) => {
+					assert.deepStrictEqual(r, [{b: 1, c: 1}, {b: 2, c: 1}]);
+					done();
+				})
+			;
+		});
+
+		it('HAVING', done => {
+			const input = [{a: 1}, {a: 2}];
+
+			jlSql.query('SELECT a AS b HAVING b = 1')
+				.fromArrayOfObjects(input)
+				.toArrayOfObjects((r) => {
+					assert.deepStrictEqual(r, [{b: 1}]);
+					done();
+				})
+			;
+		});
+	});
 });

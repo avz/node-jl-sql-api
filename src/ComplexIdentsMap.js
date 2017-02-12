@@ -5,14 +5,17 @@ const NotFound = require('./error/NotFound');
 
 class ComplexIdentsMap
 {
-	constructor()
+	constructor(caseSensitivity = true)
 	{
 		this.map = {};
+		this.caseSensitivity = caseSensitivity;
 	}
 
 	_key(path)
 	{
-		return JSON.stringify(path.map(s => s.toUpperCase()));
+		const k = this.caseSensitivity ? path : path.map(s => s.toUpperCase());
+
+		return JSON.stringify(k);
 	}
 
 	_unkey(key)
