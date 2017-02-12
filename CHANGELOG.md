@@ -1,3 +1,10 @@
+## `v2.8.0` (2017-02-12)
+
+* aliases now accessible in WHERE and GROUP BY:
+  - `SELECT field AS alias WHERE alias = 123`
+  - `SELECT field AS alias GROUP BY alias`
+
+
 ## `v2.7.0` (2017-02-08)
 
 * `NOT IN` and `NOT STRICT IN`
