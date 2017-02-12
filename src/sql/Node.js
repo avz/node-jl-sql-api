@@ -1,7 +1,6 @@
 'use strict';
 
 const util = require('util');
-const ProgramError = require('../error/ProgramError');
 const ImplementationRequired = require('../error/ImplementationRequired');
 
 class Node
@@ -105,7 +104,13 @@ class Node
 
 					return value.slice().map(clone);
 				} else {
-					throw new ProgramError('Non-cloneable object');
+					const copy = {};
+
+					for (const name in value) {
+						copy[name] = clone(value[name]);
+					}
+
+					return copy;
 				}
 			} else {
 				return value;
